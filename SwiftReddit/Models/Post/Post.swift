@@ -98,11 +98,6 @@ struct Post: Identifiable, Hashable, Equatable {
         hasher.combine(title)
     }
     
-    // custom identifiable conformance
-    var identifier: String {
-        return id
-    }
-    
     init(from postData: PostData) {
         self.id = postData.id
         self.title = postData.title

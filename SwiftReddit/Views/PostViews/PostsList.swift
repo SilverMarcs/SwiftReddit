@@ -117,7 +117,10 @@ struct PostsList: View {
             if isRefresh {
                 posts = newPosts
             } else {
-                posts.append(contentsOf: newPosts)
+                // Filter out duplicates when appending new posts
+                let existingIDs = Set(posts.map { $0.id })
+                let uniqueNewPosts = newPosts.filter { !existingIDs.contains($0.id) }
+                posts.append(contentsOf: uniqueNewPosts)
             }
             after = newAfter
         } else {
