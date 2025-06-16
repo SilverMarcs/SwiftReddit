@@ -10,7 +10,6 @@ import SwiftUI
 struct PostsView: View {
     @State private var posts: [Post] = []
     @State private var isLoading = false
-    @State private var loadingMore = false
     @State private var after: String?
     @State private var selectedSort: SubListingSortOption = .best
     
@@ -26,13 +25,13 @@ struct PostsView: View {
                 
                 Color.clear
                     .onAppear {
-                        if !isLoading && !loadingMore && after != nil {
+                        if !isLoading && after != nil {
                             loadMorePosts()
                         }
                     }
                     .listRowSeparator(.hidden)
                 
-                if after == nil && !isLoading && !loadingMore {
+                if after == nil && !isLoading {
                     Text("No more posts")
                         .foregroundColor(.secondary)
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -40,7 +39,7 @@ struct PostsView: View {
                         .listRowSeparator(.hidden)
                 }
                 
-                if isLoading || loadingMore {
+                if isLoading {
                     ProgressView()
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -51,8 +50,6 @@ struct PostsView: View {
             .navigationTitle("Home")
             .toolbarTitleDisplayMode(.inlineLarge)
             .toolbar {
-                ToolbarSpacer(.fixed)
-                
                 ToolbarItem(placement: .topBarTrailing) {
                     Picker("Sort", selection: $selectedSort) {
                         ForEach(SubListingSortOption.allCases) { sort in
@@ -88,12 +85,12 @@ struct PostsView: View {
     }
     
     private func loadMorePosts() {
-        guard !loadingMore && !isLoading && after != nil else { return }
+        guard !isLoading && after != nil else { return }
         
         Task {
-            loadingMore = true
+            isLoading = true
             await fetchPosts(isRefresh: false)
-            loadingMore = false
+            isLoading = false
         }
     }
     

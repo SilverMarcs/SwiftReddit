@@ -36,10 +36,11 @@ struct PostView: View {
                           .foregroundColor(.primary)
                           .cornerRadius(4)
                   }
-                  
-                  // TODO: post type here???
-                  
-                  // post description a bit here
+
+                  Text(post.selftext.trimmingCharacters(in: .whitespacesAndNewlines))
+                      .font(.caption)
+                      .foregroundStyle(.secondary)
+                      .lineLimit(2)
               }
               
               Spacer()
@@ -83,26 +84,19 @@ struct PostView: View {
                   HStack(spacing: 10) {
                         HStack(spacing: 4) {
                           Image(systemName: "bubble.left")
-                              .imageScale(.small)
-                            .fontWeight(.semibold)
-                              .foregroundColor(.secondary)
                           
                           Text(post.formattedComments)
-                              .font(.callout)
-                              .fontWeight(.semibold)
-                              .foregroundStyle(.secondary)
                         }
+                      
                         HStack(spacing: 4) {
                             Image(systemName: "clock")
-                                .imageScale(.small)
-                                .foregroundColor(.secondary)
-                            
+
                             Text(post.timeAgo)
-                                .font(.callout)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(.secondary)
                         }
                   }
+                  .font(.caption)
+                  .fontWeight(.semibold)
+                  .foregroundColor(.secondary)
               }
               
               Spacer()
@@ -121,17 +115,8 @@ struct PostView: View {
                         .font(.title2)
                         .foregroundStyle(.secondary)
                 }
-                .font(.subheadline)
                 .fontWeight(.semibold)
           }
-//
-//          // Domain/URL info for link posts
-//          if !post.isSelf, let url = post.url, !url.isEmpty {
-//              Text(post.domain)
-//                  .font(.caption2)
-//                  .foregroundColor(.blue)
-//                  .lineLimit(1)
-//          }
       }
       .padding(.horizontal, 16)
       .padding(.vertical, 12)
