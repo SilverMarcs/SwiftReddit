@@ -1,21 +1,27 @@
 //
 //  ContentView.swift
-//  SwiftReddit
+//  winston
 //
-//  Created by Zabir Raihan on 15/06/2025.
+//  Created by Winston Team on 16/06/25.
 //
 
 import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView {
+            PostsView()
+                .tabItem {
+                    Image(systemName: "house")
+                    Text("Posts")
+                }
+            
+            SettingsView()
+                .tabItem {
+                    Image(systemName: "gearshape")
+                    Text("Settings")
+                }
         }
-        .padding()
     }
 }
 
