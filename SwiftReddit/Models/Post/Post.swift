@@ -10,7 +10,7 @@ import SwiftUI
 
 ///  post structure for reduced memory usage in feeds
 /// Contains only essential information needed for basic post display
-struct Post: Identifiable, Hashable {
+struct Post: Identifiable, Hashable, Equatable {
     let id: String
     let title: String
     let author: String
@@ -96,12 +96,11 @@ struct Post: Identifiable, Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
         hasher.combine(title)
-        hasher.combine(mediaType)
     }
     
     // Custom equality implementation
     static func == (lhs: Post, rhs: Post) -> Bool {
-        return lhs.id == rhs.id && lhs.title == rhs.title && lhs.mediaType == rhs.mediaType
+        return lhs.id == rhs.id && lhs.title == rhs.title
     }
     
     init(from postData: PostData) {
@@ -183,7 +182,7 @@ struct Post: Identifiable, Hashable {
         self.winstonSeen = postData.winstonSeen ?? false
         self.winstonHidden = postData.winstonHidden ?? false
         
-        // Extract  media information
+        // Extract media information with high-quality image support
         self.mediaType = Self.extractMedia(from: postData)
     }
     
@@ -200,17 +199,21 @@ struct Post: Identifiable, Hashable {
         
         // Gallery detection
         if let isGallery = data.is_gallery, isGallery {
-            return .gallery(count: 0, imageURL: imageURL) // Simplified count for now
+            let galleryImageURL = extractGalleryImageURL(from: data) ?? extractImageURL(from: data)
+            let count = data.gallery_data?.items?.count ?? 0
+            return .gallery(count: count, imageURL: galleryImageURL)
         }
         
         // Video detection
         if data.is_video == true {
-            return .video(thumbnailURL: imageURL)
+            let videoThumbnail = extractVideoThumbnail(from: data) ?? imageURL
+            return .video(thumbnailURL: videoThumbnail)
         }
         
         // YouTube detection
         if domain.contains("youtube.com") || domain.contains("youtu.be") {
-            return .youtube(thumbnailURL: imageURL)
+            let ytThumbnail = extractYouTubeThumbnail(from: data) ?? imageURL
+            return .youtube(thumbnailURL: ytThumbnail)
         }
         
         // GIF detection (simple URL-based)
@@ -234,7 +237,32 @@ struct Post: Identifiable, Hashable {
     
     /// Extract proper image URL from PostData
     private static func extractImageURL(from data: PostData) -> String? {
-        // Fallback to thumbnail if available and not default
+        // Priority 1: High-quality preview image
+        if let preview = data.preview,
+           let images = preview.images,
+           !images.isEmpty,
+           let source = images[0].source,
+           let url = source.url {
+            // Convert preview URL to high-quality i.redd.it URL
+            let cleanURL = url
+                .replacingOccurrences(of: "/preview.", with: "/i.")
+                .replacingOccurrences(of: "&amp;", with: "&")
+            
+            // Skip external preview URLs as they're often low quality
+            if !cleanURL.contains("external-preview") {
+                return cleanURL
+            }
+        }
+        
+        // Priority 2: Direct image URLs (i.redd.it, i.imgur.com, etc.)
+        let url = data.url
+        if url.contains("i.redd.it") || url.contains("i.imgur.com") ||
+           url.hasSuffix(".jpg") || url.hasSuffix(".jpeg") || 
+           url.hasSuffix(".png") || url.hasSuffix(".webp") {
+            return url
+        }
+        
+        // Priority 3: Fallback to thumbnail if available and not default
         let thumbnail = data.thumbnail
         if let thumbnail = thumbnail,
            thumbnail != "self" &&
@@ -242,6 +270,53 @@ struct Post: Identifiable, Hashable {
            thumbnail != "nsfw" &&
            !thumbnail.isEmpty {
             return thumbnail
+        }
+        
+        return nil
+    }
+    
+    /// Extract high-quality image URL from gallery data
+    private static func extractGalleryImageURL(from data: PostData) -> String? {
+        // Try to get the first gallery image in high quality
+        if let galleryData = data.gallery_data?.items,
+           let metadata = data.media_metadata,
+           let firstItem = galleryData.first {
+            let mediaId = firstItem.media_id
+            if let itemMeta = metadata[mediaId],
+               let extArray = itemMeta?.m?.split(separator: "/"),
+               let ext = extArray.last {
+                return "https://i.redd.it/\(mediaId).\(ext)"
+            }
+        }
+        return nil
+    }
+    
+    /// Extract video thumbnail from preview or media data
+    private static func extractVideoThumbnail(from data: PostData) -> String? {
+        // Try to get thumbnail from reddit video preview
+        if let preview = data.preview,
+           let videoPreview = preview.reddit_video_preview,
+           let scrubberURL = videoPreview.scrubber_media_url {
+            return scrubberURL
+        }
+        
+        // Try to get thumbnail from reddit video media
+        if let media = data.media,
+           let redditVideo = media.reddit_video,
+           let scrubberURL = redditVideo.scrubber_media_url {
+            return scrubberURL
+        }
+        
+        return nil
+    }
+    
+    /// Extract YouTube thumbnail from media oembed data
+    private static func extractYouTubeThumbnail(from data: PostData) -> String? {
+        // Try to get high-quality thumbnail from oembed
+        if let media = data.media,
+           let oembed = media.oembed,
+           let thumbnailURL = oembed.thumbnail_url {
+            return thumbnailURL
         }
         
         return nil

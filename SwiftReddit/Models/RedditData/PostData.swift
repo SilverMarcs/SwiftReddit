@@ -87,6 +87,103 @@ struct PostData: Identifiable, Codable, Hashable {
     let is_gallery: Bool?
     let winstonSeen: Bool?
     let winstonHidden: Bool?
+    
+    // Media-related fields for high-quality images
+    let preview: Preview?
+    let media: Media?
+    let gallery_data: GalleryData?
+    let media_metadata: [String: MediaMetadataItem?]?
+}
+
+// MARK: - Preview Support for High-Quality Images
+
+struct PreviewImg: Codable, Hashable {
+    let url: String?
+    let width: Int?
+    let height: Int?
+}
+
+struct PreviewImgCollection: Codable, Hashable {
+    let source: PreviewImg?
+    let resolutions: [PreviewImg]?
+}
+
+struct RedditVideoPreview: Codable, Hashable {
+    let bitrate_kbps: Double?
+    let fallback_url: String?
+    let height: Double?
+    let width: Double?
+    let scrubber_media_url: String?
+    let dash_url: String?
+    let duration: Double?
+    let hls_url: String?
+    let is_gif: Bool?
+    let transcoding_status: String?
+}
+
+struct Preview: Codable, Hashable {
+    let images: [PreviewImgCollection]?
+    let reddit_video_preview: RedditVideoPreview?
+    let enabled: Bool?
+}
+
+struct Media: Codable, Hashable {
+    let type: String?
+    let oembed: Oembed?
+    let reddit_video: RedditVideo?
+}
+
+struct Oembed: Codable, Hashable {
+    let provider_url: String?
+    let version: String?
+    let title: String?
+    let type: String?
+    let thumbnail_width: Int?
+    let height: Int?
+    let width: Int?
+    let html: String?
+    let author_name: String?
+    let provider_name: String?
+    let thumbnail_url: String?
+    let thumbnail_height: Int?
+    let author_url: String?
+}
+
+struct RedditVideo: Codable, Hashable {
+    let bitrate_kbps: Double?
+    let fallback_url: String?
+    let height: Double?
+    let width: Double?
+    let scrubber_media_url: String?
+    let dash_url: String?
+    let duration: Double?
+    let hls_url: String?
+    let is_gif: Bool?
+    let transcoding_status: String?
+}
+
+struct GalleryData: Codable, Hashable {
+    let items: [GalleryDataItem]?
+}
+
+struct GalleryDataItem: Codable, Hashable, Identifiable {
+    let media_id: String
+    let id: Double
+}
+
+struct MediaMetadataItem: Codable, Hashable, Identifiable {
+    let status: String
+    let e: String?
+    let m: String?
+    let p: [MediaMetadataItemSize]?
+    let s: MediaMetadataItemSize?
+    let id: String?
+}
+
+struct MediaMetadataItemSize: Codable, Hashable {
+    let x: Int
+    let y: Int
+    let u: String?
 }
 
 // MARK: - Response Models for Posts
