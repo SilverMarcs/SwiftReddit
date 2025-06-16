@@ -13,74 +13,79 @@ class CredentialsManager: ObservableObject {
     static let shared = CredentialsManager()
     
     private let userDefaults = UserDefaults.standard
-    private let credentialsKey = "reddit_credentials"
-    private let selectedCredentialKey = "selected_credential_id"
+    private let credentialsKey = "reddit_credential" // Changed to singular
     
-    private(set) var credentials: [RedditCredential] = []
+    // Single credential instead of array
+    var credential: RedditCredential? = nil
+    
+    // For backward compatibility, expose as array but only with single item
+//    var credentials: [RedditCredential] {
+//        return credential != nil ? [credential!] : []
+//    }
     
     var selectedCredential: RedditCredential? {
         get {
-            if let selectedID = userDefaults.object(forKey: selectedCredentialKey) as? Data,
-               let uuid = try? JSONDecoder().decode(UUID.self, from: selectedID) {
-                return credentials.first { $0.id == uuid }
-            }
-            return credentials.first
+            return credential
         }
         set {
-            if let credential = newValue,
-               let encodedID = try? JSONEncoder().encode(credential.id) {
-                userDefaults.set(encodedID, forKey: selectedCredentialKey)
-            } else {
-                userDefaults.removeObject(forKey: selectedCredentialKey)
-            }
+            credential = newValue
+            saveToUserDefaults()
         }
     }
     
     var validCredentials: [RedditCredential] {
-        credentials.filter { $0.validationStatus == .authorized }
+        return credential?.validationStatus == .authorized ? [credential!] : []
     }
     
     private init() {
         loadCredentials()
     }
     
-    func saveCredential(_ credential: RedditCredential) {
-        if let index = credentials.firstIndex(where: { $0.id == credential.id }) {
-            credentials[index] = credential
-        } else {
-            credentials.append(credential)
-        }
+    func saveCredential(_ newCredential: RedditCredential) {
+        // Replace any existing credential with the new one
+        credential = newCredential
         saveToUserDefaults()
     }
     
-    func deleteCredential(_ credential: RedditCredential) {
-        credentials.removeAll { $0.id == credential.id }
-        
-        // If this was the selected credential, clear the selection
-        if selectedCredential?.id == credential.id {
-            selectedCredential = nil
+    func deleteCredential(_ credentialToDelete: RedditCredential) {
+        // Only delete if it matches the current credential
+        if credential?.id == credentialToDelete.id {
+            credential = nil
+            saveToUserDefaults()
         }
-        
-        saveToUserDefaults()
     }
     
     func deleteAllCredentials() {
-        credentials.removeAll()
-        selectedCredential = nil
+        credential = nil
         saveToUserDefaults()
     }
     
     private func loadCredentials() {
-        guard let data = userDefaults.data(forKey: credentialsKey),
-              let loadedCredentials = try? JSONDecoder().decode([RedditCredential].self, from: data) else {
+        // Try to load single credential first
+        if let data = userDefaults.data(forKey: credentialsKey),
+           let loadedCredential = try? JSONDecoder().decode(RedditCredential.self, from: data) {
+            self.credential = loadedCredential
             return
         }
-        self.credentials = loadedCredentials
+        
+        // Migration: Try to load from old multiple credentials format
+        if let data = userDefaults.data(forKey: "reddit_credentials"),
+           let loadedCredentials = try? JSONDecoder().decode([RedditCredential].self, from: data),
+           let firstCredential = loadedCredentials.first {
+            self.credential = firstCredential
+            // Clear old format and save in new format
+            userDefaults.removeObject(forKey: "reddit_credentials")
+            userDefaults.removeObject(forKey: "selected_credential_id")
+            saveToUserDefaults()
+        }
     }
     
     private func saveToUserDefaults() {
-        if let data = try? JSONEncoder().encode(credentials) {
+        if let credential = credential,
+           let data = try? JSONEncoder().encode(credential) {
             userDefaults.set(data, forKey: credentialsKey)
+        } else {
+            userDefaults.removeObject(forKey: credentialsKey)
         }
     }
 }

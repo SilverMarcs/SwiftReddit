@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct RedditCredential: Identifiable, Equatable, Hashable, Codable {
     enum CodingKeys: String, CodingKey { 
@@ -156,19 +157,19 @@ struct RedditCredential: Identifiable, Equatable, Hashable, Codable {
     enum CredentialValidationState: String {
         case authorized, valid, invalid, maybeValid, empty
         
-        func getMeta() -> Meta {
-            return switch self {
+        var meta: Meta {
+            switch self {
             case .authorized: 
-                .init(color: "green", label: "Authorized", description: "This credential is ready to use.")
-            case .maybeValid, .valid: 
-                .init(color: "orange", label: "Unauthorized", description: "You need to authorize this credential with Reddit.")
-            case .empty, .invalid: 
-                .init(color: "red", label: "Invalid", description: "The credential information is incorrect.")
+                .init(color: .green, label: "Authorized", description: "This credential is ready to use.")
+            case .maybeValid, .valid:
+                .init(color: .orange, label: "Unauthorized", description: "You need to authorize this credential with Reddit.")
+            case .empty, .invalid:
+                .init(color: .red, label: "Invalid", description: "The credential information is incorrect.")
             }
         }
         
-        struct Meta: Equatable {
-            let color: String
+        struct Meta {
+            let color: Color
             let label: String
             let description: String
         }

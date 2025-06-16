@@ -9,156 +9,240 @@ import SwiftUI
 
 struct CredentialsView: View {
     @State private var credentialsManager = CredentialsManager.shared
-    @State private var showingAddCredential = false
+    @State private var appID = ""
+    @State private var appSecret = ""
+    @State private var isLoading = false
+    @State private var waitingForCallback = false
+    @State private var errorMessage = ""
+    @State private var showingError = false
     @State private var showingDeleteAlert = false
-    @State private var credentialToDelete: RedditCredential?
+    @State private var showingReplaceWarning = false
+    @State private var isAddingCredential = false
+    
+    private var isFormValid: Bool {
+        !appID.trimmingCharacters(in: .whitespaces).isEmpty &&
+        !appSecret.trimmingCharacters(in: .whitespaces).isEmpty
+    }
+    
+    private var hasExistingCredential: Bool {
+        credentialsManager.credential != nil
+    }
     
     var body: some View {
-        List {
-            if credentialsManager.credentials.isEmpty {
-                Section {
-                    VStack(spacing: 16) {
-                        Image(systemName: "key.slash")
-                            .font(.system(size: 48))
-                            .foregroundColor(.secondary)
-                        
-                        Text("No Credentials")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                        
-                        Text("Add your Reddit API credentials to get started")
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                        
-                        Button("Add Credential") {
-                            showingAddCredential = true
+        Form {
+            if let credential = credentialsManager.credential {
+                Section("Reddit Credential") {
+                    HStack {
+                        Label {
+                            Text(credential.userName ?? "Unknown User")
+                            Text(credential.apiAppID)
+                        } icon: {
+                            Image(systemName: "key.fill")
+                                .foregroundStyle(credential.validationStatus.meta.color)
                         }
-                        .buttonStyle(.borderedProminent)
+                        
+                        Spacer()
+                        
+                        Button {
+                            showingDeleteAlert = true
+                        } label: {
+                            Image(systemName: "trash.fill")
+                                .foregroundStyle(.red)
+                        }
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 32)
                 }
-                .listRowBackground(Color.clear)
-                .listRowSeparator(.hidden)
-            } else {
-                Section("Reddit Credentials") {
-                    ForEach(credentialsManager.credentials) { credential in
-                        CredentialRowView(credential: credential)
-                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                Button("Delete", role: .destructive) {
-                                    credentialToDelete = credential
-                                    showingDeleteAlert = true
+            }
+            
+            // Add/Replace credential section
+            Section {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text(hasExistingCredential ? "Replace Reddit Credential" : "Reddit API Setup")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                    
+                    if hasExistingCredential {
+                        Text("You can replace your existing credential by adding a new one below.")
+                            .foregroundColor(.orange)
+                            .font(.subheadline)
+                    } else {
+                        Text("To use this app, you need to create your own Reddit API credentials. Don't worry - it's free and easy!")
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            
+            if !hasExistingCredential || isAddingCredential {
+                Section("Step 1: Get Your Credentials") {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("1. Go to Reddit's app preferences")
+                        Text("2. Create a new app (select 'installed app')")
+                        Text("3. Copy the App ID and Secret below")
+                    }
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    
+                    Link(destination: URL(string: "https://www.reddit.com/prefs/apps")!) {
+                        Label("Open Reddit App Settings", systemImage: "safari")
+                    }
+                }
+                
+                Section("Step 2: Enter Your Credentials") {
+                    TextField("Enter your Reddit app ID", text: $appID)
+                        
+                    TextField("Enter your Reddit app secret", text: $appSecret)
+                }
+                
+                if isFormValid {
+                    Section("Step 3: Authorize") {
+                        VStack(spacing: 12) {
+                            if waitingForCallback {
+                                VStack(spacing: 8) {
+                                    ProgressView()
+                                    Text("Waiting for authorization...")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
                                 }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                            } else {
+                                Button(action: {
+                                    if hasExistingCredential {
+                                        showingReplaceWarning = true
+                                    } else {
+                                        authorizeCredential()
+                                    }
+                                }) {
+                                    HStack {
+                                        if isLoading {
+                                            ProgressView()
+                                                .scaleEffect(0.8)
+                                        } else {
+                                            Image(systemName: "checkmark.shield")
+                                        }
+                                        Text(hasExistingCredential ? "Replace & Authorize" : "Authorize with Reddit")
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color.blue)
+                                    .foregroundColor(.white)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                }
+                                .disabled(isLoading)
                             }
+                        }
+                    }
+                }
+            } else {
+                // Show button to start adding credential
+                Section {
+                    Button(hasExistingCredential ? "Replace Credential" : "Add Credential") {
+                        isAddingCredential = true
                     }
                 }
             }
         }
-        .navigationTitle("Credentials")
+        .navigationTitle("Reddit Credential")
         .toolbarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button("Add") {
-                    showingAddCredential = true
-                }
+        .alert("Error", isPresented: $showingError) {
+            Button("OK") {
+                showingError = false
             }
+        } message: {
+            Text(errorMessage)
         }
-        .sheet(isPresented: $showingAddCredential) {
-            AddCredentialView()
+        .alert("Replace Credential", isPresented: $showingReplaceWarning) {
+            Button("Cancel", role: .cancel) {
+                showingReplaceWarning = false
+            }
+            Button("Replace", role: .destructive) {
+                showingReplaceWarning = false
+                authorizeCredential()
+            }
+        } message: {
+            Text("This will replace your existing Reddit credential. Are you sure you want to continue?")
         }
         .alert("Delete Credential", isPresented: $showingDeleteAlert) {
             Button("Cancel", role: .cancel) {
-                credentialToDelete = nil
+                showingDeleteAlert = false
             }
             Button("Delete", role: .destructive) {
-                if let credential = credentialToDelete {
-                    credentialsManager.deleteCredential(credential)
-                }
-                credentialToDelete = nil
+                credentialsManager.deleteCredential(credentialsManager.credential!)
+                showingDeleteAlert = false
+                // Reset form state
+                appID = ""
+                appSecret = ""
+                isAddingCredential = false
             }
         } message: {
             Text("Are you sure you want to delete this credential? This action cannot be undone.")
         }
-    }
-}
-
-struct CredentialRowView: View {
-    let credential: RedditCredential
-    @State private var credentialsManager = CredentialsManager.shared
-    
-    var isSelected: Bool {
-        credentialsManager.selectedCredential?.id == credential.id
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    if let userName = credential.userName {
-                        Text("u/\(userName)")
-                            .font(.headline)
-                    } else {
-                        Text("Unnamed Credential")
-                            .font(.headline)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    Text("App ID: \(credential.apiAppID.prefix(12))...")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                
-                Spacer()
-                
-                VStack(alignment: .trailing, spacing: 4) {
-                    StatusBadge(status: credential.validationStatus)
-                    
-                    if isSelected {
-                        Text("Selected")
-                            .font(.caption2)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(Color.blue.opacity(0.2))
-                            .foregroundColor(.blue)
-                            .clipShape(Capsule())
-                    }
-                }
-            }
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            if credential.validationStatus == .authorized {
-                credentialsManager.selectedCredential = credential
-            }
+        .onOpenURL { url in
+            handleRedirectURL(url)
         }
     }
-}
-
-struct StatusBadge: View {
-    let status: RedditCredential.CredentialValidationState
     
-    var body: some View {
-        let meta = status.getMeta()
+    private func authorizeCredential() {
+        let trimmedAppID = appID.trimmingCharacters(in: .whitespaces)
+        let trimmedAppSecret = appSecret.trimmingCharacters(in: .whitespaces)
         
-        Text(meta.label)
-            .font(.caption2)
-            .fontWeight(.medium)
-            .padding(.horizontal, 6)
-            .padding(.vertical, 2)
-            .background(statusColor.opacity(0.2))
-            .foregroundColor(statusColor)
-            .clipShape(Capsule())
+        guard !trimmedAppID.isEmpty && !trimmedAppSecret.isEmpty else {
+            errorMessage = "Please enter both App ID and App Secret"
+            showingError = true
+            return
+        }
+        
+        let authURL = RedditAPI.shared.getAuthorizationCodeURL(trimmedAppID)
+        waitingForCallback = true
+        
+        #if os(macOS)
+        NSWorkspace.shared.open(authURL)
+        #else
+        UIApplication.shared.open(authURL)
+        #endif
     }
     
-    private var statusColor: Color {
-        switch status.getMeta().color {
-        case "green": return .green
-        case "orange": return .orange
-        case "red": return .red
-        default: return .gray
+    private func handleRedirectURL(_ url: URL) {
+        guard waitingForCallback else { return }
+        
+        if let authCode = RedditAPI.shared.getAuthCodeFromURL(url) {
+            Task {
+                await processAuthCode(authCode)
+            }
+        } else {
+            waitingForCallback = false
+            errorMessage = "Authorization was cancelled or failed"
+            showingError = true
+        }
+    }
+    
+    private func processAuthCode(_ authCode: String) async {
+        await MainActor.run {
+            isLoading = true
+        }
+        
+        let credential = RedditCredential(
+            apiAppID: appID.trimmingCharacters(in: .whitespaces),
+            apiAppSecret: appSecret.trimmingCharacters(in: .whitespaces)
+        )
+        
+        let result = await RedditAPI.shared.injectFirstAccessTokenInto(credential, authCode: authCode)
+        
+        isLoading = false
+        waitingForCallback = false
+        
+        if let updatedCredential = result {
+            credentialsManager.saveCredential(updatedCredential)
+            // Reset form state
+            appID = ""
+            appSecret = ""
+            isAddingCredential = false
+        } else {
+            errorMessage = "Failed to exchange authorization code for access token. Please check your credentials and try again."
+            showingError = true
         }
     }
 }
+
 
 #Preview {
     NavigationView {
