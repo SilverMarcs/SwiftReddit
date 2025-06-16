@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct PostsList: View {
+    @ObservedObject private var appPrefs = AppPreferences.shared
     @State private var posts: [Post] = []
     @State private var isLoading = false
     @State private var after: String?
@@ -63,6 +64,9 @@ struct PostsList: View {
                         ForEach(SubListingSortOption.allCases) { sort in
                             Button {
                                 selectedSort = sort
+                                Task {
+                                    await refreshPosts()
+                                }
                             } label: {
                                 Label(sort.displayName, systemImage: sort.icon)
                                     .tag(sort)
@@ -77,11 +81,10 @@ struct PostsList: View {
             .refreshable {
                 await refreshPosts()
             }
-            .task(id: posts.isEmpty) {
+            .task {
+                guard !appPrefs.hasLaunched else { return }
                 await loadInitialPosts()
-            }
-            .task(id: selectedSort) {
-                await refreshPosts()
+                appPrefs.hasLaunched = true
             }
         }
     }
