@@ -1,19 +1,19 @@
 //
-//  LightweightLinkView.swift
+//  PostLinkView.swift
 //  winston
 //
-//  Created for memory optimization - lightweight link display
+//  Created for memory optimization -  link display
 //
 
 import SwiftUI
 
-struct LightweightLinkView: View {
+struct PostLinkView: View {
   let thumbnailURL: String?
   
   var body: some View {
     ZStack {
       if let thumbnailURL = thumbnailURL {
-        LightweightImageView(imageURL: thumbnailURL)
+          PostImageView(imageURL: thumbnailURL)
       } else {
         Rectangle()
           .fill(Color.gray.opacity(0.2))

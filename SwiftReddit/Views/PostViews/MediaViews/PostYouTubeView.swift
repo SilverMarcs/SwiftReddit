@@ -1,26 +1,26 @@
 //
-//  LightweightGIFView.swift
+//  PostYouTubeView.swift
 //  winston
 //
-//  Created for memory optimization - lightweight GIF display
+//  Created for memory optimization -  YouTube display
 //
 
 import SwiftUI
 
-struct LightweightGIFView: View {
-  let imageURL: String?
+struct PostYouTubeView: View {
+  let thumbnailURL: String?
   
   var body: some View {
     ZStack {
-      LightweightImageView(imageURL: imageURL)
+        PostImageView(imageURL: thumbnailURL)
       
-      // Always show GIF badge
+      // Always show YouTube badge
       VStack {
         Spacer()
         HStack {
-          Image(systemName: "livephoto")
+          Image(systemName: "play.rectangle.fill")
             .font(.caption)
-          Text("GIF")
+          Text("YouTube")
             .font(.caption)
             .fontWeight(.medium)
           Spacer()
@@ -28,7 +28,7 @@ struct LightweightGIFView: View {
         .foregroundColor(.white)
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
-        .background(Color.blue.opacity(0.8))
+        .background(Color.red.opacity(0.8))
         .cornerRadius(4)
         .padding(8)
       }

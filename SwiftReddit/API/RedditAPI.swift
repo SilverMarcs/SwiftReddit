@@ -128,16 +128,16 @@ class RedditAPI {
     
     // MARK: - Post Fetching
     
-    func fetchHomeFeed(sort: SubListingSortOption = .best, after: String? = nil, limit: Int = 10) async -> ([LightweightPost], String?)? {
+    func fetchHomeFeed(sort: SubListingSortOption = .best, after: String? = nil, limit: Int = 10) async -> ([Post], String?)? {
         return await fetchPosts(endpoint: "", sort: sort, after: after, limit: limit)
     }
     
-    func fetchSubredditPosts(subreddit: String, sort: SubListingSortOption = .best, after: String? = nil, limit: Int = 10) async -> ([LightweightPost], String?)? {
+    func fetchSubredditPosts(subreddit: String, sort: SubListingSortOption = .best, after: String? = nil, limit: Int = 10) async -> ([Post], String?)? {
         let endpoint = subreddit.isEmpty ? "" : "r/\(subreddit)"
         return await fetchPosts(endpoint: endpoint, sort: sort, after: after, limit: limit)
     }
     
-    private func fetchPosts(endpoint: String, sort: SubListingSortOption, after: String?, limit: Int) async -> ([LightweightPost], String?)? {
+    private func fetchPosts(endpoint: String, sort: SubListingSortOption, after: String?, limit: Int) async -> ([Post], String?)? {
         guard let credential = CredentialsManager.shared.selectedCredential,
               let accessToken = await credential.getUpToDateToken() else {
             print("No valid credential or access token")
@@ -179,9 +179,9 @@ class RedditAPI {
             }
             
             let listingResponse = try JSONDecoder().decode(ListingResponse.self, from: data)
-            let posts = listingResponse.data.children.compactMap { child -> LightweightPost? in
+            let posts = listingResponse.data.children.compactMap { child -> Post? in
                 guard child.kind == "t3" else { return nil }
-                return LightweightPost(from: child.data)
+                return Post(from: child.data)
             }
             
             return (posts, listingResponse.data.after)

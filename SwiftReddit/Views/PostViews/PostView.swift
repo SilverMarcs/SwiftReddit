@@ -1,5 +1,5 @@
 //
-//  LightweightPostView.swift
+//  PostView.swift
 //  winston
 //
 //  Created for memory optimization
@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct LightweightPostView: View {
-  let post: LightweightPost
+struct PostView: View {
+  let post: Post
   
-  init(post: LightweightPost) {
+  init(post: Post) {
     self.post = post
   }
   
@@ -63,7 +63,7 @@ struct LightweightPostView: View {
           
           // Media component
           if post.mediaType.hasMedia {
-              LightweightMediaView(mediaType: post.mediaType)
+              PostMediaView(mediaType: post.mediaType)
           }
           
           Divider()

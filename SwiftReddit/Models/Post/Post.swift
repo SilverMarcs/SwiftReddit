@@ -1,5 +1,5 @@
 //
-//  LightweightPost.swift
+//  Post.swift
 //  winston
 //
 //  Created by Winston Team on 16/06/25.
@@ -8,9 +8,9 @@
 import Foundation
 import SwiftUI
 
-/// Lightweight post structure for reduced memory usage in feeds
+///  post structure for reduced memory usage in feeds
 /// Contains only essential information needed for basic post display
-struct LightweightPost: Identifiable, Hashable {
+struct Post: Identifiable, Hashable {
     let id: String
     let title: String
     let author: String
@@ -89,8 +89,8 @@ struct LightweightPost: Identifiable, Hashable {
     let winstonSeen: Bool?
     let winstonHidden: Bool?
     
-    // Lightweight media properties
-    let mediaType: LightweightMediaType
+    //  media properties
+    let mediaType: MediaType
     
     // Custom hash implementation to handle optionals
     func hash(into hasher: inout Hasher) {
@@ -100,7 +100,7 @@ struct LightweightPost: Identifiable, Hashable {
     }
     
     // Custom equality implementation
-    static func == (lhs: LightweightPost, rhs: LightweightPost) -> Bool {
+    static func == (lhs: Post, rhs: Post) -> Bool {
         return lhs.id == rhs.id && lhs.title == rhs.title && lhs.mediaType == rhs.mediaType
     }
     
@@ -183,12 +183,12 @@ struct LightweightPost: Identifiable, Hashable {
         self.winstonSeen = postData.winstonSeen ?? false
         self.winstonHidden = postData.winstonHidden ?? false
         
-        // Extract lightweight media information
-        self.mediaType = Self.extractLightweightMedia(from: postData)
+        // Extract  media information
+        self.mediaType = Self.extractMedia(from: postData)
     }
     
-    /// Lightweight media extraction that determines media type without heavy processing
-    private static func extractLightweightMedia(from data: PostData) -> LightweightMediaType {
+    ///  media extraction that determines media type without heavy processing
+    private static func extractMedia(from data: PostData) -> MediaType {
         // Skip self posts
         guard !data.is_self else { return .none }
         

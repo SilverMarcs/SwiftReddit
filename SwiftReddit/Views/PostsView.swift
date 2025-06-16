@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PostsView: View {
-    @State private var posts: [LightweightPost] = []
+    @State private var posts: [Post] = []
     @State private var isLoading = false
     @State private var loadingMore = false
     @State private var after: String?
@@ -18,7 +18,7 @@ struct PostsView: View {
         NavigationStack {
             List {
                 ForEach(posts) { post in
-                    LightweightPostView(post: post)
+                    PostView(post: post)
                         .listRowInsets(.vertical, 5)
                         .listRowInsets(.horizontal, 5)
                 }

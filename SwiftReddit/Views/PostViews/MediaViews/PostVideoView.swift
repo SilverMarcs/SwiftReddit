@@ -1,18 +1,18 @@
 //
-//  LightweightVideoView.swift
+//  PostVideoView.swift
 //  winston
 //
-//  Created for memory optimization - lightweight video display
+//  Created for memory optimization -  video display
 //
 
 import SwiftUI
 
-struct LightweightVideoView: View {
+struct PostVideoView: View {
   let thumbnailURL: String?
   
   var body: some View {
     ZStack {
-      LightweightImageView(imageURL: thumbnailURL)
+        PostImageView(imageURL: thumbnailURL)
       
       // Play button overlay - always show
       Circle()

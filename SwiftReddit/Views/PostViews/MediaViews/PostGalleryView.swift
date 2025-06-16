@@ -1,19 +1,19 @@
 //
-//  LightweightGalleryView.swift
+//  PostGalleryView.swift
 //  winston
 //
-//  Created for memory optimization - lightweight gallery display
+//  Created for memory optimization -  gallery display
 //
 
 import SwiftUI
 
-struct LightweightGalleryView: View {
+struct PostGalleryView: View {
   let count: Int
   let imageURL: String?
   
   var body: some View {
     ZStack {
-      LightweightImageView(imageURL: imageURL)
+        PostImageView(imageURL: imageURL)
       
       VStack {
         Spacer()

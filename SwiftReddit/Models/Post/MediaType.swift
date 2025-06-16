@@ -1,5 +1,5 @@
 //
-//  LightweightMediaType.swift
+//  MediaType.swift
 //  SwiftReddit
 //
 //  Created by Zabir Raihan on 16/06/2025.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum LightweightMediaType: Hashable {
+enum MediaType: Hashable {
     case none
     case image(imageURL: String?)
     case gallery(count: Int, imageURL: String?)

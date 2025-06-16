@@ -1,13 +1,13 @@
 //
-//  LightweightImageView.swift
+//  PostImageView.swift
 //  winston
 //
-//  Created for memory optimization - lightweight image display
+//  Created for memory optimization -  image display
 //
 
 import SwiftUI
 
-struct LightweightImageView: View {
+struct PostImageView: View {
   let imageURL: String?
   
   var body: some View {
