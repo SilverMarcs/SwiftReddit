@@ -17,9 +17,12 @@ struct PostsList: View {
         NavigationStack {
             List {
                 ForEach(posts) { post in
-                    PostView(post: post)
-                        .listRowInsets(.vertical, 5)
-                        .listRowInsets(.horizontal, 5)
+                    NavigationLink(value: post) {
+                        PostView(post: post)
+                    }
+                    .listRowInsets(.vertical, 5)
+                    .listRowInsets(.horizontal, 5)
+                    .navigationLinkIndicatorVisibility(.hidden)
                 }
                 .listRowSeparator(.hidden)
                 
@@ -47,6 +50,9 @@ struct PostsList: View {
                         .padding()
                         .listRowSeparator(.hidden)
                 }
+            }
+            .navigationDestination(for: Post.self) { post in
+                PostDetail(post: post)
             }
             .listStyle(.plain)
             .navigationTitle("Home")
