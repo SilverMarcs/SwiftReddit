@@ -35,7 +35,7 @@ struct PostImageView: View {
           )
       }
     }
-    .frame(maxHeight: 800)
+    .frame(maxHeight: 500)
     .cornerRadius(12)
     .clipped()
   }

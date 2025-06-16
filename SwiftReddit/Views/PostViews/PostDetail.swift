@@ -13,17 +13,21 @@ struct PostDetail: View {
     var body: some View {
         List {
             Section {
-                PostView(post: post)
+                PostView(post: post, showBackground: false, truncateSelfText: false)
+                    .listRowInsets(EdgeInsets(top: 0, leading: 5, bottom: 5, trailing: 5))
                     .listRowSeparator(.hidden)
             }
             
             Section {
-                ForEach(0..<15, id: \.self) { index in
+                ForEach(0..<post.numComments, id: \.self) { index in
                     Text("Comment \(index + 1)")
                         .padding()
                 }
             }   
         }
+        .navigationTitle(post.subreddit)
+        .navigationSubtitle(post.formattedComments + " comments")
+        .toolbarTitleDisplayMode(.inline)
         .listStyle(.plain)
     }
 }

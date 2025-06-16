@@ -9,44 +9,36 @@ import SwiftUI
 
 struct PostView: View {
   let post: Post
-  
-  init(post: Post) {
-    self.post = post
-  }
+  var showBackground: Bool = true
+  var truncateSelfText: Bool = true
   
   var body: some View {
       VStack(alignment: .leading, spacing: 8) {
           // Title and flair header
-          HStack(alignment: .top) {
-              VStack(alignment: .leading, spacing: 4) {
-                  // Title
-                  Text(post.title)
-                      .font(.headline)
-                      .fontWeight(.semibold)
-                      .lineLimit(3)
-                      .multilineTextAlignment(.leading)
-                  
-                  // Flair if available
-                  if let flair = post.linkFlairText, !flair.isEmpty {
-                      Text(flair)
-                          .font(.caption2)
-                          .fontWeight(.semibold)
-                          .padding(.horizontal, 6)
-                          .padding(.vertical, 2)
-                          .background(post.flairBackgroundColor)
-                          .foregroundStyle(post.flairTextColor)
-                          .cornerRadius(4)
-                  }
+            Text(post.title)
+                .font(.title3)
+                .fontWeight(.semibold)
+                .lineLimit(3)
+                .multilineTextAlignment(.leading)
+            
+            // Flair if available
+            if let flair = post.linkFlairText, !flair.isEmpty {
+                Text(flair)
+                    .font(.caption2)
+                    .fontWeight(.semibold)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(post.flairBackgroundColor)
+                    .foregroundStyle(post.flairTextColor)
+                    .cornerRadius(4)
+            }
 
-                  if !post.selftext.isEmpty {
-                      Text(post.selftext.trimmingCharacters(in: .whitespacesAndNewlines))
-                          .font(.caption)
-                          .foregroundStyle(.secondary)
-                          .lineLimit(2)
-                  }
-              }
-              Spacer()
-          }
+            if !post.selftext.isEmpty {
+                Text(post.selftext.trimmingCharacters(in: .whitespacesAndNewlines))
+                    .font(truncateSelfText ? .caption : .subheadline)
+                    .foregroundStyle(truncateSelfText ? .secondary : .primary)
+                    .lineLimit(truncateSelfText ? 3 : nil)
+        }
           
           // Media component
           if post.mediaType.hasMedia {
@@ -93,7 +85,7 @@ struct PostView: View {
                         .foregroundStyle(.secondary)
                     
                     Text(post.formattedUps)
-                        .font(.title3)
+                        .font(.headline)
                         .fontWeight(.semibold)
                         .foregroundStyle(.secondary)
                     
@@ -104,8 +96,8 @@ struct PostView: View {
                 .fontWeight(.semibold)
           }
       }
-      .padding(.horizontal, 16)
-      .padding(.vertical, 12)
-      .background(.background.secondary, in: .rect(cornerRadius: 16))
+      .padding(.horizontal, truncateSelfText ? 16 : nil)
+      .padding(.vertical, truncateSelfText ? 12 : nil)
+      .background(showBackground ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 16))
   }
 }
