@@ -1,26 +1,19 @@
 //
 //  PostsView.swift
-//  winston
+//  SwiftReddit
 //
-//  Created by Winston Team on 16/06/25.
+//  Created by Zabir Raihan on 16/06/2025.
 //
+
 
 import SwiftUI
+import Combine
 
 struct PostsView: View {
+    @ObservedObject private var credentialsManager = CredentialsManager.shared
+    
     var body: some View {
-        NavigationView {
-            VStack {
-                Text("Posts")
-                    .font(.largeTitle)
-                Text("Coming soon...")
-                    .foregroundColor(.secondary)
-            }
-            .navigationTitle("Posts")
-        }
+        SimpleFeed(subreddit: .home)
     }
 }
 
-#Preview {
-    PostsView()
-}

@@ -7,9 +7,9 @@
 
 import Foundation
 import SwiftUI
+import Combine
 
-@Observable
-class CredentialsManager {
+class CredentialsManager: ObservableObject {
     static let shared = CredentialsManager()
     
     private let userDefaults = UserDefaults.standard

@@ -101,8 +101,6 @@ struct RedditCredential: Identifiable, Equatable, Hashable, Codable {
         return await fetchNewToken()
         
         func fetchNewToken() async -> AccessToken? {
-            let payload = RefreshAccessTokenPayload(refresh_token: refreshToken)
-            
             guard let url = URL(string: "\(RedditAPI.redditWWWApiURLBase)/api/v1/access_token") else { return nil }
             
             var request = URLRequest(url: url)
@@ -177,22 +175,11 @@ struct RedditCredential: Identifiable, Equatable, Hashable, Codable {
     }
 }
 
-struct RefreshAccessTokenPayload: Encodable {
-    let grant_type = "refresh_token"
-    let refresh_token: String
-}
-
 struct RefreshAccessTokenResponse: Decodable {
     let access_token: String
     let token_type: String
     let expires_in: Int
     let scope: String
-}
-
-struct GetAccessTokenPayload: Encodable {
-    let grant_type = "authorization_code"
-    let code: String
-    let redirect_uri = RedditAPI.appRedirectURI
 }
 
 struct GetAccessTokenResponse: Decodable {

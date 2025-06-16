@@ -54,8 +54,6 @@ class RedditAPI {
             code = String(code.dropLast(2))
         }
         
-        let payload = GetAccessTokenPayload(code: code)
-        
         guard let url = URL(string: "\(Self.redditWWWApiURLBase)/api/v1/access_token") else { return nil }
         
         var request = URLRequest(url: url)
