@@ -1,146 +1,235 @@
-import SwiftUI
-
-struct SimpleFeed: View {
-    @State private var posts: [LightweightPost] = []
-    @State private var isLoading = false
-    @State private var isLoadingMore = false
-    @State private var error: String?
-    @State private var after: String?
-    @State private var hasMorePosts = true
-    
-    let subreddit: Subreddit
-    
-    var body: some View {
-        NavigationView {
-            Group {
-                if posts.isEmpty && isLoading {
-                    VStack {
-                        ProgressView()
-                        Text("Loading posts...")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .padding(.top)
-                    }
-                } else if posts.isEmpty && error != nil {
-                    VStack(spacing: 16) {
-                        Image(systemName: "exclamationmark.triangle")
-                            .font(.largeTitle)
-                            .foregroundColor(.orange)
-                        
-                        Text("Error Loading Posts")
-                            .font(.headline)
-                        
-                        if let error = error {
-                            Text(error)
-                                .font(.body)
-                                .foregroundColor(.secondary)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal)
-                        }
-                        
-                        Button("Retry") {
-                            Task {
-                                await loadPosts()
-                            }
-                        }
-                        .buttonStyle(.borderedProminent)
-                    }
-                    .padding()
-                } else {
-                    ScrollView {
-                        LazyVStack(spacing: 16) {
-                            ForEach(posts) { post in
-                                LightweightPostView(post: post)
-                                    .onAppear {
-                                        // Load more when we reach the last few posts
-                                        if post.id == posts.suffix(3).first?.id {
-                                            Task {
-                                                await loadMorePosts()
-                                            }
-                                        }
-                                    }
-                            }
-                            
-                            // Loading more indicator
-                            if isLoadingMore && hasMorePosts {
-                                HStack {
-                                    ProgressView()
-                                        .scaleEffect(0.8)
-                                    Text("Loading more...")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                                .padding()
-                            }
-                            
-                            // End of posts indicator
-                            if !hasMorePosts && !posts.isEmpty {
-                                Text("No more posts")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                    .padding()
-                            }
-                        }
-                        .padding(.horizontal)
-                        .padding(.top)
-                    }
-                    .refreshable {
-                        await refreshPosts()
-                    }
-                }
-            }
-            .navigationTitle(subreddit.displayName)
-            .navigationBarTitleDisplayMode(.large)
-            .task {
-                if posts.isEmpty {
-                    await loadPosts()
-                }
-            }
-        }
-    }
-    
-    @MainActor
-    private func loadPosts() async {
-        guard !isLoading else { return }
-        
-        isLoading = true
-        error = nil
-        
-        do {
-            let result = try await subreddit.fetchLightweightPosts(limit: 25)
-            posts = result.posts
-            after = result.after
-            hasMorePosts = result.after != nil
-        } catch {
-            self.error = error.localizedDescription
-        }
-        
-        isLoading = false
-    }
-    
-    @MainActor
-    private func loadMorePosts() async {
-        guard !isLoadingMore, hasMorePosts, let after = after else { return }
-        
-        isLoadingMore = true
-        
-        do {
-            let result = try await subreddit.fetchLightweightPosts(limit: 25, after: after)
-            posts.append(contentsOf: result.posts)
-            self.after = result.after
-            hasMorePosts = result.after != nil
-        } catch {
-            // Silently fail for now - could show a toast or retry button
-            print("Failed to load more posts: \(error)")
-        }
-        
-        isLoadingMore = false
-    }
-    
-    @MainActor
-    private func refreshPosts() async {
-        after = nil
-        hasMorePosts = true
-        await loadPosts()
-    }
-}
+////
+////  SimpleFeed.swift
+////  winston
+////
+////  Created by Winston Team on 16/06/25.
+////
+//
+//import SwiftUI
+//
+//struct SimpleFeed: View {
+//    let subreddit: Subreddit
+//    
+//    @State private var posts: [LightweightPost] = []
+//    @State private var loading = false
+//    @State private var lastPostAfter: String? = nil
+//    @State private var hasMorePosts = true
+//    @State private var sort: SubListingSortOption = .best
+//    
+//    var body: some View {
+//        List {
+//            ForEach(posts) { post in
+//                PostRowView(post: post)
+//                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+//                    .onAppear {
+//                        // Load more when we reach the last few posts
+//                        if post.id == posts.last?.id {
+//                            loadMorePosts()
+//                        }
+//                    }
+//            }
+//            .listRowSeparator(.hidden)
+//            
+//            if loading {
+//                HStack {
+//                    Spacer()
+//                    ProgressView()
+//                        .padding()
+//                    Spacer()
+//                }
+//                .listRowSeparator(.hidden)
+//            }
+//            
+//            if !hasMorePosts && !posts.isEmpty {
+//                Text("No more posts")
+//                    .foregroundColor(.secondary)
+//                    .frame(maxWidth: .infinity, alignment: .center)
+//                    .padding()
+//                    .listRowSeparator(.hidden)
+//            }
+//        }
+//        .listStyle(.plain)
+//        .refreshable {
+//            await refreshFeed()
+//        }
+//        .navigationTitle(titleFormatted)
+//        .navigationBarTitleDisplayMode(.large)
+//        .toolbar {
+//            ToolbarItem(placement: .topBarTrailing) {
+//                Menu {
+//                    ForEach(SubListingSortOption.allCases) { option in
+//                        Button(option.displayName) {
+//                            sort = option
+//                            Task {
+//                                await refreshFeed()
+//                            }
+//                        }
+//                    }
+//                } label: {
+//                    Image(systemName: "arrow.up.arrow.down")
+//                }
+//            }
+//        }
+//        .onAppear {
+//            if posts.isEmpty {
+//                loadInitialPosts()
+//            }
+//        }
+//    }
+//    
+//    private var titleFormatted: String {
+//        switch subreddit.id {
+//        case "home":
+//            return "Home"
+//        case "all":
+//            return "r/all"
+//        case "popular":
+//            return "r/popular"
+//        default:
+//            return subreddit.data?.display_name_prefixed ?? "r/\(subreddit.id)"
+//        }
+//    }
+//    
+//    private func loadInitialPosts() {
+//        guard !loading else { return }
+//        
+//        loading = true
+//        lastPostAfter = nil
+//        hasMorePosts = true
+//        
+//        Task {
+//            await fetchPosts(isRefresh: true)
+//        }
+//    }
+//    
+//    private func loadMorePosts() {
+//        guard !loading && hasMorePosts else { return }
+//        
+//        loading = true
+//        Task {
+//            await fetchPosts(isRefresh: false)
+//        }
+//    }
+//    
+//    private func refreshFeed() async {
+//        lastPostAfter = nil
+//        hasMorePosts = true
+//        await fetchPosts(isRefresh: true)
+//    }
+//    
+//    private func fetchPosts(isRefresh: Bool) async {
+//        let result = await subreddit.fetchPosts(
+//            sort: sort,
+//            after: isRefresh ? nil : lastPostAfter,
+//            limit: 10
+//        )
+//        
+//        await MainActor.run {
+//            loading = false
+//            
+//            if let (newPosts, newAfter) = result, let newPosts = newPosts {
+//                if isRefresh {
+//                    posts = newPosts
+//                } else {
+//                    posts.append(contentsOf: newPosts)
+//                }
+//                
+//                lastPostAfter = newAfter
+//                hasMorePosts = !newPosts.isEmpty && newAfter != nil
+//                
+//            } else {
+//                hasMorePosts = false
+//            }
+//        }
+//    }
+//}
+//
+//struct PostRowView: View {
+//    let post: LightweightPost
+//    
+//    var body: some View {
+//        VStack(alignment: .leading, spacing: 8) {
+//            // Title
+//            Text(post.title)
+//                .font(.headline)
+//                .lineLimit(3)
+//            
+//            // Metadata row
+//            HStack {
+//                Text("r/\(post.subreddit)")
+//                    .font(.caption)
+//                    .foregroundColor(.blue)
+//                
+//                Text("•")
+//                    .font(.caption)
+//                    .foregroundColor(.secondary)
+//                
+//                Text("u/\(post.author)")
+//                    .font(.caption)
+//                    .foregroundColor(.secondary)
+//                
+//                Text("•")
+//                    .font(.caption)
+//                    .foregroundColor(.secondary)
+//                
+//                Text(post.timeAgo)
+//                    .font(.caption)
+//                    .foregroundColor(.secondary)
+//                
+//                Spacer()
+//            }
+//            
+//            // Stats row
+//            HStack {
+//                // Upvotes
+//                HStack(spacing: 4) {
+//                    Image(systemName: "arrow.up")
+//                        .font(.caption)
+//                    Text(post.formattedUps)
+//                        .font(.caption)
+//                }
+//                .foregroundColor(.orange)
+//                
+//                Text("•")
+//                    .font(.caption)
+//                    .foregroundColor(.secondary)
+//                
+//                // Comments
+//                HStack(spacing: 4) {
+//                    Image(systemName: "bubble.left")
+//                        .font(.caption)
+//                    Text(post.formattedComments)
+//                        .font(.caption)
+//                }
+//                .foregroundColor(.secondary)
+//                
+//                Spacer()
+//                
+//                // Media indicator
+//                if post.mediaType.hasMedia {
+//                    Image(systemName: post.mediaType.mediaIcon)
+//                        .font(.caption)
+//                        .foregroundColor(.secondary)
+//                }
+//                
+//                // NSFW indicator
+//                if post.isNSFW {
+//                    Text("NSFW")
+//                        .font(.caption2)
+//                        .padding(.horizontal, 4)
+//                        .padding(.vertical, 2)
+//                        .background(Color.red.opacity(0.2))
+//                        .foregroundColor(.red)
+//                        .clipShape(Capsule())
+//                }
+//            }
+//        }
+//        .padding(.vertical, 4)
+//    }
+//}
+//
+//#Preview {
+//    NavigationView {
+//        SimpleFeed(subreddit: Subreddit(id: "home"))
+//    }
+//}

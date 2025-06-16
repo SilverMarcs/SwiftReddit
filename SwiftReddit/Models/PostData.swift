@@ -1,0 +1,117 @@
+//
+//  PostData.swift
+//  SwiftReddit
+//
+//  Created by Zabir Raihan on 16/06/2025.
+//
+
+
+//
+//  PostData.swift
+//  winston
+//
+//  Created by Winston Team on 16/06/25.
+//
+
+import Foundation
+
+/// Core PostData structure matching Reddit's API response
+struct PostData: Identifiable, Codable, Hashable {
+    let id: String
+    let title: String
+    let author: String
+    let subreddit: String
+    let subreddit_name_prefixed: String
+    let ups: Int
+    let downs: Int
+    let num_comments: Int
+    let created: Double
+    let permalink: String
+    let name: String
+    let url: String
+    let domain: String
+    let is_self: Bool
+    let selftext: String
+    let clicked: Bool
+    let saved: Bool
+    let hidden: Bool
+    let gilded: Int
+    let hide_score: Bool
+    let quarantine: Bool
+    let upvote_ratio: Double
+    let subreddit_type: String
+    let total_awards_received: Int
+    let allow_live_comments: Bool
+    let is_robot_indexable: Bool
+    let send_replies: Bool
+    let contest_mode: Bool
+    let subreddit_subscribers: Int
+    let num_crossposts: Int
+    
+    // Optional properties
+    let created_utc: Double?
+    let post_hint: String?
+    let thumbnail: String?
+    let link_flair_text: String?
+    let link_flair_text_color: String?
+    let whitelist_status: String?
+    let link_flair_background_color: String?
+    let link_flair_type: String?
+    let approved_at_utc: Int?
+    let mod_reason_title: String?
+    let top_awarded_type: String?
+    let author_flair_background_color: String?
+    let approved_by: String?
+    let is_created_from_ads_ui: Bool?
+    let author_premium: Bool?
+    let author_flair_css_class: String?
+    let author_flair_type: String?
+    let likes: Bool?
+    let stickied: Bool?
+    let suggested_sort: String?
+    let banned_at_utc: String?
+    let view_count: String?
+    let archived: Bool?
+    let no_follow: Bool?
+    let is_crosspostable: Bool?
+    let pinned: Bool?
+    let over_18: Bool?
+    let media_only: Bool?
+    let can_gild: Bool?
+    let spoiler: Bool?
+    let locked: Bool?
+    let treatment_tags: [String]?
+    let visited: Bool?
+    let removed_by: String?
+    let num_reports: Int?
+    let distinguished: String?
+    let subreddit_id: String?
+    let author_is_blocked: Bool?
+    let mod_reason_by: String?
+    let removal_reason: String?
+    let report_reasons: [String]?
+    let discussion_type: String?
+    let is_video: Bool?
+    let is_gallery: Bool?
+    let winstonSeen: Bool?
+    let winstonHidden: Bool?
+}
+
+/// Reddit API response structures
+//struct Listing<T: Codable & Hashable>: Codable, Hashable {
+//    let kind: String?
+//    let data: ListingData<T>?
+//}
+
+//struct ListingData<T: Codable & Hashable>: Codable, Hashable {
+//    let after: String?
+//    let dist: Int?
+//    let modhash: String?
+//    let geo_filter: String?
+//    let children: [ListingChild<T>]?
+//}
+
+//struct ListingChild<T: Codable & Hashable>: Codable, Hashable {
+//    let kind: String?
+//    let data: T?
+//}

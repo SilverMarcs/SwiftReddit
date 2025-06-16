@@ -1,110 +1,330 @@
-import Foundation
+//
+//  LightweightPost.swift
+//  winston
+//
+//  Created by Winston Team on 16/06/25.
+//
 
-/// A lightweight post model for efficient feed display
+import Foundation
+import SwiftUI
+
+/// Lightweight media type for basic media display without heavy processing
+enum LightweightMediaType: Hashable {
+    case none
+    case image(imageURL: String?)
+    case gallery(count: Int, imageURL: String?)
+    case video(thumbnailURL: String?)
+    case youtube(thumbnailURL: String?)
+    case link(thumbnailURL: String?)
+    case gif(imageURL: String?)
+    
+    var hasMedia: Bool {
+        switch self {
+        case .none: return false
+        default: return true
+        }
+    }
+    
+    var mediaIcon: String {
+        switch self {
+        case .none: return ""
+        case .image: return "photo"
+        case .gallery: return "rectangle.grid.3x2"
+        case .video: return "play.rectangle"
+        case .youtube: return "play.rectangle.fill"
+        case .link: return "link"
+        case .gif: return "livephoto"
+        }
+    }
+    
+    var imageURL: String? {
+        switch self {
+        case .none: return nil
+        case .image(let url), .gallery(_, let url), .gif(let url):
+            return url
+        case .video(let url), .youtube(let url), .link(let url):
+            return url
+        }
+    }
+}
+
+/// Lightweight post structure for reduced memory usage in feeds
+/// Contains only essential information needed for basic post display
 struct LightweightPost: Identifiable, Hashable {
     let id: String
     let title: String
     let author: String
-    let score: Int
-    let numComments: Int
-    let created: Date
     let subreddit: String
+    let subredditNamePrefixed: String
+    let ups: Int
+    let numComments: Int
+    let created: Double
+    let permalink: String
+    let fullname: String
     let url: String?
-    let selftext: String?
-    let mediaType: LightweightMediaType
-    let thumbnail: String?
-    let preview: String?
+    let domain: String
     let isNSFW: Bool
-    let stickied: Bool
-    let locked: Bool
+    let isSelf: Bool
+    let thumbnail: String?
+    let linkFlairText: String?
+    let selftext: String
+    let clicked: Bool
+    let saved: Bool
+    let hidden: Bool
+    let gilded: Int
+    let downs: Int
+    let hideScore: Bool
+    let quarantine: Bool
+    let upvoteRatio: Double
+    let subredditType: String
+    let totalAwardsReceived: Int
+    let allowLiveComments: Bool
+    let isRobotIndexable: Bool
+    let sendReplies: Bool
+    let contestMode: Bool
+    let subredditSubscribers: Int
+    let createdUTC: Double?
+    let numCrossposts: Int
+    let postHint: String?
+    let linkFlairTextColor: String?
+    let whitelistStatus: String?
+    let linkFlairBackgroundColor: String?
+    let linkFlairType: String?
+    let approvedAtUTC: Int?
+    let modReasonTitle: String?
+    let topAwardedType: String?
+    let authorFlairBackgroundColor: String?
+    let approvedBy: String?
+    let isCreatedFromAdsUI: Bool?
+    let authorPremium: Bool?
+    let authorFlairCSSClass: String?
+    let authorFlairType: String?
+    let likes: Bool?
+    let stickied: Bool?
+    let suggestedSort: String?
+    let bannedAtUTC: String?
+    let viewCount: String?
+    let archived: Bool?
+    let noFollow: Bool?
+    let isCrosspostable: Bool?
+    let pinned: Bool?
+    let over18: Bool?
+    let mediaOnly: Bool?
+    let canGild: Bool?
+    let spoiler: Bool?
+    let locked: Bool?
+    let treatmentTags: [String]?
+    let visited: Bool?
+    let removedBy: String?
+    let numReports: Int?
+    let distinguished: String?
+    let subredditID: String?
+    let authorIsBlocked: Bool?
+    let modReasonBy: String?
+    let removalReason: String?
+    let reportReasons: [String]?
+    let discussionType: String?
+    let isVideo: Bool?
+    let isGallery: Bool?
+    let winstonSeen: Bool?
+    let winstonHidden: Bool?
     
-    init(from json: [String: Any]) {
-        let data = json["data"] as? [String: Any] ?? [:]
-        
-        self.id = data["id"] as? String ?? ""
-        self.title = data["title"] as? String ?? ""
-        self.author = data["author"] as? String ?? ""
-        self.score = data["score"] as? Int ?? 0
-        self.numComments = data["num_comments"] as? Int ?? 0
-        self.subreddit = data["subreddit"] as? String ?? ""
-        self.url = data["url"] as? String
-        self.selftext = data["selftext"] as? String
-        self.thumbnail = data["thumbnail"] as? String
-        self.isNSFW = data["over_18"] as? Bool ?? false
-        self.stickied = data["stickied"] as? Bool ?? false
-        self.locked = data["locked"] as? Bool ?? false
-        
-        // Create date from unix timestamp
-        if let createdUTC = data["created_utc"] as? Double {
-            self.created = Date(timeIntervalSince1970: createdUTC)
-        } else {
-            self.created = Date()
-        }
-        
-        // Extract media information
-        let extractedMedia = Self.extractMediaInfo(from: data)
-        self.mediaType = extractedMedia.type
-        self.preview = extractedMedia.preview
+    // Lightweight media properties
+    let mediaType: LightweightMediaType
+    
+    // Custom hash implementation to handle optionals
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(title)
+        hasher.combine(mediaType)
     }
     
-    private static func extractMediaInfo(from data: [String: Any]) -> (type: LightweightMediaType, preview: String?) {
-        // Check if it's a video
-        if let secureMedia = data["secure_media"] as? [String: Any],
-           let redditVideo = secureMedia["reddit_video"] as? [String: Any] {
-            let fallbackUrl = redditVideo["fallback_url"] as? String
-            return (.video(url: fallbackUrl), nil)
+    // Custom equality implementation
+    static func == (lhs: LightweightPost, rhs: LightweightPost) -> Bool {
+        return lhs.id == rhs.id && lhs.title == rhs.title && lhs.mediaType == rhs.mediaType
+    }
+    
+    init(from postData: PostData) {
+        self.id = postData.id
+        self.title = postData.title
+        self.author = postData.author
+        self.subreddit = postData.subreddit
+        self.subredditNamePrefixed = postData.subreddit_name_prefixed
+        self.ups = postData.ups
+        self.numComments = postData.num_comments
+        self.created = postData.created
+        self.permalink = postData.permalink
+        self.fullname = postData.name
+        self.url = postData.url.isEmpty ? nil : postData.url
+        self.domain = postData.domain
+        self.isNSFW = postData.over_18 ?? false
+        self.isSelf = postData.is_self
+        self.thumbnail = postData.thumbnail
+        self.linkFlairText = postData.link_flair_text
+        self.selftext = postData.selftext
+        self.clicked = postData.clicked
+        self.saved = postData.saved
+        self.hidden = postData.hidden
+        self.gilded = postData.gilded
+        self.downs = postData.downs
+        self.hideScore = postData.hide_score
+        self.quarantine = postData.quarantine
+        self.upvoteRatio = postData.upvote_ratio
+        self.subredditType = postData.subreddit_type
+        self.totalAwardsReceived = postData.total_awards_received
+        self.allowLiveComments = postData.allow_live_comments
+        self.isRobotIndexable = postData.is_robot_indexable
+        self.sendReplies = postData.send_replies
+        self.contestMode = postData.contest_mode
+        self.subredditSubscribers = postData.subreddit_subscribers
+        self.createdUTC = postData.created_utc
+        self.numCrossposts = postData.num_crossposts
+        self.postHint = postData.post_hint
+        self.linkFlairTextColor = postData.link_flair_text_color
+        self.whitelistStatus = postData.whitelist_status
+        self.linkFlairBackgroundColor = postData.link_flair_background_color
+        self.linkFlairType = postData.link_flair_type
+        self.approvedAtUTC = postData.approved_at_utc
+        self.modReasonTitle = postData.mod_reason_title
+        self.topAwardedType = postData.top_awarded_type
+        self.authorFlairBackgroundColor = postData.author_flair_background_color
+        self.approvedBy = postData.approved_by
+        self.isCreatedFromAdsUI = postData.is_created_from_ads_ui
+        self.authorPremium = postData.author_premium
+        self.authorFlairCSSClass = postData.author_flair_css_class
+        self.authorFlairType = postData.author_flair_type
+        self.likes = postData.likes
+        self.stickied = postData.stickied
+        self.suggestedSort = postData.suggested_sort
+        self.bannedAtUTC = postData.banned_at_utc
+        self.viewCount = postData.view_count
+        self.archived = postData.archived
+        self.noFollow = postData.no_follow
+        self.isCrosspostable = postData.is_crosspostable
+        self.pinned = postData.pinned
+        self.over18 = postData.over_18
+        self.mediaOnly = postData.media_only
+        self.canGild = postData.can_gild
+        self.spoiler = postData.spoiler
+        self.locked = postData.locked
+        self.treatmentTags = postData.treatment_tags
+        self.visited = postData.visited
+        self.removedBy = postData.removed_by
+        self.numReports = postData.num_reports
+        self.distinguished = postData.distinguished
+        self.subredditID = postData.subreddit_id
+        self.authorIsBlocked = postData.author_is_blocked
+        self.modReasonBy = postData.mod_reason_by
+        self.removalReason = postData.removal_reason
+        self.reportReasons = postData.report_reasons
+        self.discussionType = postData.discussion_type
+        self.isVideo = postData.is_video ?? false
+        self.isGallery = postData.is_gallery ?? false
+        self.winstonSeen = postData.winstonSeen ?? false
+        self.winstonHidden = postData.winstonHidden ?? false
+        
+        // Extract lightweight media information
+        self.mediaType = Self.extractLightweightMedia(from: postData)
+    }
+    
+    /// Lightweight media extraction that determines media type without heavy processing
+    private static func extractLightweightMedia(from data: PostData) -> LightweightMediaType {
+        // Skip self posts
+        guard !data.is_self else { return .none }
+        
+        let url = data.url
+        let domain = data.domain
+        
+        // Get proper image URL from preview if available, fallback to thumbnail
+        let imageURL = extractImageURL(from: data)
+        
+        // Gallery detection
+        if let isGallery = data.is_gallery, isGallery {
+            return .gallery(count: 0, imageURL: imageURL) // Simplified count for now
         }
         
-        // Check for images in preview
-        if let preview = data["preview"] as? [String: Any],
-           let images = preview["images"] as? [[String: Any]],
-           let firstImage = images.first,
-           let source = firstImage["source"] as? [String: Any],
-           let imageUrl = source["url"] as? String {
-            let decodedUrl = imageUrl.replacingOccurrences(of: "&amp;", with: "&")
-            return (.image(url: decodedUrl), decodedUrl)
+        // Video detection
+        if data.is_video == true {
+            return .video(thumbnailURL: imageURL)
         }
         
-        // Check for external links
-        if let url = data["url"] as? String,
-           !url.isEmpty,
-           let urlObj = URL(string: url) {
-            
-            // Check if it's an image URL
-            let imageExtensions = ["jpg", "jpeg", "png", "gif", "webp"]
-            if imageExtensions.contains(urlObj.pathExtension.lowercased()) {
-                return (.image(url: url), url)
-            }
-            
-            // Check for common video/gif services
-            let host = urlObj.host?.lowercased() ?? ""
-            if host.contains("youtube") || host.contains("youtu.be") {
-                return (.youtube(url: url), nil)
-            } else if host.contains("gfycat") {
-                return (.gif(url: url), nil)
-            } else if url.lowercased().hasSuffix(".gif") {
-                return (.gif(url: url), url)
-            }
-            
-            return (.link(url: url), nil)
+        // YouTube detection
+        if domain.contains("youtube.com") || domain.contains("youtu.be") {
+            return .youtube(thumbnailURL: imageURL)
         }
         
-        // Check for self text
-        if let selftext = data["selftext"] as? String, !selftext.isEmpty {
-            return (.text, nil)
+        // GIF detection (simple URL-based)
+        if url.hasSuffix(".gif") || domain.contains("gfycat") || domain.contains("imgur") && url.contains("/gif") {
+            return .gif(imageURL: imageURL)
         }
         
-        return (.none, nil)
+        // Image detection
+        if url.hasSuffix(".jpg") || url.hasSuffix(".jpeg") || url.hasSuffix(".png") || url.hasSuffix(".webp") ||
+           domain.contains("i.redd.it") || domain.contains("i.imgur.com") {
+            return .image(imageURL: imageURL)
+        }
+        
+        // Link with potential preview
+        if !url.isEmpty && url != data.permalink {
+            return .link(thumbnailURL: imageURL)
+        }
+        
+        return .none
+    }
+    
+    /// Extract proper image URL from PostData
+    private static func extractImageURL(from data: PostData) -> String? {
+        // Fallback to thumbnail if available and not default
+        let thumbnail = data.thumbnail
+        if let thumbnail = thumbnail,
+           thumbnail != "self" &&
+           thumbnail != "default" &&
+           thumbnail != "nsfw" &&
+           !thumbnail.isEmpty {
+            return thumbnail
+        }
+        
+        return nil
+    }
+    
+    /// Basic relative time string for display
+    var timeAgo: String {
+        let timeInterval = Date().timeIntervalSince1970 - created
+        let minutes = Int(timeInterval / 60)
+        let hours = Int(timeInterval / 3600)
+        let days = Int(timeInterval / 86400)
+        
+        if days > 0 {
+            return "\(days)d"
+        } else if hours > 0 {
+            return "\(hours)h"
+        } else if minutes > 0 {
+            return "\(minutes)m"
+        } else {
+            return "now"
+        }
+    }
+    
+    /// Format vote count for display
+    var formattedUps: String {
+        if ups >= 1000 {
+            return String(format: "%.1fk", Double(ups) / 1000.0)
+        }
+        return String(ups)
+    }
+    
+    /// Format comment count for display
+    var formattedComments: String {
+        if numComments >= 1000 {
+            return String(format: "%.1fk", Double(numComments) / 1000.0)
+        }
+        return String(numComments)
     }
 }
 
-// MARK: - Hashable
-extension LightweightPost {
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-    
-    static func == (lhs: LightweightPost, rhs: LightweightPost) -> Bool {
-        lhs.id == rhs.id
+/// Extension to create lightweight posts from PostData array
+extension Array where Element == PostData {
+    func toLightweightPosts() -> [LightweightPost] {
+        return self.map { LightweightPost(from: $0) }
     }
 }

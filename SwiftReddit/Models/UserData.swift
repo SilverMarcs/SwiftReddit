@@ -1,9 +1,10 @@
 //
 //  UserData.swift
-//  winston
+//  SwiftReddit
 //
-//  Created by Winston Team on 16/06/25.
+//  Created by Zabir Raihan on 16/06/2025.
 //
+
 
 import Foundation
 
