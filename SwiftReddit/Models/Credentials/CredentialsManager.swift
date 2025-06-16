@@ -22,24 +22,6 @@ class CredentialsManager {
     // OAuth state management
     var lastAuthState: String?
     
-    // Current user data
-    var currentUserData: UserData?
-
-    
-    var selectedCredential: RedditCredential? {
-        get {
-            return credential
-        }
-        set {
-            credential = newValue
-            saveToUserDefaults()
-        }
-    }
-    
-    var validCredentials: [RedditCredential] {
-        return credential?.validationStatus == .authorized ? [credential!] : []
-    }
-    
     private init() {
         loadCredentials()
     }
@@ -151,12 +133,10 @@ class CredentialsManager {
             if let iconImg = userData.icon_img, !iconImg.isEmpty {
                 updatedCredential.profilePicture = iconImg
             }
-            currentUserData = userData
         }
         
         saveCredential(updatedCredential)
         return true
-    }
     }
     
     // MARK: - Token Management
@@ -172,15 +152,5 @@ class CredentialsManager {
         }
         
         return result.token?.token
-    }
-    
-    // MARK: - User Data Management
-    
-    func refreshCurrentUserData() async {
-        guard let accessToken = await getValidAccessToken(),
-              let userName = credential?.userName else { return }
-        
-        let userAgent = "ios:lo.cafe.winston:v0.1.0 (by /u/\(userName))"
-        currentUserData = await RedditAPI.shared.fetchMe(with: accessToken, userAgent: userAgent)
     }
 }

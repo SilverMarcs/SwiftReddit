@@ -15,25 +15,6 @@ class RedditAPI {
     
     private init() {}
     
-    // Pure HTTP client methods
-    func fetchMe(with accessToken: String, userAgent: String) async -> UserData? {
-        guard let url = URL(string: "\(Self.redditApiURLBase)/api/v1/me") else { return nil }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        
-        do {
-            let (data, _) = try await URLSession.shared.data(for: request)
-            let userData = try JSONDecoder().decode(UserData.self, from: data)
-            return userData
-        } catch {
-            print("Fetch me error: \(error)")
-            return nil
-        }
-    }
-    
     func exchangeAuthCodeForTokens(appID: String, appSecret: String, authCode: String) async -> GetAccessTokenResponse? {
         var code = authCode
         if code.hasSuffix("#_") {

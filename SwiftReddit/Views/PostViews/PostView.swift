@@ -33,7 +33,7 @@ struct PostView: View {
                           .padding(.horizontal, 6)
                           .padding(.vertical, 2)
                           .background(.background.tertiary)
-                          .foregroundColor(.primary)
+                          .foregroundStyle(.primary)
                           .cornerRadius(4)
                   }
 
@@ -59,12 +59,12 @@ struct PostView: View {
               // Avatar logo or subreddit logo TODO:
               Image(systemName: "person.crop.circle.fill")
                     .font(.title)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
               
               VStack(alignment: .leading, spacing: 2) {
                   Text(post.subredditNamePrefixed)
                       .font(.caption)
-                      .foregroundColor(.secondary)
+                      .foregroundStyle(.link)
                   
                   HStack(spacing: 10) {
                         HStack(spacing: 4) {
@@ -81,7 +81,7 @@ struct PostView: View {
                   }
                   .font(.caption)
                   .fontWeight(.semibold)
-                  .foregroundColor(.secondary)
+                  .foregroundStyle(.secondary)
               }
               
               Spacer()
