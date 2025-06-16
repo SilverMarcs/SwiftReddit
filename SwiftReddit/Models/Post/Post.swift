@@ -98,9 +98,9 @@ struct Post: Identifiable, Hashable, Equatable {
         hasher.combine(title)
     }
     
-    // Custom equality implementation
-    static func == (lhs: Post, rhs: Post) -> Bool {
-        return lhs.id == rhs.id && lhs.title == rhs.title
+    // custom identifiable conformance
+    var identifier: String {
+        return id
     }
     
     init(from postData: PostData) {

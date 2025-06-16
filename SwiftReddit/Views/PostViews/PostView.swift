@@ -35,7 +35,7 @@ struct PostView: View {
 
             if !post.selftext.isEmpty {
                 Text(post.selftext.trimmingCharacters(in: .whitespacesAndNewlines))
-                    .font(truncateSelfText ? .caption : .subheadline)
+                    .font(.subheadline)
                     .foregroundStyle(truncateSelfText ? .secondary : .primary)
                     .lineLimit(truncateSelfText ? 3 : nil)
         }
