@@ -78,16 +78,10 @@ struct RedditCredential: Identifiable, Equatable, Hashable, Codable {
         profilePicture = nil
     }
     
-    func save() {
-        CredentialsManager.shared.saveCredential(self)
-    }
-    
-    func delete() {
-        CredentialsManager.shared.deleteCredential(self)
-    }
-    
-    func getUpToDateToken(forceRenew: Bool = false) async -> AccessToken? {
-        guard let refreshToken = self.refreshToken, !apiAppID.isEmpty && !apiAppSecret.isEmpty else { return nil }
+    func getUpToDateToken(forceRenew: Bool = false) async -> (token: AccessToken?, updatedCredential: RedditCredential?) {
+        guard let refreshToken = self.refreshToken, !apiAppID.isEmpty && !apiAppSecret.isEmpty else { 
+            return (nil, nil) 
+        }
         
         if !forceRenew, let accessToken = self.accessToken {
             let lastRefresh = Double(accessToken.lastRefresh.timeIntervalSince1970)
@@ -95,56 +89,35 @@ struct RedditCredential: Identifiable, Equatable, Hashable, Codable {
             let now = Double(Date().timeIntervalSince1970)
             
             if (now - lastRefresh) < expiration {
-                return accessToken
+                return (accessToken, nil)
             }
         }
         
-        return await fetchNewToken()
-        
-        func fetchNewToken() async -> AccessToken? {
-            guard let url = URL(string: "\(RedditAPI.redditWWWApiURLBase)/api/v1/access_token") else { return nil }
+        // Use RedditAPI for token refresh
+        if let response = await RedditAPI.shared.refreshAccessToken(
+            appID: apiAppID, 
+            appSecret: apiAppSecret, 
+            refreshToken: refreshToken
+        ) {
+            let newAccessToken = AccessToken(
+                token: response.access_token,
+                expiration: response.expires_in,
+                lastRefresh: Date()
+            )
             
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+            var updatedCredential = self
+            updatedCredential.accessToken = newAccessToken
             
-            // Basic auth
-            let credentials = "\(apiAppID):\(apiAppSecret)"
-            let base64Credentials = Data(credentials.utf8).base64EncodedString()
-            request.setValue("Basic \(base64Credentials)", forHTTPHeaderField: "Authorization")
+            return (newAccessToken, updatedCredential)
+        } else {
+            // Token refresh failed - clear credentials
+            var clearedCredential = self
+            clearedCredential.refreshToken = nil
+            clearedCredential.accessToken = nil
+            clearedCredential.userName = nil
+            clearedCredential.profilePicture = nil
             
-            // Form data
-            let formData = "grant_type=refresh_token&refresh_token=\(refreshToken)"
-            request.httpBody = formData.data(using: .utf8)
-            
-            do {
-                let (data, _) = try await URLSession.shared.data(for: request)
-                let response = try JSONDecoder().decode(RefreshAccessTokenResponse.self, from: data)
-                
-                let newAccessToken = AccessToken(
-                    token: response.access_token,
-                    expiration: response.expires_in,
-                    lastRefresh: Date()
-                )
-                
-                var newSelf = self
-                newSelf.accessToken = newAccessToken
-                CredentialsManager.shared.saveCredential(newSelf)
-                
-                return newAccessToken
-            } catch {
-                print("Token refresh error: \(error)")
-                
-                // Clear invalid credentials
-                var selfCopy = self
-                selfCopy.refreshToken = nil
-                selfCopy.accessToken = nil
-                selfCopy.userName = nil
-                selfCopy.profilePicture = nil
-                selfCopy.save()
-                
-                return nil
-            }
+            return (nil, clearedCredential)
         }
     }
     

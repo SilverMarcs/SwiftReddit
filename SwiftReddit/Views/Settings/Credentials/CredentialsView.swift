@@ -52,24 +52,7 @@ struct CredentialsView: View {
                     }
                 }
             }
-            
-            // Add/Replace credential section
-            Section {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text(hasExistingCredential ? "Replace Reddit Credential" : "Reddit API Setup")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                    
-                    if hasExistingCredential {
-                        Text("You can replace your existing credential by adding a new one below.")
-                            .foregroundColor(.orange)
-                            .font(.subheadline)
-                    } else {
-                        Text("To use this app, you need to create your own Reddit API credentials. Don't worry - it's free and easy!")
-                            .foregroundColor(.secondary)
-                    }
-                }
-            }
+        
             
             if !hasExistingCredential || isAddingCredential {
                 Section("Step 1: Get Your Credentials") {
@@ -112,20 +95,14 @@ struct CredentialsView: View {
                                         authorizeCredential()
                                     }
                                 }) {
-                                    HStack {
-                                        if isLoading {
-                                            ProgressView()
-                                                .scaleEffect(0.8)
-                                        } else {
-                                            Image(systemName: "checkmark.shield")
-                                        }
-                                        Text(hasExistingCredential ? "Replace & Authorize" : "Authorize with Reddit")
+                                    if isLoading {
+                                        ProgressView()
+                                            .scaleEffect(0.8)
+                                    } else {
+                                        Image(systemName: "checkmark.shield")
                                     }
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.blue)
-                                    .foregroundColor(.white)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    
+                                    Text(hasExistingCredential ? "Replace & Authorize" : "Authorize with Reddit")
                                 }
                                 .disabled(isLoading)
                             }
@@ -191,7 +168,7 @@ struct CredentialsView: View {
             return
         }
         
-        let authURL = RedditAPI.shared.getAuthorizationCodeURL(trimmedAppID)
+        let authURL = credentialsManager.getAuthorizationCodeURL(trimmedAppID)
         waitingForCallback = true
         
         #if os(macOS)
@@ -204,7 +181,7 @@ struct CredentialsView: View {
     private func handleRedirectURL(_ url: URL) {
         guard waitingForCallback else { return }
         
-        if let authCode = RedditAPI.shared.getAuthCodeFromURL(url) {
+        if let authCode = credentialsManager.getAuthCodeFromURL(url) {
             Task {
                 await processAuthCode(authCode)
             }
@@ -225,20 +202,21 @@ struct CredentialsView: View {
             apiAppSecret: appSecret.trimmingCharacters(in: .whitespaces)
         )
         
-        let result = await RedditAPI.shared.injectFirstAccessTokenInto(credential, authCode: authCode)
+        let success = await credentialsManager.authorizeCredential(credential, authCode: authCode)
         
-        isLoading = false
-        waitingForCallback = false
-        
-        if let updatedCredential = result {
-            credentialsManager.saveCredential(updatedCredential)
-            // Reset form state
-            appID = ""
-            appSecret = ""
-            isAddingCredential = false
-        } else {
-            errorMessage = "Failed to exchange authorization code for access token. Please check your credentials and try again."
-            showingError = true
+        await MainActor.run {
+            isLoading = false
+            waitingForCallback = false
+            
+            if success {
+                // Reset form state
+                appID = ""
+                appSecret = ""
+                isAddingCredential = false
+            } else {
+                errorMessage = "Failed to exchange authorization code for access token. Please check your credentials and try again."
+                showingError = true
+            }
         }
     }
 }

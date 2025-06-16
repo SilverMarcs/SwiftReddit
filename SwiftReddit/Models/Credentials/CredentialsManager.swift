@@ -9,7 +9,8 @@ import Foundation
 import SwiftUI
 import Combine
 
-class CredentialsManager: ObservableObject {
+@Observable
+class CredentialsManager {
     static let shared = CredentialsManager()
     
     private let userDefaults = UserDefaults.standard
@@ -18,10 +19,12 @@ class CredentialsManager: ObservableObject {
     // Single credential instead of array
     var credential: RedditCredential? = nil
     
-    // For backward compatibility, expose as array but only with single item
-//    var credentials: [RedditCredential] {
-//        return credential != nil ? [credential!] : []
-//    }
+    // OAuth state management
+    var lastAuthState: String?
+    
+    // Current user data
+    var currentUserData: UserData?
+
     
     var selectedCredential: RedditCredential? {
         get {
@@ -87,5 +90,97 @@ class CredentialsManager: ObservableObject {
         } else {
             userDefaults.removeObject(forKey: credentialsKey)
         }
+    }
+    
+    // MARK: - OAuth Flow Management
+    
+    func getAuthorizationCodeURL(_ appID: String) -> URL {
+        let response_type: String = "code"
+        let state: String = UUID().uuidString
+        let redirect_uri: String = RedditAPI.appRedirectURI
+        let duration: String = "permanent"
+        let scope: String = "identity,edit,flair,history,modconfig,modflair,modlog,modposts,modwiki,mysubreddits,privatemessages,read,report,save,submit,subscribe,vote,wikiedit,wikiread"
+        
+        lastAuthState = state
+        
+        let urlString = "https://www.reddit.com/api/v1/authorize.compact?client_id=\(appID.trimmingCharacters(in: .whitespaces))&response_type=\(response_type)&state=\(state)&redirect_uri=\(redirect_uri)&duration=\(duration)&scope=\(scope)"
+        
+        return URL(string: urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!
+    }
+    
+    func getAuthCodeFromURL(_ rawUrl: URL) -> String? {
+        if let url = URL(string: rawUrl.absoluteString.replacingOccurrences(of: "winstonapp://", with: "https://app.winston.cafe/")),
+           url.lastPathComponent == "auth-success",
+           let query = URLComponents(url: url, resolvingAgainstBaseURL: false),
+           let state = query.queryItems?.first(where: { $0.name == "state" })?.value,
+           let code = query.queryItems?.first(where: { $0.name == "code" })?.value,
+           state == lastAuthState {
+            return code
+        }
+        return nil
+    }
+    
+    func authorizeCredential(_ credential: RedditCredential, authCode: String) async -> Bool {
+        guard !credential.apiAppID.isEmpty && !credential.apiAppSecret.isEmpty else { return false }
+        
+        // Exchange auth code for tokens
+        guard let tokenResponse = await RedditAPI.shared.exchangeAuthCodeForTokens(
+            appID: credential.apiAppID,
+            appSecret: credential.apiAppSecret,
+            authCode: authCode
+        ) else {
+            return false
+        }
+        
+        var updatedCredential = credential
+        let newAccessToken = RedditCredential.AccessToken(
+            token: tokenResponse.access_token,
+            expiration: tokenResponse.expires_in,
+            lastRefresh: Date()
+        )
+        
+        updatedCredential.refreshToken = tokenResponse.refresh_token
+        updatedCredential.accessToken = newAccessToken
+        
+        // Fetch user info
+        if let userData = await RedditAPI.shared.fetchMe(
+            with: tokenResponse.access_token,
+            userAgent: "ios:lo.cafe.winston:v0.1.0 (by /u/UnknownUser)"
+        ) {
+            updatedCredential.userName = userData.name
+            if let iconImg = userData.icon_img, !iconImg.isEmpty {
+                updatedCredential.profilePicture = iconImg
+            }
+            currentUserData = userData
+        }
+        
+        saveCredential(updatedCredential)
+        return true
+    }
+    }
+    
+    // MARK: - Token Management
+    
+    func getValidAccessToken() async -> String? {
+        guard let credential = credential else { return nil }
+        
+        let result = await credential.getUpToDateToken()
+        
+        // Handle credential updates from token refresh
+        if let updatedCredential = result.updatedCredential {
+            saveCredential(updatedCredential)
+        }
+        
+        return result.token?.token
+    }
+    
+    // MARK: - User Data Management
+    
+    func refreshCurrentUserData() async {
+        guard let accessToken = await getValidAccessToken(),
+              let userName = credential?.userName else { return }
+        
+        let userAgent = "ios:lo.cafe.winston:v0.1.0 (by /u/\(userName))"
+        currentUserData = await RedditAPI.shared.fetchMe(with: accessToken, userAgent: userAgent)
     }
 }

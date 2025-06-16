@@ -18,8 +18,7 @@ extension RedditAPI {
     }
     
     private func fetchPosts(endpoint: String, sort: SubListingSortOption, after: String?, limit: Int) async -> ([Post], String?)? {
-        guard let credential = CredentialsManager.shared.selectedCredential,
-              let accessToken = await credential.getUpToDateToken() else {
+        guard let accessToken = await CredentialsManager.shared.getValidAccessToken() else {
             print("No valid credential or access token")
             return nil
         }
@@ -44,8 +43,9 @@ extension RedditAPI {
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.setValue("Bearer \(accessToken.token)", forHTTPHeaderField: "Authorization")
-        request.setValue("ios:lo.cafe.winston:v0.1.0 (by /u/\(credential.userName ?? "UnknownUser"))", forHTTPHeaderField: "User-Agent")
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        let userName = CredentialsManager.shared.credential?.userName ?? "UnknownUser"
+        request.setValue("ios:lo.cafe.winston:v0.1.0 (by /u/\(userName))", forHTTPHeaderField: "User-Agent")
         
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
