@@ -1,5 +1,5 @@
 //
-//  PostsView.swift
+//  PostsList.swift
 //  winston
 //
 //  Created by Winston Team on 16/06/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PostsView: View {
+struct PostsList: View {
     @State private var posts: [Post] = []
     @State private var isLoading = false
     @State private var after: String?
@@ -24,6 +24,7 @@ struct PostsView: View {
                 .listRowSeparator(.hidden)
                 
                 Color.clear
+                    .frame(height: 10)
                     .onAppear {
                         if !isLoading && after != nil {
                             loadMorePosts()
@@ -41,7 +42,8 @@ struct PostsView: View {
                 
                 if isLoading {
                     ProgressView()
-                        .frame(maxWidth: .infinity)
+                        .controlSize(.large)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .padding()
                         .listRowSeparator(.hidden)
                 }
@@ -93,8 +95,8 @@ struct PostsView: View {
     private func loadMorePosts() {
         guard !isLoading && after != nil else { return }
         
+        isLoading = true
         Task {
-            isLoading = true
             await fetchPosts(isRefresh: false)
             isLoading = false
         }
@@ -119,5 +121,5 @@ struct PostsView: View {
 }
 
 #Preview {
-    PostsView()
+    PostsList()
 }

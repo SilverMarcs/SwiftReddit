@@ -13,7 +13,7 @@ struct ContentView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             Tab("Posts", systemImage: "doc.text.image", value: .posts) {
-                PostsView()
+                PostsList()
             }
             
             Tab("Settings", systemImage: "gearshape.fill", value: .settings) {
