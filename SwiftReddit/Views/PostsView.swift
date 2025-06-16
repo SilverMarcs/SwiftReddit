@@ -51,12 +51,18 @@ struct PostsView: View {
             .toolbarTitleDisplayMode(.inlineLarge)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Picker("Sort", selection: $selectedSort) {
+                    Menu {
                         ForEach(SubListingSortOption.allCases) { sort in
-                            Label(sort.displayName, systemImage: sort.icon)
-                                .labelStyle(.iconOnly)
-                                .tag(sort)
+                            Button {
+                                selectedSort = sort
+                            } label: {
+                                Label(sort.displayName, systemImage: sort.icon)
+                                    .tag(sort)
+                            }
                         }
+                    } label: {
+                        Label(selectedSort.displayName, systemImage: selectedSort.icon)
+                            .labelStyle(.iconOnly)
                     }
                 }
             }

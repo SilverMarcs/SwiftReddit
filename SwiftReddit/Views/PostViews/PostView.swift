@@ -37,29 +37,14 @@ struct PostView: View {
                           .cornerRadius(4)
                   }
 
-                  Text(post.selftext.trimmingCharacters(in: .whitespacesAndNewlines))
-                      .font(.caption)
-                      .foregroundStyle(.secondary)
-                      .lineLimit(2)
-              }
-              
-              Spacer()
-              
-              // NSFW badge
-              if post.isNSFW {
-                  HStack(spacing: 4) {
-                      Image(systemName: "exclamationmark.triangle.fill")
-                          .font(.caption2)
-                      Text("NSFW")
-                          .font(.caption2)
-                          .fontWeight(.semibold)
+                  if !post.selftext.isEmpty {
+                      Text(post.selftext.trimmingCharacters(in: .whitespacesAndNewlines))
+                          .font(.caption)
+                          .foregroundStyle(.secondary)
+                          .lineLimit(2)
                   }
-                  .padding(.horizontal, 8)
-                  .padding(.vertical, 4)
-                  .background(Color.red.opacity(0.9))
-                  .foregroundColor(.white)
-                  .cornerRadius(6)
               }
+              Spacer()
           }
           
           // Media component
