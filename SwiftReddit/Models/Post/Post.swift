@@ -280,4 +280,23 @@ struct Post: Identifiable, Hashable {
         }
         return String(numComments)
     }
+    
+    /// Get flair background color from Reddit API
+    var flairBackgroundColor: Color {
+        guard let bgColor = linkFlairBackgroundColor, !bgColor.isEmpty else {
+            return Color(hex: "D5D7D9") // Default light gray
+        }
+        return Color(hex: bgColor)
+    }
+    
+    /// Get flair text color from Reddit API
+    var flairTextColor: Color {
+        let hasBackground = linkFlairBackgroundColor != nil && !linkFlairBackgroundColor!.isEmpty
+        
+        if hasBackground, let textColor = linkFlairTextColor {
+            return textColor == "light" ? .white : .black
+        }
+        
+        return .black // Default
+    }
 }

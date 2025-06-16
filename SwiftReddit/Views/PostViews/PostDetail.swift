@@ -11,7 +11,20 @@ struct PostDetail: View {
     var post: Post
     
     var body: some View {
-        PostView(post: post)
+        List {
+            Section {
+                PostView(post: post)
+                    .listRowSeparator(.hidden)
+            }
+            
+            Section {
+                ForEach(0..<15, id: \.self) { index in
+                    Text("Comment \(index + 1)")
+                        .padding()
+                }
+            }   
+        }
+        .listStyle(.plain)
     }
 }
 

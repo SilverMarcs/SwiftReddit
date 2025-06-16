@@ -30,10 +30,11 @@ struct PostView: View {
                   if let flair = post.linkFlairText, !flair.isEmpty {
                       Text(flair)
                           .font(.caption2)
+                          .fontWeight(.semibold)
                           .padding(.horizontal, 6)
                           .padding(.vertical, 2)
-                          .background(.background.tertiary)
-                          .foregroundStyle(.primary)
+                          .background(post.flairBackgroundColor)
+                          .foregroundStyle(post.flairTextColor)
                           .cornerRadius(4)
                   }
 
