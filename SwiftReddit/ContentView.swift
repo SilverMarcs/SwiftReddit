@@ -8,21 +8,28 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var selectedTab: Tabs = .posts
+    
     var body: some View {
-        TabView {
-            PostsView()
-                .tabItem {
-                    Image(systemName: "house")
-                    Text("Posts")
-                }
+        TabView(selection: $selectedTab) {
+            Tab("Posts", systemImage: "doc.text.image", value: .posts) {
+                PostsView()
+            }
             
-            SettingsView()
-                .tabItem {
-                    Image(systemName: "gearshape")
-                    Text("Settings")
-                }
+            Tab("Settings", systemImage: "gearshape.fill", value: .settings) {
+                SettingsView()
+            }
         }
+        #if !os(macOS)
+        .tabBarMinimizeBehavior(.onScrollDown)
+        #endif
     }
+}
+
+enum Tabs: Hashable {
+    case posts
+    case settings
+    case search
 }
 
 #Preview {

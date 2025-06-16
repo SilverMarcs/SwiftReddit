@@ -9,11 +9,10 @@ import SwiftUI
 
 struct LightweightVideoView: View {
   let thumbnailURL: String?
-  let isNSFW: Bool
   
   var body: some View {
     ZStack {
-      LightweightImageView(imageURL: thumbnailURL, isNSFW: isNSFW)
+      LightweightImageView(imageURL: thumbnailURL)
       
       // Play button overlay - always show
       Circle()

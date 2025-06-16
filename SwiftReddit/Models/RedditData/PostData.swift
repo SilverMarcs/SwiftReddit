@@ -5,14 +5,6 @@
 //  Created by Zabir Raihan on 16/06/2025.
 //
 
-
-//
-//  PostData.swift
-//  winston
-//
-//  Created by Winston Team on 16/06/25.
-//
-
 import Foundation
 
 /// Core PostData structure matching Reddit's API response
@@ -97,21 +89,21 @@ struct PostData: Identifiable, Codable, Hashable {
     let winstonHidden: Bool?
 }
 
-/// Reddit API response structures
-//struct Listing<T: Codable & Hashable>: Codable, Hashable {
-//    let kind: String?
-//    let data: ListingData<T>?
-//}
+// MARK: - Response Models for Posts
 
-//struct ListingData<T: Codable & Hashable>: Codable, Hashable {
-//    let after: String?
-//    let dist: Int?
-//    let modhash: String?
-//    let geo_filter: String?
-//    let children: [ListingChild<T>]?
-//}
+struct ListingResponse: Codable {
+    let kind: String
+    let data: ListingData
+}
 
-//struct ListingChild<T: Codable & Hashable>: Codable, Hashable {
-//    let kind: String?
-//    let data: T?
-//}
+struct ListingData: Codable {
+    let children: [ListingChild]
+    let after: String?
+    let before: String?
+}
+
+struct ListingChild: Codable {
+    let kind: String
+    let data: PostData
+}
+

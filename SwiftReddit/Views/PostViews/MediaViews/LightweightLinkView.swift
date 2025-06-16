@@ -9,12 +9,11 @@ import SwiftUI
 
 struct LightweightLinkView: View {
   let thumbnailURL: String?
-  let isNSFW: Bool
   
   var body: some View {
     ZStack {
       if let thumbnailURL = thumbnailURL {
-        LightweightImageView(imageURL: thumbnailURL, isNSFW: isNSFW)
+        LightweightImageView(imageURL: thumbnailURL)
       } else {
         Rectangle()
           .fill(Color.gray.opacity(0.2))

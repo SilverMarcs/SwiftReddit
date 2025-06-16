@@ -8,46 +8,6 @@
 import Foundation
 import SwiftUI
 
-/// Lightweight media type for basic media display without heavy processing
-enum LightweightMediaType: Hashable {
-    case none
-    case image(imageURL: String?)
-    case gallery(count: Int, imageURL: String?)
-    case video(thumbnailURL: String?)
-    case youtube(thumbnailURL: String?)
-    case link(thumbnailURL: String?)
-    case gif(imageURL: String?)
-    
-    var hasMedia: Bool {
-        switch self {
-        case .none: return false
-        default: return true
-        }
-    }
-    
-    var mediaIcon: String {
-        switch self {
-        case .none: return ""
-        case .image: return "photo"
-        case .gallery: return "rectangle.grid.3x2"
-        case .video: return "play.rectangle"
-        case .youtube: return "play.rectangle.fill"
-        case .link: return "link"
-        case .gif: return "livephoto"
-        }
-    }
-    
-    var imageURL: String? {
-        switch self {
-        case .none: return nil
-        case .image(let url), .gallery(_, let url), .gif(let url):
-            return url
-        case .video(let url), .youtube(let url), .link(let url):
-            return url
-        }
-    }
-}
-
 /// Lightweight post structure for reduced memory usage in feeds
 /// Contains only essential information needed for basic post display
 struct LightweightPost: Identifiable, Hashable {
@@ -319,12 +279,5 @@ struct LightweightPost: Identifiable, Hashable {
             return String(format: "%.1fk", Double(numComments) / 1000.0)
         }
         return String(numComments)
-    }
-}
-
-/// Extension to create lightweight posts from PostData array
-extension Array where Element == PostData {
-    func toLightweightPosts() -> [LightweightPost] {
-        return self.map { LightweightPost(from: $0) }
     }
 }

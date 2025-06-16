@@ -9,7 +9,6 @@ import SwiftUI
 
 struct LightweightImageView: View {
   let imageURL: String?
-  let isNSFW: Bool
   
   var body: some View {
     ZStack {
@@ -34,29 +33,6 @@ struct LightweightImageView: View {
               .font(.title2)
               .foregroundColor(.secondary)
           )
-      }
-      
-      // NSFW Badge in top-left corner
-      if isNSFW {
-        VStack {
-          HStack {
-            HStack(spacing: 4) {
-              Image(systemName: "exclamationmark.triangle.fill")
-                .font(.caption2)
-              Text("NSFW")
-                .font(.caption2)
-                .fontWeight(.semibold)
-            }
-            .foregroundColor(.white)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(Color.red.opacity(0.9))
-            .cornerRadius(6)
-            .padding(8)
-            Spacer()
-          }
-          Spacer()
-        }
       }
     }
     .frame(maxHeight: 300)

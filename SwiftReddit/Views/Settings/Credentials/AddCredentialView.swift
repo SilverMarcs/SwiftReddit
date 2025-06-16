@@ -70,7 +70,6 @@ struct AddCredentialView: View {
                             TextField("Enter your Reddit app ID", text: $appID)
                                 .textFieldStyle(.roundedBorder)
                                 .autocorrectionDisabled()
-                                .textInputAutocapitalization(.never)
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {

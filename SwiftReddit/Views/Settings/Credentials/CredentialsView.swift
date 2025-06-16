@@ -55,9 +55,9 @@ struct CredentialsView: View {
             }
         }
         .navigationTitle("Credentials")
-        .navigationBarTitleDisplayMode(.inline)
+        .toolbarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .primaryAction) {
                 Button("Add") {
                     showingAddCredential = true
                 }

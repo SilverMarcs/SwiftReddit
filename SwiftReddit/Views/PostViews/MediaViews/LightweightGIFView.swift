@@ -1,27 +1,26 @@
 //
-//  LightweightYouTubeView.swift
+//  LightweightGIFView.swift
 //  winston
 //
-//  Created for memory optimization - lightweight YouTube display
+//  Created for memory optimization - lightweight GIF display
 //
 
 import SwiftUI
 
-struct LightweightYouTubeView: View {
-  let thumbnailURL: String?
-  let isNSFW: Bool
+struct LightweightGIFView: View {
+  let imageURL: String?
   
   var body: some View {
     ZStack {
-      LightweightImageView(imageURL: thumbnailURL, isNSFW: isNSFW)
+      LightweightImageView(imageURL: imageURL)
       
-      // Always show YouTube badge
+      // Always show GIF badge
       VStack {
         Spacer()
         HStack {
-          Image(systemName: "play.rectangle.fill")
+          Image(systemName: "livephoto")
             .font(.caption)
-          Text("YouTube")
+          Text("GIF")
             .font(.caption)
             .fontWeight(.medium)
           Spacer()
@@ -29,7 +28,7 @@ struct LightweightYouTubeView: View {
         .foregroundColor(.white)
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
-        .background(Color.red.opacity(0.8))
+        .background(Color.blue.opacity(0.8))
         .cornerRadius(4)
         .padding(8)
       }

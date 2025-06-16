@@ -171,7 +171,7 @@ class RedditAPI {
             let (data, response) = try await URLSession.shared.data(for: request)
             
             if let httpResponse = response as? HTTPURLResponse {
-                print("Reddit API Response Status: \(httpResponse.statusCode)")
+//                print("Reddit API Response Status: \(httpResponse.statusCode)")
                 if httpResponse.statusCode != 200 {
                     print("Reddit API Error: Status \(httpResponse.statusCode)")
                     return nil
@@ -190,22 +190,4 @@ class RedditAPI {
             return nil
         }
     }
-}
-
-// MARK: - Response Models for Posts
-
-struct ListingResponse: Codable {
-    let kind: String
-    let data: ListingData
-}
-
-struct ListingData: Codable {
-    let children: [ListingChild]
-    let after: String?
-    let before: String?
-}
-
-struct ListingChild: Codable {
-    let kind: String
-    let data: PostData
 }

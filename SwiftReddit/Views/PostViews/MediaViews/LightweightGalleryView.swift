@@ -10,11 +10,10 @@ import SwiftUI
 struct LightweightGalleryView: View {
   let count: Int
   let imageURL: String?
-  let isNSFW: Bool
   
   var body: some View {
     ZStack {
-      LightweightImageView(imageURL: imageURL, isNSFW: isNSFW)
+      LightweightImageView(imageURL: imageURL)
       
       VStack {
         Spacer()
