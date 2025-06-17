@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import WebKit
 
 struct PostsList: View {
     @ObservedObject private var appPrefs = AppPreferences.shared
@@ -54,6 +55,9 @@ struct PostsList: View {
             }
             .navigationDestination(for: Post.self) { post in
                 PostDetail(post: post)
+            }
+            .navigationDestination(for: LinkMetadata.self) { meta in
+                BasicWebview(linkMeta: meta)
             }
             .listStyle(.plain)
             .navigationTitle("Home")
