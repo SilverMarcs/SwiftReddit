@@ -15,7 +15,7 @@ struct BasicWebview: View {
     var body: some View {
         if let url = URL(string: linkMeta.url) {
             WebView(page)
-                .ignoresSafeArea()
+                .edgesIgnoringSafeArea(.bottom)
                 .navigationTitle(page.title)
                 .navigationBarTitleDisplayMode(.inline)
                 .onAppear {

@@ -16,7 +16,7 @@ struct PostView: View {
       VStack(alignment: .leading, spacing: 8) {
           // Title and flair header
             Text(post.title)
-                .font(.title3)
+                .font(.system(size: 18)) // title3 is fine
                 .fontWeight(.semibold)
                 .lineLimit(3)
                 .multilineTextAlignment(.leading)

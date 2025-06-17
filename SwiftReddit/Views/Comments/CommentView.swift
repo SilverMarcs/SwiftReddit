@@ -93,7 +93,10 @@ struct CommentView: View {
                     Text(comment.author)
                         .font(.caption)
                         .fontWeight(comment.isSubmitter ? .bold : .medium)
-                        .foregroundStyle(comment.isSubmitter ? .blue : .secondary)
+                        .foregroundStyle(
+                            comment.distinguished == "moderator" ? .green :
+                                (comment.isSubmitter ? .blue : .secondary)
+                        )
                     
                     if let flairText = comment.authorFlairText, !flairText.isEmpty {
                         Text(flairText)
