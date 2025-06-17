@@ -99,10 +99,9 @@ struct CredentialsView: View {
                                         ProgressView()
                                             .scaleEffect(0.8)
                                     } else {
-                                        Image(systemName: "checkmark.shield")
+                                        Label("Authorize with Reddit", systemImage: "checkmark.shield")
+                                            .foregroundStyle(.primary)
                                     }
-                                    
-                                    Text(hasExistingCredential ? "Replace & Authorize" : "Authorize with Reddit")
                                 }
                                 .disabled(isLoading)
                             }
@@ -118,6 +117,7 @@ struct CredentialsView: View {
                 }
             }
         }
+        .formStyle(.grouped)
         .navigationTitle("Reddit Credential")
         .toolbarTitleDisplayMode(.inline)
         .alert("Error", isPresented: $showingError) {
