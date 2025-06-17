@@ -9,26 +9,40 @@ import SwiftUI
 
 struct PostDetail: View {
     var post: Post
+    @State private var sortOption: CommentSortOption = .confidence
     
     var body: some View {
-        List {
-            Section {
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
                 PostView(post: post, showBackground: false, truncateSelfText: false)
-                    .listRowInsets(EdgeInsets(top: 0, leading: 5, bottom: 5, trailing: 5))
-                    .listRowSeparator(.hidden)
+                
+                Divider()
+                    .padding(.horizontal)
+                
+                // Comments
+                CommentsListView(post: post, sortOption: sortOption)
             }
-            
-            Section {
-                ForEach(0..<post.numComments, id: \.self) { index in
-                    Text("Comment \(index + 1)")
-                        .padding()
-                }
-            }   
         }
         .navigationTitle(post.subreddit)
         .navigationSubtitle(post.formattedComments + " comments")
         .toolbarTitleDisplayMode(.inline)
-        .listStyle(.plain)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    ForEach(CommentSortOption.allCases, id: \.self) { option in
+                        Button {
+                            sortOption = option
+                        } label: {
+                            Label(option.displayName, systemImage: option.iconName)
+                                .tag(option)
+                        }
+                    }
+                } label: {
+                    Label("Sort by", systemImage: sortOption.iconName)
+                        .labelStyle(.iconOnly)
+                }
+            }
+        }
     }
 }
 

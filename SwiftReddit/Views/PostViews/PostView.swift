@@ -45,7 +45,9 @@ struct PostView: View {
               PostMediaView(mediaType: post.mediaType)
           }
           
-          Divider()
+          if truncateSelfText {
+              Divider()
+          }
           
           // Post metadata
           HStack {

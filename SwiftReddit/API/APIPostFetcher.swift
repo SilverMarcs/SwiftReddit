@@ -58,7 +58,7 @@ extension RedditAPI {
                 }
             }
             
-            let listingResponse = try JSONDecoder().decode(ListingResponse.self, from: data)
+            let listingResponse = try JSONDecoder().decode(PostListingResponse.self, from: data)
             let posts = listingResponse.data.children.compactMap { child -> Post? in
                 guard child.kind == "t3" else { return nil }
                 return Post(from: child.data)

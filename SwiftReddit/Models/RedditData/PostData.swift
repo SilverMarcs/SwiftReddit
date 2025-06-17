@@ -185,22 +185,3 @@ struct MediaMetadataItemSize: Codable, Hashable {
     let y: Int
     let u: String?
 }
-
-// MARK: - Response Models for Posts
-
-struct ListingResponse: Codable {
-    let kind: String
-    let data: ListingData
-}
-
-struct ListingData: Codable {
-    let children: [ListingChild]
-    let after: String?
-    let before: String?
-}
-
-struct ListingChild: Codable {
-    let kind: String
-    let data: PostData
-}
-
