@@ -26,12 +26,12 @@ struct LinkMetadata: Hashable {
 
 enum MediaType: Hashable {
     case none
-    case image(GalleryImage?)
+    case image(imageURL: String?, dimensions: CGSize?)
     case gallery(images: [GalleryImage])
     case video(videoURL: String?, thumbnailURL: String?, dimensions: CGSize?)
     case youtube(videoID: String, thumbnailURL: String?, dimensions: CGSize?)
     case link(metadata: LinkMetadata)
-    case gif(GalleryImage?)
+    case gif(imageURL: String?, dimensions: CGSize?)
     
     var hasMedia: Bool {
         switch self {
@@ -43,8 +43,8 @@ enum MediaType: Hashable {
     var imageURL: String? {
         switch self {
         case .none: return nil
-        case .image(let galleryImage), .gif(let galleryImage):
-            return galleryImage?.url
+        case .image(let url, _), .gif(let url, _):
+            return url
         case .gallery(let images):
             return images.first?.url
         case .video(_, let thumbnailURL, _), .youtube(_, let thumbnailURL, _):
@@ -74,9 +74,7 @@ enum MediaType: Hashable {
     
     var dimensions: CGSize? {
         switch self {
-        case .image(let galleryImage), .gif(let galleryImage):
-            return galleryImage?.dimensions
-        case .video(_, _, let dimensions), .youtube(_, _, let dimensions):
+        case .image(_, let dimensions), .video(_, _, let dimensions), .youtube(_, _, let dimensions), .gif(_, let dimensions):
             return dimensions
         case .gallery(let images):
             return images.first?.dimensions

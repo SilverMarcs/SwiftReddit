@@ -9,25 +9,38 @@ import SwiftUI
 
 struct PostGalleryView: View {
     let images: [GalleryImage]
+    @State private var showFullscreen = false
+    @State private var selectedIndex = 0
     
     var body: some View {
         if images.count == 1 {
             singleImageView
         } else {
-            twoImageView
+            multipleImagesView
         }
     }
     
     // Single image layout
     private var singleImageView: some View {
         imageView(for: images[0])
+            .onTapGesture {
+                selectedIndex = 0
+                showFullscreen = true
+            }
+            .fullScreenCover(isPresented: $showFullscreen) {
+                ZoomableGalleryModal(images: images, initialIndex: selectedIndex)
+            }
     }
     
-    // Two image layout - side by side with potential overlay
-    private var twoImageView: some View {
-        HStack {
+    // Multiple images layout - always show only two images max
+    private var multipleImagesView: some View {
+        HStack(spacing: 4) {
             // First image
             imageView(for: images[0])
+                .onTapGesture {
+                    selectedIndex = 0
+                    showFullscreen = true
+                }
             
             // Second image with potential overlay
             ZStack {
@@ -43,10 +56,17 @@ struct PostGalleryView: View {
                         .foregroundColor(.white)
                 }
             }
+            .onTapGesture {
+                selectedIndex = 1
+                showFullscreen = true
+            }
+        }
+        .sheet(isPresented: $showFullscreen) {
+            ZoomableGalleryModal(images: images, initialIndex: selectedIndex)
         }
     }
     
-    // Image view implementation to replace PostImageView dependency
+    // Image view implementation
     private func imageView(for galleryImage: GalleryImage) -> some View {
         AsyncImage(url: URL(string: galleryImage.url)) { image in
             image
@@ -73,4 +93,42 @@ struct PostGalleryView: View {
         }
         return dimensions.width / dimensions.height
     }
+}
+
+struct ZoomableGalleryModal: View {
+    let images: [GalleryImage]
+    @State private var currentIndex: Int
+    @Environment(\.dismiss) private var dismiss
+    
+    init(images: [GalleryImage], initialIndex: Int) {
+        self.images = images
+        self._currentIndex = State(initialValue: initialIndex)
+    }
+    
+    var body: some View {
+        TabView(selection: $currentIndex) {
+            ForEach(Array(images.enumerated()), id: \.element) { index, galleryImage in
+                AsyncImage(url: URL(string: galleryImage.url)) { image in
+                    ZoomableSwiftImageView(image: image)
+                } placeholder: {
+                    ProgressView()
+                        .controlSize(.large)
+                }
+                .tag(index)
+            }
+        }
+        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
+    }
+}
+
+#Preview {
+    PostGalleryView(
+        images: [
+            GalleryImage(url: "https://picsum.photos/800/600", dimensions: CGSize(width: 800, height: 600)),
+            GalleryImage(url: "https://picsum.photos/600/800", dimensions: CGSize(width: 600, height: 800)),
+            GalleryImage(url: "https://picsum.photos/700/500", dimensions: CGSize(width: 700, height: 500)),
+            GalleryImage(url: "https://picsum.photos/900/700", dimensions: CGSize(width: 900, height: 700))
+        ]
+    )
+    .padding()
 }
