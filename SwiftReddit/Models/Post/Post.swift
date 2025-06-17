@@ -279,7 +279,8 @@ struct Post: Identifiable, Hashable, Equatable {
            domain.contains("redgifs") ||
            (domain.contains("imgur") && (url.contains("gif") || url.contains("gifv"))) {
             let (imageURL, dimensions) = extractHighQualityImageWithDimensions(from: data)
-            return .gif(imageURL: imageURL, dimensions: dimensions)
+            let galleryImage = imageURL != nil ? GalleryImage(url: imageURL!, dimensions: dimensions ?? CGSize.zero) : nil
+            return .gif(galleryImage)
         }
         
         // PRIORITY 6: Direct image formats
@@ -287,7 +288,8 @@ struct Post: Identifiable, Hashable, Equatable {
         if imageFormats.contains(where: { url.hasSuffix($0) }) || 
            domain.contains("i.redd.it") || domain.contains("i.imgur.com") {
             let (imageURL, dimensions) = extractHighQualityImageWithDimensions(from: data)
-            return .image(imageURL: imageURL, dimensions: dimensions)
+            let galleryImage = imageURL != nil ? GalleryImage(url: imageURL!, dimensions: dimensions ?? CGSize.zero) : nil
+            return .image(galleryImage)
         }
         
         // PRIORITY 7: Preview images (high quality conversion) - Better detection
@@ -302,7 +304,8 @@ struct Post: Identifiable, Hashable, Equatable {
                                   url.contains("i.redd.it") || url.contains("i.imgur.com")
                 
                 if isDirectImage {
-                    return .image(imageURL: imageURL, dimensions: dimensions)
+                    let galleryImage = GalleryImage(url: imageURL, dimensions: dimensions ?? CGSize.zero)
+                    return .image(galleryImage)
                 }
             }
         }

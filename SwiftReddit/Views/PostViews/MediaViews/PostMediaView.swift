@@ -18,8 +18,8 @@ struct PostMediaView: View {
       case .none:
         EmptyView()
         
-      case .image(let imageURL, let dimensions):
-        PostImageView(imageURL: imageURL, dimensions: dimensions)
+      case .image(let galleryImage):
+        PostImageView(imageURL: galleryImage?.url, dimensions: galleryImage?.dimensions)
         
       case .gallery(let images):
           PostGalleryView(images: images)
@@ -30,8 +30,8 @@ struct PostMediaView: View {
       case .youtube(let videoID, let thumbnailURL, let dimensions):
           PostYouTubeView(videoID: videoID, thumbnailURL: thumbnailURL, dimensions: dimensions)
         
-      case .gif(let imageURL, let dimensions):
-          PostGIFView(imageURL: imageURL, dimensions: dimensions)
+      case .gif(let galleryImage):
+          PostGIFView(imageURL: galleryImage?.url, dimensions: galleryImage?.dimensions)
         
       case .link(let metadata):
         PostLinkView(metadata: metadata)
@@ -41,7 +41,7 @@ struct PostMediaView: View {
 
 #Preview {
   VStack(spacing: 16) {
-      PostMediaView(mediaType: .image(imageURL: "https://example.com/image.jpg", dimensions: CGSize(width: 800, height: 600)))
+      PostMediaView(mediaType: .image(GalleryImage(url: "https://example.com/image.jpg", dimensions: CGSize(width: 800, height: 600))))
       
       PostMediaView(mediaType: .gallery(images: [
         GalleryImage(url: "https://example.com/image1.jpg", dimensions: CGSize(width: 800, height: 600)),
