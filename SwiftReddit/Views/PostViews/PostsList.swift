@@ -14,9 +14,10 @@ struct PostsList: View {
     @State private var isLoading = false
     @State private var after: String?
     @State private var selectedSort: SubListingSortOption = .best
+    @State private var navigationPath = NavigationPath()
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             List {
                 ForEach(posts) { post in
                     NavigationLink(value: post) {
@@ -53,15 +54,17 @@ struct PostsList: View {
                         .listRowSeparator(.hidden)
                 }
             }
-            .navigationDestination(for: Post.self) { post in
-                PostDetail(post: post)
-            }
-            .navigationDestination(for: LinkMetadata.self) { meta in
-                BasicWebview(linkMeta: meta)
-            }
             .listStyle(.plain)
             .navigationTitle("Home")
             .toolbarTitleDisplayMode(.inlineLarge)
+            .refreshable {
+                await refreshPosts()
+            }
+            .task {
+                guard !appPrefs.hasLaunched else { return }
+                await loadInitialPosts()
+                appPrefs.hasLaunched = true
+            }
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
@@ -82,15 +85,24 @@ struct PostsList: View {
                     }
                 }
             }
-            .refreshable {
-                await refreshPosts()
+            .navigationDestination(for: Post.self) { post in
+                PostDetail(post: post)
             }
-            .task {
-                guard !appPrefs.hasLaunched else { return }
-                await loadInitialPosts()
-                appPrefs.hasLaunched = true
+            .navigationDestination(for: LinkMetadata.self) { meta in
+                BasicWebview(linkMeta: meta)
             }
         }
+        .environment(\.openURL, OpenURLAction { url in
+            let linkMetadata = LinkMetadata(
+                url: url.absoluteString,
+                domain: url.host ?? "Unknown",
+                thumbnailURL: nil
+            )
+            
+            navigationPath.append(linkMetadata)
+            
+            return .handled
+        })
     }
     
     private func loadInitialPosts() async {

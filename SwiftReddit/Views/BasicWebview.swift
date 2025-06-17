@@ -22,6 +22,9 @@ struct BasicWebview: View {
                     let request = URLRequest(url: url)
                     page.load(request)
                 }
+                #if !os(macOS)
+                .toolbar(.hidden, for :.tabBar)
+                #endif
         }
     }
 }
