@@ -34,7 +34,9 @@ struct CommentView: View {
                     VStack(alignment: .leading, spacing: 0) {
                         commentContent
                         // Divider after the comment content, before children
-                        commentDivider
+                        if isExpanded {   
+                            commentDivider
+                        }
                     }
                 }
                 .disclosureGroupStyle(CommentDisclosureStyle())
@@ -148,7 +150,7 @@ struct CommentView: View {
     
     private var commentBody: some View {
         Text(LocalizedStringKey(comment.body.trimmingCharacters(in: .whitespacesAndNewlines)))
-            .font(.body)
+            .font(.callout)
             .fixedSize(horizontal: false, vertical: true)
     }
     
