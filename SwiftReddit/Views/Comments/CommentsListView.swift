@@ -35,18 +35,16 @@ struct CommentsListView: View {
     }
     
     private var loadingView: some View {
-        VStack(spacing: 16) {
-            ProgressView()
-                .controlSize(.large)
-        }
-        .frame(maxWidth: .infinity, minHeight: 200)
+        ProgressView()
+            .controlSize(.large)
+            .frame(maxWidth: .infinity, minHeight: 200)
     }
     
     private func errorView(_ message: String) -> some View {
         VStack(spacing: 16) {
             Text(message)
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
             
             Button("Try Again") {
@@ -63,7 +61,7 @@ struct CommentsListView: View {
     private var emptyView: some View {
         Text("No comments yet")
             .font(.headline)
-        .frame(maxWidth: .infinity, minHeight: 200)
+            .frame(maxWidth: .infinity, minHeight: 200)
     }
     
     @ViewBuilder
@@ -71,17 +69,13 @@ struct CommentsListView: View {
         Text("Comments")
             .font(.title3)
             .fontWeight(.bold)
-            .padding()
+            .padding(.leading)
         
         ForEach(comments) { comment in
-            VStack(spacing: 0) {
-                CommentView(comment: comment) { updatedComment in
-                    updateComment(updatedComment)
-                }
-                
-                Divider()
-                    .padding(.leading, comment.indentationWidth + 12)
-            }
+            CommentView(comment: comment, onToggleCollapse: { updatedComment in
+                updateComment(updatedComment)
+            }, isTopLevel: true)
+            .padding(.horizontal, 5)
         }
     }
     

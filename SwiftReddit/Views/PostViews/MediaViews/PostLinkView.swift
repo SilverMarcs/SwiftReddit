@@ -15,7 +15,7 @@ struct PostLinkView: View {
         Image(systemName: "link")
             .imageScale(.large)
             .fontWeight(.bold)
-          .foregroundStyle(.secondary)
+            .foregroundStyle(.secondary)
         
         Text(metadata.domain.lowercased())
           .font(.subheadline)

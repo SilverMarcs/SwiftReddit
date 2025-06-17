@@ -13,11 +13,8 @@ struct PostDetail: View {
     
     var body: some View {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
+            LazyVStack(alignment: .leading) {
                 PostView(post: post, showBackground: false, truncateSelfText: false)
-                
-                Divider()
-                    .padding(.horizontal)
                 
                 // Comments
                 CommentsListView(post: post, sortOption: sortOption)
