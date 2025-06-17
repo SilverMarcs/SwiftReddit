@@ -126,6 +126,13 @@ struct Comment: Identifiable, Hashable {
         newComment.isCollapsed.toggle()
         return newComment
     }
+    
+    /// Set collapsed state and return new instance
+    func withCollapsedState(_ collapsed: Bool) -> Comment {
+        var newComment = self
+        newComment.isCollapsed = collapsed
+        return newComment
+    }
 }
 
 /// Comment sort options

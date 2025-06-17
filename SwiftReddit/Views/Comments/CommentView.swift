@@ -11,32 +11,49 @@ struct CommentView: View {
     @State var comment: Comment
     let onToggleCollapse: (Comment) -> Void
     let isTopLevel: Bool
+    @State private var isExpanded: Bool
     
     private let maxDepth = 8 // Limit visual depth to prevent excessive indentation
     
+    init(comment: Comment, onToggleCollapse: @escaping (Comment) -> Void, isTopLevel: Bool) {
+        self.comment = comment
+        self.onToggleCollapse = onToggleCollapse
+        self.isTopLevel = isTopLevel
+        self._isExpanded = State(initialValue: !comment.isCollapsed)
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Comment content
-            commentContent
-            
-            // Children comments (if not collapsed)
-            if !comment.isCollapsed && comment.hasChildren {
-                ForEach(comment.children, id: \.id) { child in
-                    CommentView(comment: child, onToggleCollapse: onToggleCollapse, isTopLevel: false)
-                }
-            }
-        }
-        .opacity(comment.isCollapsed ? 0.5 : 1.0)
-        .contentShape(.rect)
-        .background(isTopLevel ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 12))
-        .onTapGesture {
             if comment.hasChildren {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    comment = comment.toggleCollapsed()
-                    onToggleCollapse(comment)
+                DisclosureGroup(isExpanded: $isExpanded) {
+                    // Children comments
+                    ForEach(comment.children, id: \.id) { child in
+                        CommentView(comment: child, onToggleCollapse: onToggleCollapse, isTopLevel: false)
+                    }
+                } label: {
+                    VStack(alignment: .leading, spacing: 0) {
+                        commentContent
+                        // Divider after the comment content, before children
+                        commentDivider
+                    }
+                }
+                .disclosureGroupStyle(CommentDisclosureStyle())
+                .onChange(of: isExpanded) { _, newValue in
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        comment = comment.withCollapsedState(!newValue)
+                        onToggleCollapse(comment)
+                    }
+                }
+            } else {
+                // Comment without children - just show content
+                VStack(alignment: .leading, spacing: 0) {
+                    commentContent
+                    // Divider below comment content
+                    commentDivider
                 }
             }
         }
+        .background(isTopLevel ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 12))
     }
     
     private var commentContent: some View {
@@ -44,16 +61,20 @@ struct CommentView: View {
             // Comment header
             commentHeader
             
-            // Comment body (if not collapsed)
-            if !comment.isCollapsed {
+            // Comment body
+            if isExpanded {
                 commentBody
-            } else if comment.hasChildren {
+            }
+            // Show collapsed indicator when comment has children but is not expanded
+            if comment.hasChildren && !isExpanded {
                 collapsedIndicator
             }
         }
+        .contentShape(.rect)
         .padding(.leading, comment.depth < maxDepth ? comment.indentationWidth : CGFloat(maxDepth * 12))
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
+        .opacity(!isExpanded && comment.hasChildren ? 0.5 : 1.0)
     }
     
     private var commentHeader: some View {
@@ -120,6 +141,7 @@ struct CommentView: View {
                 Image(systemName: "arrow.down")
                     .font(.subheadline)
             }
+            .id(comment.id)
             .padding(.horizontal, 6)
             .padding(.vertical, 4)
             .background(.background.tertiary, in: .rect(cornerRadius: 14))
@@ -139,5 +161,47 @@ struct CommentView: View {
             .font(.caption)
             .foregroundStyle(.secondary)
             .italic()
+    }
+    
+    private var commentDivider: some View {
+        Divider()
+            .padding(.leading, comment.depth < maxDepth ? comment.indentationWidth + 12 : CGFloat(maxDepth * 12) + 12)
+    }
+}
+
+// Custom DisclosureGroup style for comments
+struct CommentDisclosureStyle: DisclosureGroupStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Clickable comment content with visual feedback
+            Button {
+//                withAnimation(.easeInOut(duration: 0.3)) {
+                withAnimation {
+                    configuration.isExpanded.toggle()
+                }
+            } label: {
+//                HStack {
+                    configuration.label
+//                    Spacer()
+                    // Show chevron indicator for expandable comments
+//                    Image(systemName: configuration.isExpanded ? "chevron.down" : "chevron.right")
+//                        .font(.caption)
+//                        .foregroundStyle(.secondary)
+//                        .animation(.easeInOut(duration: 0.2), value: configuration.isExpanded)
+//                }
+            }
+            .buttonStyle(.plain)
+            .contentShape(.rect)
+            .accessibilityHint(configuration.isExpanded ? "Tap to collapse replies" : "Tap to expand replies")
+            
+            // Children comments (content) with smooth animation
+            if configuration.isExpanded {
+                configuration.content
+//                    .transition(.asymmetric(
+//                        insertion: .opacity.combined(with: .move(edge: .top)),
+//                        removal: .opacity.combined(with: .move(edge: .top))
+//                    ))
+            }
+        }
     }
 }
