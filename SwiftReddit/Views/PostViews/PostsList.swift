@@ -59,7 +59,7 @@ struct PostsList: View {
             .navigationTitle("Home")
             .toolbarTitleDisplayMode(.inlineLarge)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .primaryAction) {
                     Menu {
                         ForEach(SubListingSortOption.allCases) { sort in
                             Button {
