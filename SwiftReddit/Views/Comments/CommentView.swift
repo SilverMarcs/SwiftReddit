@@ -49,7 +49,7 @@ struct CommentView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     commentContent
                     // Divider below comment content
-                    commentDivider
+//                    commentDivider
                 }
             }
         }
