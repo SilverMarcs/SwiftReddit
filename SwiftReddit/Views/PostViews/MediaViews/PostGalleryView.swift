@@ -8,32 +8,46 @@
 import SwiftUI
 
 struct PostGalleryView: View {
-  let count: Int
-  let imageURL: String?
-  
-  var body: some View {
-    ZStack {
-        PostImageView(imageURL: imageURL)
-      
-      VStack {
-        Spacer()
-        HStack {
-          Spacer()
-          HStack(spacing: 4) {
-            Image(systemName: "rectangle.grid.3x2")
-              .font(.caption)
-            Text("\(count)")
-              .font(.caption)
-              .fontWeight(.medium)
-          }
-          .foregroundColor(.white)
-          .padding(.horizontal, 8)
-          .padding(.vertical, 4)
-          .background(Color.black.opacity(0.7))
-          .cornerRadius(12)
-          .padding(8)
+    let images: [GalleryImage]
+    
+    var body: some View {
+        if images.count == 1 {
+            singleImageView
+        } else {
+            twoImageView
         }
-      }
     }
-  }
+    
+    // Single image layout
+    private var singleImageView: some View {
+        PostImageView(imageURL: images[0].url, dimensions: images[0].dimensions)
+    }
+    
+    // Two image layout - side by side with potential overlay
+    private var twoImageView: some View {
+        HStack {
+            // First image
+            PostImageView(imageURL: images[0].url, dimensions: images[0].dimensions)
+            
+            // Second image with potential overlay
+            ZStack {
+                PostImageView(imageURL: images[1].url, dimensions: images[1].dimensions)
+                
+                // Show remaining count if more than 2 images
+                if images.count > 2 {
+                    Color.black.opacity(0.6)
+                    
+                    VStack {
+                        Image(systemName: "photo.stack")
+                            .font(.title2)
+                            .foregroundColor(.white)
+                        Text("+\(images.count - 2)")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                    }
+                }
+            }
+        }
+    }
 }

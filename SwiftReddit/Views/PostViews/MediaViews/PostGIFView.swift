@@ -9,10 +9,11 @@ import SwiftUI
 
 struct PostGIFView: View {
   let imageURL: String?
+  let dimensions: CGSize?
   
   var body: some View {
     ZStack {
-        PostImageView(imageURL: imageURL)
+        PostImageView(imageURL: imageURL, dimensions: dimensions)
       
       // Always show GIF badge
       VStack {

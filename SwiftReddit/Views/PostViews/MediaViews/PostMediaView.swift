@@ -18,34 +18,42 @@ struct PostMediaView: View {
       case .none:
         EmptyView()
         
-      case .image(let imageURL):
-        PostImageView(imageURL: imageURL)
+      case .image(let imageURL, let dimensions):
+        PostImageView(imageURL: imageURL, dimensions: dimensions)
         
-      case .gallery(let count, let imageURL):
-          PostGalleryView(count: count, imageURL: imageURL)
+      case .gallery(let images):
+          PostGalleryView(images: images)
         
-      case .video(let thumbnailURL):
-          PostVideoView(thumbnailURL: thumbnailURL)
+      case .video(let videoURL, let thumbnailURL, let dimensions):
+          PostVideoView(videoURL: videoURL, thumbnailURL: thumbnailURL, dimensions: dimensions)
         
-      case .youtube(let thumbnailURL):
-          PostYouTubeView(thumbnailURL: thumbnailURL)
+      case .youtube(let videoID, let thumbnailURL, let dimensions):
+          PostYouTubeView(videoID: videoID, thumbnailURL: thumbnailURL, dimensions: dimensions)
         
-      case .gif(let imageURL):
-          PostGIFView(imageURL: imageURL)
+      case .gif(let imageURL, let dimensions):
+          PostGIFView(imageURL: imageURL, dimensions: dimensions)
         
-      case .link(let thumbnailURL):
-        PostLinkView(thumbnailURL: thumbnailURL)
+      case .link(let metadata):
+        PostLinkView(metadata: metadata)
       }
     }
 }
 
 #Preview {
   VStack(spacing: 16) {
-      PostMediaView(mediaType: .image(imageURL: "https://example.com/image.jpg"))
-      PostMediaView(mediaType: .gallery(count: 5, imageURL: "https://example.com/image.jpg"))
-      PostMediaView(mediaType: .video(thumbnailURL: "https://example.com/thumb.jpg"))
-      PostMediaView(mediaType: .youtube(thumbnailURL: nil))
-      PostMediaView(mediaType: .link(thumbnailURL: nil))
+      PostMediaView(mediaType: .image(imageURL: "https://example.com/image.jpg", dimensions: CGSize(width: 800, height: 600)))
+      
+      PostMediaView(mediaType: .gallery(images: [
+        GalleryImage(url: "https://example.com/image1.jpg", dimensions: CGSize(width: 800, height: 600)),
+        GalleryImage(url: "https://example.com/image2.jpg", dimensions: CGSize(width: 600, height: 800)),
+        GalleryImage(url: "https://example.com/image3.jpg", dimensions: CGSize(width: 800, height: 600)),
+        GalleryImage(url: "https://example.com/image4.jpg", dimensions: CGSize(width: 800, height: 600)),
+        GalleryImage(url: "https://example.com/image5.jpg", dimensions: CGSize(width: 800, height: 600))
+      ]))
+      
+      PostMediaView(mediaType: .video(videoURL: "https://example.com/video.mp4", thumbnailURL: "https://example.com/thumb.jpg", dimensions: CGSize(width: 1280, height: 720)))
+      PostMediaView(mediaType: .youtube(videoID: "dQw4w9WgXcQ", thumbnailURL: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg", dimensions: CGSize(width: 1280, height: 720)))
+      PostMediaView(mediaType: .link(metadata: LinkMetadata(url: "https://developer.apple.com/swiftui", domain: "developer.apple.com", thumbnailURL: "https://example.com/thumb.jpg")))
   }
   .padding()
 }

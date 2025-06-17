@@ -8,11 +8,13 @@
 import SwiftUI
 
 struct PostVideoView: View {
+  let videoURL: String?
   let thumbnailURL: String?
+  let dimensions: CGSize?
   
   var body: some View {
     ZStack {
-        PostImageView(imageURL: thumbnailURL)
+        PostImageView(imageURL: thumbnailURL, dimensions: dimensions)
       
       // Play button overlay - always show
       Circle()
@@ -24,6 +26,12 @@ struct PostVideoView: View {
             .foregroundColor(.white)
             .offset(x: 2) // Slight offset to center visually
         )
+    }
+    .onTapGesture {
+      // TODO: Handle video playback with videoURL
+      if let videoURL = videoURL {
+        print("Playing video: \(videoURL)")
+      }
     }
   }
 }

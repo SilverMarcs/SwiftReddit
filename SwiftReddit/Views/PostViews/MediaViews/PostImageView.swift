@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PostImageView: View {
   let imageURL: String?
+  let dimensions: CGSize?
   
   var body: some View {
     ZStack {
@@ -20,6 +21,7 @@ struct PostImageView: View {
         } placeholder: {
           Rectangle()
             .fill(Color.gray.opacity(0.3))
+            .aspectRatio(aspectRatio, contentMode: .fit)
             .overlay(
               ProgressView()
                 .scaleEffect(0.8)
@@ -28,6 +30,7 @@ struct PostImageView: View {
       } else {
         Rectangle()
           .fill(Color.gray.opacity(0.3))
+          .aspectRatio(aspectRatio, contentMode: .fit)
           .overlay(
             Image(systemName: "photo")
               .font(.title2)
@@ -38,5 +41,13 @@ struct PostImageView: View {
     .frame(maxHeight: 500)
     .cornerRadius(12)
     .clipped()
+  }
+  
+  private var aspectRatio: CGFloat {
+    guard let dimensions = dimensions,
+          dimensions.width > 0 && dimensions.height > 0 else {
+      return 16/9 // Default aspect ratio
+    }
+    return dimensions.width / dimensions.height
   }
 }
