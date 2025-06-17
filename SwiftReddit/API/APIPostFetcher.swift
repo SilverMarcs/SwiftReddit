@@ -32,7 +32,8 @@ extension RedditAPI {
         var components = URLComponents(string: urlString)
         components?.queryItems = [
             URLQueryItem(name: "limit", value: String(limit)),
-            URLQueryItem(name: "raw_json", value: "1")
+            URLQueryItem(name: "raw_json", value: "1"),
+            URLQueryItem(name: "sr_detail", value: "1")
         ]
         
         if let after = after {

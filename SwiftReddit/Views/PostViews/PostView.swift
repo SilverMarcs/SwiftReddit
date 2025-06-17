@@ -49,15 +49,38 @@ struct PostView: View {
           
           // Post metadata
           HStack {
-              // Avatar logo or subreddit logo TODO:
-              Image(systemName: "person.crop.circle.fill")
-                    .font(.title)
-                    .foregroundStyle(.secondary)
+              // Subreddit icon
+              if let iconURL = post.subredditIconURL, let url = URL(string: iconURL) {
+                  AsyncImage(url: url) { image in
+                      image
+                          .resizable()
+                          .aspectRatio(contentMode: .fill)
+                  } placeholder: {
+                      Image(systemName: "person.crop.circle.fill")
+                          .foregroundStyle(.secondary)
+                  }
+                  .frame(width: 32, height: 32)
+                  .clipShape(Circle())
+              } else {
+                  Image(systemName: "person.crop.circle.fill")
+                      .font(.title)
+                      .foregroundStyle(.secondary)
+              }
               
               VStack(alignment: .leading, spacing: 2) {
-                  Text(post.subredditNamePrefixed)
-                      .font(.caption)
-                      .foregroundStyle(.link)
+                  HStack(spacing: 4) {
+                      Text(post.subredditNamePrefixed)
+                          .font(.caption)
+                          .foregroundStyle(.link)
+                      
+//                      Text("•")
+//                          .font(.caption)
+//                          .foregroundStyle(.secondary)
+//                      
+//                      Text("u/\(post.author)")
+//                          .font(.caption)
+//                          .foregroundStyle(.secondary)
+                  }
                   
                   HStack(spacing: 10) {
                         HStack(spacing: 4) {

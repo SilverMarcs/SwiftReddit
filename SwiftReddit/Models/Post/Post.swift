@@ -89,6 +89,9 @@ struct Post: Identifiable, Hashable, Equatable {
     let winstonSeen: Bool?
     let winstonHidden: Bool?
     
+    // Subreddit details
+    let subredditIconURL: String?
+    
     //  media properties
     let mediaType: MediaType
     
@@ -176,6 +179,9 @@ struct Post: Identifiable, Hashable, Equatable {
         self.isGallery = postData.is_gallery ?? false
         self.winstonSeen = postData.winstonSeen ?? false
         self.winstonHidden = postData.winstonHidden ?? false
+        
+        // Extract subreddit icon URL
+        self.subredditIconURL = Self.extractSubredditIcon(from: postData)
         
         // Extract media information with high-quality image support
         self.mediaType = Self.extractMedia(from: postData)
@@ -578,5 +584,25 @@ struct Post: Identifiable, Hashable, Equatable {
     /// Get link metadata for rich link previews
     var linkMetadata: LinkMetadata? {
         return mediaType.linkMetadata
+    }
+    
+    /// Extract subreddit icon URL from PostData
+    private static func extractSubredditIcon(from data: PostData) -> String? {
+        // Check if subreddit details are available
+        guard let srDetail = data.sr_detail else { return nil }
+        
+        // Prefer community_icon over icon_img
+        if let communityIcon = srDetail.community_icon, !communityIcon.isEmpty {
+            // Remove query parameters from the URL for a cleaner icon
+            let cleanURL = communityIcon.components(separatedBy: "?").first ?? communityIcon
+            return cleanURL
+        }
+        
+        if let iconImg = srDetail.icon_img, !iconImg.isEmpty {
+            let cleanURL = iconImg.components(separatedBy: "?").first ?? iconImg
+            return cleanURL
+        }
+        
+        return nil
     }
 }

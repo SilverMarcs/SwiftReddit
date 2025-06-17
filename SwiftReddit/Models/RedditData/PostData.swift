@@ -88,6 +88,9 @@ struct PostData: Identifiable, Codable, Hashable {
     let winstonSeen: Bool?
     let winstonHidden: Bool?
     
+    // Subreddit details (when sr_detail=1)
+    let sr_detail: SubredditDetail?
+    
     // Media-related fields for high-quality images
     let preview: Preview?
     let media: Media?
@@ -184,4 +187,16 @@ struct MediaMetadataItemSize: Codable, Hashable {
     let x: Int
     let y: Int
     let u: String?
+}
+
+// MARK: - Subreddit Detail Support
+
+struct SubredditDetail: Codable, Hashable {
+    let community_icon: String?
+    let icon_img: String?
+    let display_name: String?
+    let display_name_prefixed: String?
+    let public_description: String?
+    let subscribers: Int?
+    let over18: Bool?
 }

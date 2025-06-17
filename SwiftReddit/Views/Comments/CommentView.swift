@@ -46,11 +46,7 @@ struct CommentView: View {
                 }
             } else {
                 // Comment without children - just show content
-                VStack(alignment: .leading, spacing: 0) {
-                    commentContent
-                    // Divider below comment content
-//                    commentDivider
-                }
+                commentContent
             }
         }
         .background(isTopLevel ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 12))
