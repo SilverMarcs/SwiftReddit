@@ -62,7 +62,19 @@ struct PostGalleryView: View {
             }
         }
         .sheet(isPresented: $showFullscreen) {
-            ZoomableGalleryModal(images: images, initialIndex: selectedIndex)
+            NavigationStack {
+                ZoomableGalleryModal(images: images, initialIndex: selectedIndex)
+                    .toolbar {
+                         ToolbarItem(placement: .primaryAction) {
+                             Button {
+                                 showFullscreen = false
+                             } label: {
+                                 Image(systemName: "xmark")
+                             }
+                         }
+                     }
+            }
+   
         }
     }
     
@@ -98,7 +110,6 @@ struct PostGalleryView: View {
 struct ZoomableGalleryModal: View {
     let images: [GalleryImage]
     @State private var currentIndex: Int
-    @Environment(\.dismiss) private var dismiss
     
     init(images: [GalleryImage], initialIndex: Int) {
         self.images = images
@@ -109,7 +120,7 @@ struct ZoomableGalleryModal: View {
         TabView(selection: $currentIndex) {
             ForEach(Array(images.enumerated()), id: \.element) { index, galleryImage in
                 AsyncImage(url: URL(string: galleryImage.url)) { image in
-                    ZoomableSwiftImageView(image: image)
+                    ZoomableImage(image: image)
                 } placeholder: {
                     ProgressView()
                         .controlSize(.large)

@@ -34,7 +34,18 @@ struct PostImageView: View {
             .cornerRadius(12)
             .clipped()
             .sheet(isPresented: $showFullscreen) {
-                ZoomableImageModal(imageURL: imageURL)
+                NavigationStack {
+                    ZoomableImageModal(imageURL: imageURL)
+                        .toolbar {
+                            ToolbarItem(placement: .primaryAction) {
+                                Button {
+                                    showFullscreen = false
+                                } label: {
+                                    Image(systemName: "xmark")
+                                }
+                            }
+                        }
+                }
             }
         }
     }
@@ -50,12 +61,11 @@ struct PostImageView: View {
 
 struct ZoomableImageModal: View {
     let imageURL: String
-    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         if let url = URL(string: imageURL) {
             AsyncImage(url: url) { image in
-                ZoomableSwiftImageView(image: image)
+                ZoomableImage(image: image)
             } placeholder: {
                 ProgressView()
                     .scaleEffect(1.5)

@@ -154,6 +154,7 @@ struct CommentView: View {
     private var commentBody: some View {
         Text(LocalizedStringKey(comment.body.trimmingCharacters(in: .whitespacesAndNewlines)))
             .font(.callout)
+            .opacity(0.85)
             .fixedSize(horizontal: false, vertical: true)
     }
     

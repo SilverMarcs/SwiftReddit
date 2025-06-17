@@ -2,14 +2,12 @@
 //  ContentView.swift
 //  SwiftReddit
 //
-//  Created by Zabir Raihan on 18/06/2025.
+//  Created by IODevBlue on 18/06/2025.
 //
-
-
 
 import SwiftUI
 
-public struct ZoomableSwiftImageView: View {
+public struct ZoomableImage: View {
 
 	private let minScale: CGFloat = 1.0
 	
@@ -157,7 +155,7 @@ public struct ZoomableSwiftImageView: View {
 }
 
 #Preview {
-	ZoomableSwiftImageView(
+	ZoomableImage(
 		image:Image(systemName: "circle")
 	)
 	.frame(width: 300, height: 300)
