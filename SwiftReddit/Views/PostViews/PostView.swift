@@ -8,11 +8,8 @@
 import SwiftUI
 
 struct PostView: View {
-    @Environment(AppConfig.self) private var config
-    
   let post: Post
-  var showBackground: Bool = true
-  var truncateSelfText: Bool = true
+  var isCompact: Bool = true
   
   var body: some View {
       VStack(alignment: .leading, spacing: 8) {
@@ -38,8 +35,8 @@ struct PostView: View {
             if !post.selftext.isEmpty {
                 Text(LocalizedStringKey(post.selftext))
                     .font(.subheadline)
-                    .foregroundStyle(truncateSelfText ? .secondary : .primary)
-                    .lineLimit(truncateSelfText ? 3 : nil)
+                    .foregroundStyle(isCompact ? .secondary : .primary)
+                    .lineLimit(isCompact ? 3 : nil)
         }
           
           // Media component
@@ -94,8 +91,8 @@ struct PostView: View {
                 .fontWeight(.semibold)
           }
       }
-      .padding(.horizontal, truncateSelfText ? 16 : nil)
-      .padding(.vertical, truncateSelfText ? 12 : nil)
-      .background(showBackground ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 16))
+      .padding(.horizontal, isCompact ? 16 : nil)
+      .padding(.vertical, isCompact ? 12 : nil)
+      .background(isCompact ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 16))
   }
 }

@@ -14,7 +14,7 @@ struct PostDetail: View {
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading) {
-                PostView(post: post, showBackground: false, truncateSelfText: false)
+                PostView(post: post, isCompact: false)
                 
                 CommentsListView(post: post, sortOption: sortOption)
             }

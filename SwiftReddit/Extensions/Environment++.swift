@@ -8,6 +8,6 @@
 import Foundation
 import SwiftUI
 
-//extension EnvironmentValues {
-//    @Entry var 
-//}
+extension EnvironmentValues {
+    @Entry var isReplying = false
+}
