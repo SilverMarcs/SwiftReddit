@@ -16,27 +16,8 @@ struct PostsNavigationView: View {
         
         NavigationStack(path: $config.path) {
             PostsList(subreddit: initialSubreddit)
-                .navigationDestination(for: Post.self) { post in
-                    PostDetail(post: post)
-                }
-                .navigationDestination(for: PostListingId.self) { subreddit in
-                    PostsList(subreddit: subreddit)
-                }
-                .navigationDestination(for: LinkMetadata.self) { meta in
-                    BasicWebview(linkMeta: meta)
-                }
+                .navigationDestinations()
         }
-        .environment(\.openURL, OpenURLAction { url in
-            let linkMetadata = LinkMetadata(
-                url: url.absoluteString,
-                domain: url.host ?? "Unknown",
-                thumbnailURL: nil
-            )
-            
-            config.path.append(linkMetadata)
-            
-            return .handled
-        })
     }
 }
 
