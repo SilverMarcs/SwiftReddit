@@ -24,7 +24,7 @@ struct LinkMetadata: Hashable {
     }
 }
 
-enum MediaType: Hashable {
+indirect enum MediaType: Hashable {
     case none
     case image(imageURL: String?, dimensions: CGSize?)
     case gallery(images: [GalleryImage])
@@ -32,6 +32,7 @@ enum MediaType: Hashable {
     case youtube(videoID: String, thumbnailURL: String?, dimensions: CGSize?)
     case link(metadata: LinkMetadata)
     case gif(imageURL: String?, dimensions: CGSize?)
+    case repost(originalPost: Post)
     
     var hasMedia: Bool {
         switch self {

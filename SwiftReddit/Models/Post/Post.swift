@@ -76,6 +76,13 @@ struct Post: Identifiable, Hashable, Equatable {
         // Skip self posts
         guard !data.is_self else { return .none }
         
+        // PRIORITY 0: Check for crosspost/repost first
+        if let crosspostParentList = data.crosspost_parent_list,
+           let originalPostData = crosspostParentList.first {
+            let originalPost = Post(from: originalPostData)
+            return .repost(originalPost: originalPost)
+        }
+        
         let url = data.url
         let domain = data.domain
         

@@ -18,9 +18,6 @@ struct CommentsListView: View {
         Group {
             if isLoading {
                 loadingView
-                    .task {
-                        await loadComments()
-                    }
             } else if let errorMessage = errorMessage {
                 errorView(errorMessage)
             } else if comments.isEmpty {
@@ -29,7 +26,9 @@ struct CommentsListView: View {
                 commentsList
             }
         }
-
+        .task {
+            await loadComments()
+        }
         .task(id: sortOption) {
             await loadComments()
         }

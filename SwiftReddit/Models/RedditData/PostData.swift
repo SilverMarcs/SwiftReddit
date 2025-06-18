@@ -86,6 +86,9 @@ struct PostData: Identifiable, Codable, Hashable {
     let is_video: Bool?
     let is_gallery: Bool?
 
+    // Crosspost/Repost support
+    let crosspost_parent_list: [PostData]?
+
     // Subreddit details (when sr_detail=1)
     let sr_detail: SubredditDetail?
     

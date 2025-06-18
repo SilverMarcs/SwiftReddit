@@ -145,7 +145,7 @@ struct CommentView: View {
             .id(comment.id)
             .padding(.horizontal, 6)
             .padding(.vertical, 4)
-            .background(.background.tertiary, in: .rect(cornerRadius: 14))
+            .background(.background.secondary, in: .rect(cornerRadius: 14))
             .foregroundStyle(.secondary)
             .fontWeight(.semibold)
         }
@@ -168,42 +168,5 @@ struct CommentView: View {
     private var commentDivider: some View {
         Divider()
             .padding(.leading, comment.depth < maxDepth ? comment.indentationWidth + 12 : CGFloat(maxDepth * 12) + 12)
-    }
-}
-
-// Custom DisclosureGroup style for comments
-struct CommentDisclosureStyle: DisclosureGroupStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Clickable comment content with visual feedback
-            Button {
-//                withAnimation(.easeInOut(duration: 0.3)) {
-                withAnimation {
-                    configuration.isExpanded.toggle()
-                }
-            } label: {
-//                HStack {
-                    configuration.label
-//                    Spacer()
-                    // Show chevron indicator for expandable comments
-//                    Image(systemName: configuration.isExpanded ? "chevron.down" : "chevron.right")
-//                        .font(.caption)
-//                        .foregroundStyle(.secondary)
-//                        .animation(.easeInOut(duration: 0.2), value: configuration.isExpanded)
-//                }
-            }
-            .buttonStyle(.plain)
-            .contentShape(.rect)
-            .accessibilityHint(configuration.isExpanded ? "Tap to collapse replies" : "Tap to expand replies")
-            
-            // Children comments (content) with smooth animation
-            if configuration.isExpanded {
-                configuration.content
-//                    .transition(.asymmetric(
-//                        insertion: .opacity.combined(with: .move(edge: .top)),
-//                        removal: .opacity.combined(with: .move(edge: .top))
-//                    ))
-            }
-        }
     }
 }

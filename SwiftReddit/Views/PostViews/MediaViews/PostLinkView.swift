@@ -17,12 +17,12 @@ struct PostLinkView: View {
           Image(systemName: "link")
               .imageScale(.large)
               .fontWeight(.bold)
-              .foregroundColor(.secondary)
+              .foregroundStyle(.secondary)
           
           Text(metadata.domain.lowercased())
             .font(.subheadline)
             .fontWeight(.semibold)
-            .foregroundColor(.secondary)
+            .foregroundStyle(.secondary)
           
           Spacer()
           
@@ -46,8 +46,14 @@ struct PostLinkView: View {
           }
       }
       .padding(10)
-      .background(.background.tertiary)
-      .cornerRadius(12)
+      .background(
+          RoundedRectangle(
+              cornerRadius: 12,
+          )
+          .fill(.background.secondary)
+//          .stroke(.separator, lineWidth: 1)
+
+      )
     }
   }
 }
