@@ -85,9 +85,7 @@ struct PostData: Identifiable, Codable, Hashable {
     let discussion_type: String?
     let is_video: Bool?
     let is_gallery: Bool?
-    let winstonSeen: Bool?
-    let winstonHidden: Bool?
-    
+
     // Subreddit details (when sr_detail=1)
     let sr_detail: SubredditDetail?
     

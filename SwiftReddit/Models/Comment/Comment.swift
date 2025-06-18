@@ -13,26 +13,16 @@ struct Comment: Identifiable, Hashable {
     let id: String
     let author: String
     let body: String
-    let bodyHTML: String
     let created: Double
     let score: Int
     let ups: Int
     let depth: Int
-    let permalink: String
     let parentID: String?
-    let subreddit: String
-    let fullname: String
     let isSubmitter: Bool
     let authorFlairText: String?
     let authorFlairBackgroundColor: String?
-    let saved: Bool
-    let archived: Bool
     let distinguished: String?
     let stickied: Bool
-    let gilded: Int
-    let totalAwardsReceived: Int
-    let locked: Bool
-    
     // UI state
     var isCollapsed: Bool = false
     
@@ -43,26 +33,17 @@ struct Comment: Identifiable, Hashable {
         self.id = commentData.id
         self.author = commentData.author
         self.body = commentData.body
-        self.bodyHTML = commentData.body_html
         self.created = commentData.created_utc
         self.score = commentData.score ?? commentData.ups ?? 0
         self.ups = commentData.ups ?? 0
         self.depth = commentData.depth ?? 0
-        self.permalink = commentData.permalink ?? ""
         self.parentID = commentData.parent_id
-        self.subreddit = commentData.subreddit ?? ""
-        self.fullname = commentData.name
         self.isSubmitter = commentData.is_submitter ?? false
         self.authorFlairText = commentData.author_flair_text
         self.authorFlairBackgroundColor = commentData.author_flair_background_color
-        self.saved = commentData.saved
-        self.archived = commentData.archived
         self.distinguished = commentData.distinguished
         self.stickied = commentData.stickied ?? false
-        self.gilded = commentData.gilded ?? 0
-        self.totalAwardsReceived = commentData.total_awards_received ?? 0
-        self.locked = commentData.locked ?? false
-        
+
         // Process nested replies
         if case .listing(let listing) = commentData.replies {
             self.children = listing.data.children.compactMap { child in
@@ -132,43 +113,5 @@ struct Comment: Identifiable, Hashable {
         var newComment = self
         newComment.isCollapsed = collapsed
         return newComment
-    }
-}
-
-/// Comment sort options
-enum CommentSortOption: String, CaseIterable {
-    case confidence = "confidence"
-    case top = "top"
-    case new = "new"
-    case controversial = "controversial"
-    case old = "old"
-    case random = "random"
-    case qa = "qa"
-    case live = "live"
-    
-    var displayName: String {
-        switch self {
-        case .confidence: return "Best"
-        case .top: return "Top"
-        case .new: return "New"
-        case .controversial: return "Controversial"
-        case .old: return "Old"
-        case .random: return "Random"
-        case .qa: return "Q&A"
-        case .live: return "Live"
-        }
-    }
-    
-    var iconName: String {
-        switch self {
-        case .confidence: return "flame"
-        case .top: return "trophy"
-        case .new: return "newspaper"
-        case .controversial: return "figure.fencing"
-        case .old: return "clock.arrow.circlepath"
-        case .random: return "dice"
-        case .qa: return "bubble.left.and.bubble.right"
-        case .live: return "dot.radiowaves.left.and.right"
-        }
     }
 }
