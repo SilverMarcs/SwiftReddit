@@ -19,6 +19,11 @@ struct ContentView: View {
             Tab("Settings", systemImage: "gearshape.fill", value: .settings) {
                 SettingsView()
             }
+            
+            Tab(value: .search, role: .search) {
+                SearchTab()
+            }
+                
         }
         #if !os(macOS)
         .tabBarMinimizeBehavior(.onScrollDown)

@@ -51,35 +51,11 @@ struct PostView: View {
           
           // Post metadata
           HStack {
-              Button {
-                  config.path.append(Subreddit(id: post.subreddit))
-              } label: {
-                  if let iconURL = post.subredditIconURL, let url = URL(string: iconURL) {
-                      AsyncImage(url: url) { image in
-                          image
-                              .resizable()
-                              .aspectRatio(contentMode: .fill)
-                      } placeholder: {
-                          Image(systemName: "r.circle")
-                              .foregroundStyle(.secondary)
-                      }
-                      .frame(width: 32, height: 32)
-                      .clipShape(Circle())
-                  } else {
-                      Image(systemName: "r.circle")
-                          .font(.title)
-                          .foregroundStyle(.secondary)
-                  }
-              }
+              SubredditButton(postList: post.subreddit, type: .icon(iconUrl: post.subredditIconURL ?? ""))
               
               VStack(alignment: .leading, spacing: 2) {
-                  Button {
-                      config.path.append(Subreddit(id: post.subreddit))
-                  } label: {
-                      Text(post.subredditNamePrefixed)
-                          .font(.caption)
-                          .foregroundStyle(.link)
-                  }
+                  SubredditButton(postList: post.subreddit, type: .text)
+                      
                   
                   HStack(spacing: 10) {
                         HStack(spacing: 4) {

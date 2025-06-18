@@ -147,7 +147,6 @@ public struct ZoomableImage: View {
 	private func makeDoubleTapLocationGesture(size: CGSize) -> some Gesture {
 		DragGesture(minimumDistance: 0, coordinateSpace: .local)
 			.onEnded { value in
-				let tapCount = 1 // This will be handled differently
 				// Calculate the tap location relative to the image center
 				let tapLocation = value.location
 				let centerX = size.width / 2

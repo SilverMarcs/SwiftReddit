@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PostsNavigationView: View {
     @Environment(AppConfig.self) var config
-    var initialSubreddit: Subreddit = .home
+    var initialSubreddit: PostListingId = ""
     
     var body: some View {
         @Bindable var config = config
@@ -19,7 +19,7 @@ struct PostsNavigationView: View {
                 .navigationDestination(for: Post.self) { post in
                     PostDetail(post: post)
                 }
-                .navigationDestination(for: Subreddit.self) { subreddit in
+                .navigationDestination(for: PostListingId.self) { subreddit in
                     PostsList(subreddit: subreddit)
                 }
                 .navigationDestination(for: LinkMetadata.self) { meta in

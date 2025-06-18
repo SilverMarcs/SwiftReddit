@@ -17,7 +17,7 @@ struct BasicWebview: View {
             WebView(page)
                 .edgesIgnoringSafeArea(.bottom)
                 .navigationTitle(page.title)
-                .navigationBarTitleDisplayMode(.inline)
+                .toolbarTitleDisplayMode(.inline)
                 .onAppear {
                     let request = URLRequest(url: url)
                     page.load(request)

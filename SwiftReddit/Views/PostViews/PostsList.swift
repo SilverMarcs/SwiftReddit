@@ -15,7 +15,7 @@ struct PostsList: View {
     @State private var after: String?
     @State private var selectedSort: SubListingSortOption = .best
     
-    var subreddit: Subreddit = .home
+    let subreddit: PostListingId
     
     var body: some View {
         List {
@@ -58,15 +58,15 @@ struct PostsList: View {
             }
         }
         .listStyle(.plain)
-        .navigationTitle(subreddit.displayName)
+        .navigationTitle(subreddit.isEmpty ? "Home" : "\(subreddit.withSubredditPrefix)")
         .toolbarTitleDisplayMode(.inlineLarge)
         .refreshable {
             await refreshPosts()
         }
         .task {
-            guard !config.hasLaunched || !subreddit.isHome else { return }
+            guard !config.hasLaunched || !subreddit.isEmpty else { return }
             await loadInitialPosts()
-            if subreddit.isHome {
+            if subreddit.isEmpty {
                 config.hasLaunched = true
             }
         }
@@ -137,5 +137,6 @@ struct PostsList: View {
 }
 
 #Preview {
-    PostsList()
+    PostsList(subreddit: "")
+        
 }
