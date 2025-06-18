@@ -56,13 +56,13 @@ struct PostView: View {
                           .resizable()
                           .aspectRatio(contentMode: .fill)
                   } placeholder: {
-                      Image(systemName: "person.crop.circle.fill")
+                      Image(systemName: "r.circle")
                           .foregroundStyle(.secondary)
                   }
                   .frame(width: 32, height: 32)
                   .clipShape(Circle())
               } else {
-                  Image(systemName: "person.crop.circle.fill")
+                  Image(systemName: "r.circle")
                       .font(.title)
                       .foregroundStyle(.secondary)
               }

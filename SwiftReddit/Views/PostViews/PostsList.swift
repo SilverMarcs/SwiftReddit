@@ -15,6 +15,8 @@ struct PostsList: View {
     @State private var after: String?
     @State private var selectedSort: SubListingSortOption = .best
     @State private var navigationPath = NavigationPath()
+    @State private var showImagePreview = false
+    @State private var imagePreviewURL: String?
     
     var body: some View {
         NavigationStack(path: $navigationPath) {
@@ -83,6 +85,7 @@ struct PostsList: View {
                         Label(selectedSort.displayName, systemImage: selectedSort.icon)
                             .labelStyle(.iconOnly)
                     }
+                    .tint(.accent)
                 }
             }
             .navigationDestination(for: Post.self) { post in
@@ -91,8 +94,31 @@ struct PostsList: View {
             .navigationDestination(for: LinkMetadata.self) { meta in
                 BasicWebview(linkMeta: meta)
             }
+            .sheet(isPresented: $showImagePreview) {
+                if let imageURL = imagePreviewURL {
+                    NavigationStack {
+                        ZoomableImageModal(imageURL: imageURL)
+                            .toolbar {
+                                ToolbarItem(placement: .primaryAction) {
+                                    Button {
+                                        showImagePreview = false
+                                    } label: {
+                                        Image(systemName: "xmark")
+                                    }
+                                }
+                            }
+                    }
+                }
+            }
         }
         .environment(\.openURL, OpenURLAction { url in
+            // Check if it's a Reddit preview image URL
+            if isRedditImagePreviewURL(url) {
+                imagePreviewURL = url.absoluteString
+                showImagePreview = true
+                return .handled
+            }
+            
             let linkMetadata = LinkMetadata(
                 url: url.absoluteString,
                 domain: url.host ?? "Unknown",
@@ -103,6 +129,19 @@ struct PostsList: View {
             
             return .handled
         })
+    }
+    
+    private func isRedditImagePreviewURL(_ url: URL) -> Bool {
+        let urlString = url.absoluteString.lowercased()
+        
+        // Check for Reddit preview URLs (preview.redd.it, i.redd.it)
+        if urlString.contains("preview.redd.it") || urlString.contains("i.redd.it") {
+            return true
+        }
+        
+        // Check for common image extensions
+        let imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
+        return imageExtensions.contains { urlString.hasSuffix($0) }
     }
     
     private func loadInitialPosts() async {
