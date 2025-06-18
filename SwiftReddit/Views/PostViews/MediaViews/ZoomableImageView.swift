@@ -8,17 +8,12 @@
 import SwiftUI
 
 public struct ZoomableImage: View {
-
 	private let minScale: CGFloat = 1.0
-	
 	private let maxScale: CGFloat = 2.5
 
 	@State private var scale: CGFloat = 1.0
-
 	@State private var lastScale: CGFloat = 1.0
-
 	@State private var offset: CGPoint = .zero
-
 	@State private var lastTranslation: CGSize = .zero
 
 	var image: Image
@@ -32,19 +27,14 @@ public struct ZoomableImage: View {
 					.scaleEffect(scale)
 					.offset(x: offset.x, y: offset.y)
 					.gesture(
-						makeDragGesture(size: proxy.size)
-							.simultaneously(with: makeMagnificationGesture(size: proxy.size))
+						makeMagnificationGesture(size: proxy.size)
 					)
-					.onTapGesture(count: 2) {
-						withAnimation {
-							if scale < maxScale {
-								scale = min(max(scale * 2, minScale), maxScale) // Zoom in
-							} else {
-								scale = minScale // Reset to minimum scale
-								offset = .zero // Reset the offset when zooming out
-							}
-						}
-						adjustMaxOffset(size: proxy.size) // Adjust offsets after zooming
+					.gesture(
+						makeDragGesture(size: proxy.size),
+						including: scale > minScale ? .all : .none
+					)
+					.onTapGesture(count: 2, coordinateSpace: .local) { location in
+						handleDoubleTap(at: location, size: proxy.size)
 					}
 			}
 			.frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -79,7 +69,9 @@ public struct ZoomableImage: View {
 				else if scale < minScale {
 					withAnimation {
 						scale = minScale
+						offset = .zero // Reset offset when returning to min scale
 					}
+					lastTranslation = .zero
 				}
 				adjustMaxOffset(size: size)
 			}
@@ -88,6 +80,9 @@ public struct ZoomableImage: View {
 	private func makeDragGesture(size: CGSize) -> some Gesture {
 		DragGesture()
 			.onChanged { value in
+				// Only handle drag if image is zoomed in
+				guard scale > minScale else { return }
+				
 				let diff = CGPoint(
 					x: value.translation.width - lastTranslation.width,
 					y: value.translation.height - lastTranslation.height
@@ -96,6 +91,12 @@ public struct ZoomableImage: View {
 				lastTranslation = value.translation
 			}
 			.onEnded { value in
+				// Only handle drag end if image is zoomed in
+				guard scale > minScale else { 
+					lastTranslation = .zero
+					return 
+				}
+				
 				// Calculate the velocity of the drag
 				let velocity = value.predictedEndTranslation
 				let damping: CGFloat = 0.5 // Adjust damping for smoother effect
@@ -107,6 +108,69 @@ public struct ZoomableImage: View {
 				}
 
 				// Adjust the max offset after applying the velocity
+				adjustMaxOffset(size: size)
+			}
+	}
+
+	private func handleDoubleTap(at location: CGPoint, size: CGSize) {
+		let centerX = size.width / 2
+		let centerY = size.height / 2
+		
+		withAnimation(.easeInOut(duration: 0.3)) {
+			if scale == minScale {
+				// Zoom in to the tapped location
+				scale = maxScale
+				
+				// Calculate offset to center the tapped area
+				let zoomOffset = CGPoint(
+					x: (centerX - location.x) * (maxScale - 1),
+					y: (centerY - location.y) * (maxScale - 1)
+				)
+				offset = zoomOffset
+			} else {
+				// Zoom out and reset
+				scale = minScale
+				offset = .zero
+				lastTranslation = .zero
+			}
+		}
+		adjustMaxOffset(size: size)
+	}
+
+	private func makeDoubleTapGesture(size: CGSize) -> some Gesture {
+		TapGesture(count: 2)
+			.onEnded { value in
+				// Need to get tap location from a DragGesture instead
+			}
+	}
+	
+	private func makeDoubleTapLocationGesture(size: CGSize) -> some Gesture {
+		DragGesture(minimumDistance: 0, coordinateSpace: .local)
+			.onEnded { value in
+				let tapCount = 1 // This will be handled differently
+				// Calculate the tap location relative to the image center
+				let tapLocation = value.location
+				let centerX = size.width / 2
+				let centerY = size.height / 2
+				
+				withAnimation(.easeInOut(duration: 0.3)) {
+					if scale == minScale {
+						// Zoom in to the tapped location
+						scale = maxScale
+						
+						// Calculate offset to center the tapped area
+						let zoomOffset = CGPoint(
+							x: (centerX - tapLocation.x) * (maxScale - 1),
+							y: (centerY - tapLocation.y) * (maxScale - 1)
+						)
+						offset = zoomOffset
+					} else {
+						// Zoom out and reset
+						scale = minScale
+						offset = .zero
+						lastTranslation = .zero
+					}
+				}
 				adjustMaxOffset(size: size)
 			}
 	}
