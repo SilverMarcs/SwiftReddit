@@ -28,6 +28,7 @@ struct PostVideoView: View {
             }
             .onDisappear {
                 player?.pause()
+                player = nil
             }
     }
 }

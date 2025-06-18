@@ -45,6 +45,7 @@ struct PostLinkView: View {
                 }
           }
       }
+      .buttonStyle(.borderless)
       .padding(10)
       .background(
           RoundedRectangle(
@@ -52,7 +53,6 @@ struct PostLinkView: View {
           )
           .fill(.background.secondary)
 //          .stroke(.separator, lineWidth: 1)
-
       )
     }
   }

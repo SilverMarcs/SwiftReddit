@@ -34,7 +34,7 @@ struct PostView: View {
             }
 
             if !post.selftext.isEmpty {
-                Text(LocalizedStringKey(post.selftext.trimmingCharacters(in: .whitespacesAndNewlines)))
+                Text(LocalizedStringKey(post.selftext))
                     .font(.subheadline)
                     .foregroundStyle(truncateSelfText ? .secondary : .primary)
                     .lineLimit(truncateSelfText ? 3 : nil)

@@ -169,7 +169,7 @@ struct PostsList: View {
     private func fetchPosts(isRefresh: Bool) async {
         let afterParam = isRefresh ? nil : after
         
-        let result = await RedditAPI.shared.fetchHomeFeed(sort: selectedSort, after: afterParam, limit: 10)
+        let result = await RedditAPI.shared.fetchHomeFeed(sort: selectedSort, after: afterParam, limit: 20)
         
         if let (newPosts, newAfter) = result {
             if isRefresh {

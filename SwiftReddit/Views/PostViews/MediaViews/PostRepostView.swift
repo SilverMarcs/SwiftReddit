@@ -100,7 +100,7 @@ struct PostRepostView: View {
 
             )
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.borderless)
     }
     
     // Helper to prevent infinite nesting of reposts
