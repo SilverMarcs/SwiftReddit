@@ -55,21 +55,38 @@ struct CommentView: View {
     }
     
     private var commentContent: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // Comment header
-            commentHeader
+        HStack(alignment: .top, spacing: 0) {
+            // Colored rectangle for depth indication (only for non-top-level comments)
+            if !isTopLevel && comment.depth > 0 {
+                // Add spacing for parent depths
+                if comment.depth > 1 {
+                    Spacer()
+                        .frame(width: CGFloat((comment.depth - 1) * 12))
+                }
+                
+                // Show only this comment's own depth rectangle
+                Rectangle()
+                    .fill(colorForDepth(comment.depth))
+                    .frame(width: 2)
+                    .padding(.trailing, 9) // 12 - 2 = 9 to maintain original spacing
+            }
             
-            // Comment body
-            if isExpanded {
-                commentBody
+            VStack(alignment: .leading, spacing: 8) {
+                // Comment header
+                commentHeader
+                
+                // Comment body
+                if isExpanded {
+                    commentBody
+                }
+                // Show collapsed indicator when comment has children but is not expanded
+                if comment.hasChildren && !isExpanded {
+                    collapsedIndicator
+                }
             }
-            // Show collapsed indicator when comment has children but is not expanded
-            if comment.hasChildren && !isExpanded {
-                collapsedIndicator
-            }
+            .contentShape(.rect)
         }
-        .contentShape(.rect)
-        .padding(.leading, comment.depth < maxDepth ? comment.indentationWidth : CGFloat(maxDepth * 12))
+        .padding(.leading, isTopLevel ? 0 : 0) // Remove the original indentation since we're using rectangles
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
         .opacity(!isExpanded && comment.hasChildren ? 0.5 : 1.0)
@@ -78,9 +95,9 @@ struct CommentView: View {
     private var commentHeader: some View {
         HStack {
             // Avatar logo or subreddit logo TODO:
-            Image(systemName: "person.crop.circle.fill")
-                .font(.title)
-                .foregroundStyle(.secondary)
+//            Image(systemName: "person.crop.circle.fill")
+//                .font(.title)
+//                .foregroundStyle(.secondary)
             
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
@@ -92,7 +109,7 @@ struct CommentView: View {
                     
                     Text(comment.author)
                         .font(.caption)
-                        .fontWeight(comment.isSubmitter ? .bold : .medium)
+                        .fontWeight(.bold)
                         .foregroundStyle(
                             comment.distinguished == "moderator" ? .green :
                                 (comment.isSubmitter ? .blue : .secondary)
@@ -125,8 +142,8 @@ struct CommentView: View {
                     
                     Text(comment.timeAgo)
                 }
-                .font(.caption)
-                .fontWeight(.semibold)
+                .font(.caption2)
+                .fontWeight(.medium)
                 .foregroundStyle(.secondary)
             }
             
@@ -167,6 +184,23 @@ struct CommentView: View {
     
     private var commentDivider: some View {
         Divider()
-            .padding(.leading, comment.depth < maxDepth ? comment.indentationWidth + 12 : CGFloat(maxDepth * 12) + 12)
+            .padding(.leading, isTopLevel ? 12 : CGFloat(min(comment.depth, maxDepth) * 12) + 12)
+    }
+    
+    // Function to get color based on comment depth
+    private func colorForDepth(_ depth: Int) -> Color {
+        let colors: [Color] = [
+            .blue,      // Depth 1
+            .green,     // Depth 2
+            .orange,    // Depth 3
+            .purple,    // Depth 4
+            .red,       // Depth 5
+            .pink,      // Depth 6
+            .teal,      // Depth 7
+            .indigo     // Depth 8
+        ]
+        
+        let index = (depth - 1) % colors.count
+        return colors[index]
     }
 }

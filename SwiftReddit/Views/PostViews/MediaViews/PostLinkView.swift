@@ -17,12 +17,12 @@ struct PostLinkView: View {
           Image(systemName: "link")
               .imageScale(.large)
               .fontWeight(.bold)
-              .foregroundStyle(.secondary)
+              .foregroundStyle(.blue)
           
           Text(metadata.domain.lowercased())
             .font(.subheadline)
             .fontWeight(.semibold)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(.blue)
           
           Spacer()
           
