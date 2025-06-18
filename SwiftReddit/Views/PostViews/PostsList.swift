@@ -9,101 +9,88 @@ import SwiftUI
 import WebKit
 
 struct PostsList: View {
-    @ObservedObject private var appPrefs = AppPreferences.shared
+    @Environment(AppConfig.self) private var config
     @State private var posts: [Post] = []
     @State private var isLoading = false
     @State private var after: String?
     @State private var selectedSort: SubListingSortOption = .best
-    @State private var navigationPath = NavigationPath()
+    
+    var subreddit: Subreddit = .home
     
     var body: some View {
-        NavigationStack(path: $navigationPath) {
-            List {
-                ForEach(posts) { post in
-                    NavigationLink(value: post) {
-                        PostView(post: post)
+        List {
+            ForEach(posts) { post in
+                Button {
+                    config.path.append(post)
+                } label: {
+                    PostView(post: post)
+                        .navigationLinkIndicatorVisibility(.hidden)
+                }
+                .buttonStyle(.plain)
+                .listRowInsets(.vertical, 5)
+                .listRowInsets(.horizontal, 5)
+            }
+            .listRowSeparator(.hidden)
+            
+            Color.clear
+                .frame(height: 10)
+                .onAppear {
+                    if !isLoading && after != nil {
+                        loadMorePosts()
                     }
-                    .listRowInsets(.vertical, 5)
-                    .listRowInsets(.horizontal, 5)
-                    .navigationLinkIndicatorVisibility(.hidden)
                 }
                 .listRowSeparator(.hidden)
-                
-                Color.clear
-                    .frame(height: 10)
-                    .onAppear {
-                        if !isLoading && after != nil {
-                            loadMorePosts()
-                        }
-                    }
+            
+            if after == nil && !isLoading {
+                Text("No more posts")
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding()
                     .listRowSeparator(.hidden)
-                
-                if after == nil && !isLoading {
-                    Text("No more posts")
-                        .foregroundColor(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding()
-                        .listRowSeparator(.hidden)
-                }
-                
-                if isLoading {
-                    ProgressView()
-                        .controlSize(.large)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .padding()
-                        .listRowSeparator(.hidden)
-                }
             }
-            .listStyle(.plain)
-            .navigationTitle("Home")
-            .toolbarTitleDisplayMode(.inlineLarge)
-            .refreshable {
-                await refreshPosts()
-            }
-            .task {
-                guard !appPrefs.hasLaunched else { return }
-                await loadInitialPosts()
-                appPrefs.hasLaunched = true
-            }
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Menu {
-                        ForEach(SubListingSortOption.allCases) { sort in
-                            Button {
-                                selectedSort = sort
-                                Task {
-                                    await refreshPosts()
-                                }
-                            } label: {
-                                Label(sort.displayName, systemImage: sort.icon)
-                                    .tag(sort)
-                            }
-                        }
-                    } label: {
-                        Label(selectedSort.displayName, systemImage: selectedSort.icon)
-                            .labelStyle(.iconOnly)
-                    }
-                    .tint(.accent)
-                }
-            }
-            .navigationDestination(for: Post.self) { post in
-                PostDetail(post: post)
-            }
-            .navigationDestination(for: LinkMetadata.self) { meta in
-                BasicWebview(linkMeta: meta)
+            
+            if isLoading {
+                ProgressView()
+                    .controlSize(.large)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding()
+                    .listRowSeparator(.hidden)
             }
         }
-        .environment(\.openURL, OpenURLAction { url in
-            let linkMetadata = LinkMetadata(
-                url: url.absoluteString,
-                domain: url.host ?? "Unknown",
-                thumbnailURL: nil
-            )
-            
-            navigationPath.append(linkMetadata)
-            
-            return .handled
-        })
+        .listStyle(.plain)
+        .navigationTitle(subreddit.displayName)
+        .toolbarTitleDisplayMode(.inlineLarge)
+        .refreshable {
+            await refreshPosts()
+        }
+        .task {
+            guard !config.hasLaunched || !subreddit.isHome else { return }
+            await loadInitialPosts()
+            if subreddit.isHome {
+                config.hasLaunched = true
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    ForEach(SubListingSortOption.allCases) { sort in
+                        Button {
+                            selectedSort = sort
+                            Task {
+                                await refreshPosts()
+                            }
+                        } label: {
+                            Label(sort.displayName, systemImage: sort.icon)
+                                .tag(sort)
+                        }
+                    }
+                } label: {
+                    Label(selectedSort.displayName, systemImage: selectedSort.icon)
+                        .labelStyle(.iconOnly)
+                }
+                .tint(.accent)
+            }
+        }
     }
     
     private func loadInitialPosts() async {
@@ -131,7 +118,7 @@ struct PostsList: View {
     private func fetchPosts(isRefresh: Bool) async {
         let afterParam = isRefresh ? nil : after
         
-        let result = await RedditAPI.shared.fetchHomeFeed(sort: selectedSort, after: afterParam, limit: 20)
+        let result = await RedditAPI.shared.fetchPosts(subreddit: subreddit, sort: selectedSort, after: afterParam, limit: 20)
         
         if let (newPosts, newAfter) = result {
             if isRefresh {

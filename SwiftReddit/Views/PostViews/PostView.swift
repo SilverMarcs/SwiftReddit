@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct PostView: View {
+    @Environment(AppConfig.self) private var config
+    
   let post: Post
   var showBackground: Bool = true
   var truncateSelfText: Bool = true
@@ -49,37 +51,34 @@ struct PostView: View {
           
           // Post metadata
           HStack {
-              // Subreddit icon
-              if let iconURL = post.subredditIconURL, let url = URL(string: iconURL) {
-                  AsyncImage(url: url) { image in
-                      image
-                          .resizable()
-                          .aspectRatio(contentMode: .fill)
-                  } placeholder: {
+              Button {
+                  config.path.append(Subreddit(id: post.subreddit))
+              } label: {
+                  if let iconURL = post.subredditIconURL, let url = URL(string: iconURL) {
+                      AsyncImage(url: url) { image in
+                          image
+                              .resizable()
+                              .aspectRatio(contentMode: .fill)
+                      } placeholder: {
+                          Image(systemName: "r.circle")
+                              .foregroundStyle(.secondary)
+                      }
+                      .frame(width: 32, height: 32)
+                      .clipShape(Circle())
+                  } else {
                       Image(systemName: "r.circle")
+                          .font(.title)
                           .foregroundStyle(.secondary)
                   }
-                  .frame(width: 32, height: 32)
-                  .clipShape(Circle())
-              } else {
-                  Image(systemName: "r.circle")
-                      .font(.title)
-                      .foregroundStyle(.secondary)
               }
               
               VStack(alignment: .leading, spacing: 2) {
-                  HStack(spacing: 4) {
+                  Button {
+                      config.path.append(Subreddit(id: post.subreddit))
+                  } label: {
                       Text(post.subredditNamePrefixed)
                           .font(.caption)
                           .foregroundStyle(.link)
-                      
-//                      Text("•")
-//                          .font(.caption)
-//                          .foregroundStyle(.secondary)
-//                      
-//                      Text("u/\(post.author)")
-//                          .font(.caption)
-//                          .foregroundStyle(.secondary)
                   }
                   
                   HStack(spacing: 10) {

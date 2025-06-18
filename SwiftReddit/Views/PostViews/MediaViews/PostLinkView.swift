@@ -9,11 +9,14 @@ import SwiftUI
 import WebKit
 
 struct PostLinkView: View {
+    @Environment(AppConfig.self) private var config
   let metadata: LinkMetadata
   
   var body: some View {
-    NavigationLink(value: metadata) {
-      HStack(spacing: 12) {
+      Button {
+          config.path.append(metadata)
+      } label: {
+          HStack(spacing: 12) {
           Image(systemName: "link")
               .imageScale(.large)
               .fontWeight(.bold)
@@ -45,15 +48,15 @@ struct PostLinkView: View {
                 }
           }
       }
-      .buttonStyle(.borderless)
-      .padding(10)
-      .background(
-          RoundedRectangle(
-              cornerRadius: 12,
+          .buttonStyle(.borderless)
+          .padding(10)
+          .background(
+              RoundedRectangle(
+                  cornerRadius: 12,
+              )
+              .fill(.background.secondary)
+    //          .stroke(.separator, lineWidth: 1)
           )
-          .fill(.background.secondary)
-//          .stroke(.separator, lineWidth: 1)
-      )
     }
   }
 }

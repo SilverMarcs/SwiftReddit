@@ -8,16 +8,8 @@
 import Foundation
 
 extension RedditAPI {
-    func fetchHomeFeed(sort: SubListingSortOption = .best, after: String? = nil, limit: Int = 10) async -> ([Post], String?)? {
-        return await fetchPosts(endpoint: "", sort: sort, after: after, limit: limit)
-    }
-    
-    func fetchSubredditPosts(subreddit: String, sort: SubListingSortOption = .best, after: String? = nil, limit: Int = 10) async -> ([Post], String?)? {
-        let endpoint = subreddit.isEmpty ? "" : "r/\(subreddit)"
-        return await fetchPosts(endpoint: endpoint, sort: sort, after: after, limit: limit)
-    }
-    
-    private func fetchPosts(endpoint: String, sort: SubListingSortOption, after: String?, limit: Int) async -> ([Post], String?)? {
+    func fetchPosts(subreddit: Subreddit, sort: SubListingSortOption = .best, after: String? = nil, limit: Int = 10) async -> ([Post], String?)? {
+        let endpoint = subreddit.isHome ? "" : "r/\(subreddit.id)"
         guard let accessToken = await CredentialsManager.shared.getValidAccessToken() else {
             print("No valid credential or access token")
             return nil

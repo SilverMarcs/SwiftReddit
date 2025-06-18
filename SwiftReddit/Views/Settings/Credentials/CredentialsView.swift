@@ -64,7 +64,7 @@ struct CredentialsView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     
-                    Link(destination: URL(string: "https://www.reddit.com/prefs/apps")!) {
+                    Link(destination: URL(string: "https://www.reddit.com/config/apps")!) {
                         Label("Open Reddit App Settings", systemImage: "safari")
                     }
                 }

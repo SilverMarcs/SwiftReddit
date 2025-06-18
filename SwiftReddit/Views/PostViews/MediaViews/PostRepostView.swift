@@ -8,10 +8,14 @@
 import SwiftUI
 
 struct PostRepostView: View {
+    @Environment(AppConfig.self) private var config
     let originalPost: Post
     
     var body: some View {
-        NavigationLink(value: originalPost) {
+        Button {
+            config.path.append(originalPost)
+                
+        } label: {
             VStack(alignment: .leading) {
                 // Repost header
                 HStack {
@@ -100,7 +104,7 @@ struct PostRepostView: View {
 
             )
         }
-        .buttonStyle(.borderless)
+        .buttonStyle(.plain)
     }
     
     // Helper to prevent infinite nesting of reposts

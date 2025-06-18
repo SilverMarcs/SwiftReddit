@@ -51,7 +51,7 @@ struct CommentView: View {
                 commentContent
             }
         }
-        .background(isTopLevel ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 12))
+        .background(isTopLevel ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 14))
     }
     
     private var commentContent: some View {

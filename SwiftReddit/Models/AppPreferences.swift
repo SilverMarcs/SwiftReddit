@@ -1,17 +1,16 @@
 //
-//  AppPreferences.swift
+//  AppConfig.swift
 //  SwiftReddit
 //
 //  Created by Zabir Raihan on 17/06/2025.
 //
 
 import Foundation
-import Combine
+import SwiftUI
 
-class AppPreferences: ObservableObject {
-    static let shared = AppPreferences()
-    
-    private init() {}
+@Observable
+class AppConfig {
+    var path: NavigationPath = NavigationPath()
 
     var hasLaunched: Bool = false
 }
