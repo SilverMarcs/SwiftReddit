@@ -18,8 +18,8 @@ struct PostMediaView: View {
       case .none:
         EmptyView()
         
-      case .image(let imageURL, let dimensions):
-        PostImageView(imageURL: imageURL, dimensions: dimensions)
+      case .image(let galleryImage):
+          PostImageView(image: galleryImage)
         
       case .gallery(let images):
           PostGalleryView(images: images)
@@ -27,11 +27,11 @@ struct PostMediaView: View {
       case .video(let videoURL, let thumbnailURL, let dimensions):
           PostVideoView(videoURL: videoURL, thumbnailURL: thumbnailURL, dimensions: dimensions)
         
-      case .youtube(let videoID, let thumbnailURL, let dimensions):
-          PostYouTubeView(videoID: videoID, thumbnailURL: thumbnailURL, dimensions: dimensions)
+      case .youtube(let videoID, let galleryImage):
+          PostYouTubeView(videoID: videoID, galleryImage: galleryImage)
         
-      case .gif(let imageURL, let dimensions):
-          PostGIFView(imageURL: imageURL, dimensions: dimensions)
+      case .gif(let galleryImage):
+          PostGIFView(galleryImage: galleryImage)
         
       case .repost(let originalPost):
           PostRepostView(originalPost: originalPost)
@@ -45,7 +45,7 @@ struct PostMediaView: View {
 #Preview {
   NavigationStack {
     VStack(spacing: 16) {
-        PostMediaView(mediaType: .image(imageURL: "https://example.com/image.jpg", dimensions: CGSize(width: 800, height: 600)))
+        PostMediaView(mediaType: .image(galleryImage: GalleryImage(url: "https://example.com/image.jpg", dimensions: CGSize(width: 800, height: 600))))
         
         PostMediaView(mediaType: .gallery(images: [
           GalleryImage(url: "https://example.com/image1.jpg", dimensions: CGSize(width: 800, height: 600)),
@@ -56,7 +56,7 @@ struct PostMediaView: View {
         ]))
         
         PostMediaView(mediaType: .video(videoURL: "https://example.com/video.mp4", thumbnailURL: "https://example.com/thumb.jpg", dimensions: CGSize(width: 1280, height: 720)))
-        PostMediaView(mediaType: .youtube(videoID: "dQw4w9WgXcQ", thumbnailURL: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg", dimensions: CGSize(width: 1280, height: 720)))
+        PostMediaView(mediaType: .youtube(videoID: "dQw4w9WgXcQ", galleryImage: GalleryImage(url: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg", dimensions: CGSize(width: 1280, height: 720))))
         PostMediaView(mediaType: .link(metadata: LinkMetadata(url: "https://developer.apple.com/swiftui", domain: "developer.apple.com", thumbnailURL: "https://example.com/thumb.jpg")))
     }
     .padding()

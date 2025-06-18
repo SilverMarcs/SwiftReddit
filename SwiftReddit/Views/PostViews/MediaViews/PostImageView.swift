@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct PostImageView: View {
-    let imageURL: String?
-    let dimensions: CGSize?
+    var image: GalleryImage
+    
     @State private var showFullscreen = false
     
     var body: some View {
-        if let imageURL = imageURL, let url = URL(string: imageURL) {
+        if let url = URL(string: image.url) {
             AsyncImage(url: url) { image in
                 image
                     .resizable()
@@ -34,24 +34,14 @@ struct PostImageView: View {
             .cornerRadius(12)
             .clipped()
             .sheet(isPresented: $showFullscreen) {
-                NavigationStack {
-                    ZoomableImageModal(imageURL: imageURL)
-                        .toolbar {
-                            ToolbarItem(placement: .primaryAction) {
-                                Button {
-                                    showFullscreen = false
-                                } label: {
-                                    Image(systemName: "xmark")
-                                }
-                            }
-                        }
-                }
+                ImagePreviewModal(imageURL: image.url)
             }
         }
     }
     
     private var aspectRatio: CGFloat {
-        guard let dimensions = dimensions,
+        let dimensions = image.dimensions
+            guard
               dimensions.width > 0 && dimensions.height > 0 else {
             return 16/9 // Default aspect ratio
         }
@@ -61,8 +51,7 @@ struct PostImageView: View {
 
 #Preview {
     PostImageView(
-        imageURL: "https://picsum.photos/800/600",
-        dimensions: CGSize(width: 800, height: 600)
+        image: .init(url: "https://example.com/image.jpg", dimensions: CGSize(width: 800, height: 600))
     )
     .padding()
 }

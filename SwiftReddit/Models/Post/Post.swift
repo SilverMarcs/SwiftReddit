@@ -134,21 +134,23 @@ struct Post: Identifiable, Hashable, Equatable {
                let height = oembed.height {
                 
                 let thumbnailURL = oembed.thumbnail_url ?? extractImageURL(from: data)
-                return .youtube(
-                    videoID: videoID,
-                    thumbnailURL: thumbnailURL,
+                if let galleryImage = createGalleryImage(
+                    url: thumbnailURL,
                     dimensions: CGSize(width: width, height: height)
-                )
+                ) {
+                    return .youtube(videoID: videoID, galleryImage: galleryImage)
+                }
             }
             
             // Fallback for YouTube URLs without oembed
             if let videoID = extractYouTubeIDFromURL(url) {
                 let thumbnailURL = "https://img.youtube.com/vi/\(videoID)/maxresdefault.jpg"
-                return .youtube(
-                    videoID: videoID,
-                    thumbnailURL: thumbnailURL,
+                if let galleryImage = createGalleryImage(
+                    url: thumbnailURL,
                     dimensions: nil
-                )
+                ) {
+                    return .youtube(videoID: videoID, galleryImage: galleryImage)
+                }
             }
         }
         
@@ -170,7 +172,9 @@ struct Post: Identifiable, Hashable, Equatable {
            domain.contains("redgifs") ||
            (domain.contains("imgur") && (url.contains("gif") || url.contains("gifv"))) {
             let (imageURL, dimensions) = extractHighQualityImageWithDimensions(from: data)
-            return .gif(imageURL: imageURL, dimensions: dimensions)
+            if let galleryImage = createGalleryImage(url: imageURL, dimensions: dimensions) {
+                return .gif(galleryImage: galleryImage)
+            }
         }
         
         // PRIORITY 6: Direct image formats
@@ -178,7 +182,9 @@ struct Post: Identifiable, Hashable, Equatable {
         if imageFormats.contains(where: { url.hasSuffix($0) }) || 
            domain.contains("i.redd.it") || domain.contains("i.imgur.com") {
             let (imageURL, dimensions) = extractHighQualityImageWithDimensions(from: data)
-            return .image(imageURL: imageURL, dimensions: dimensions)
+            if let galleryImage = createGalleryImage(url: imageURL, dimensions: dimensions) {
+                return .image(galleryImage: galleryImage)
+            }
         }
         
         // PRIORITY 7: Preview images (high quality conversion) - Better detection
@@ -192,8 +198,8 @@ struct Post: Identifiable, Hashable, Equatable {
                 let isDirectImage = imageFormats.contains(where: { url.hasSuffix($0) }) || 
                                   url.contains("i.redd.it") || url.contains("i.imgur.com")
                 
-                if isDirectImage {
-                    return .image(imageURL: imageURL, dimensions: dimensions)
+                if isDirectImage, let galleryImage = createGalleryImage(url: imageURL, dimensions: dimensions) {
+                    return .image(galleryImage: galleryImage)
                 }
             }
         }
@@ -287,6 +293,13 @@ struct Post: Identifiable, Hashable, Equatable {
             }
             return nil
         }
+    }
+    
+    /// Create a GalleryImage from URL and dimensions
+    private static func createGalleryImage(url: String?, dimensions: CGSize?) -> GalleryImage? {
+        guard let url = url else { return nil }
+        let size = dimensions ?? CGSize(width: 0, height: 0)
+        return GalleryImage(url: url, dimensions: size)
     }
     
     /// Extract best quality thumbnail URL for links

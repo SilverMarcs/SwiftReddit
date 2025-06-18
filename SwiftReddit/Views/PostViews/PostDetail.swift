@@ -16,7 +16,6 @@ struct PostDetail: View {
             LazyVStack(alignment: .leading) {
                 PostView(post: post, showBackground: false, truncateSelfText: false)
                 
-                // Comments
                 CommentsListView(post: post, sortOption: sortOption)
             }
         }

@@ -9,12 +9,11 @@ import SwiftUI
 
 struct PostYouTubeView: View {
   let videoID: String
-  let thumbnailURL: String?
-  let dimensions: CGSize?
+  let galleryImage: GalleryImage
   
   var body: some View {
     ZStack {
-        PostImageView(imageURL: thumbnailURL, dimensions: dimensions)
+        PostImageView(image: galleryImage)
       
       // Always show YouTube badge
       VStack {
