@@ -38,6 +38,7 @@ struct PostDetail: View {
                     Label("Sort by", systemImage: sortOption.iconName)
                         .labelStyle(.iconOnly)
                 }
+                .tint(.accent)
             }
         }
     }
