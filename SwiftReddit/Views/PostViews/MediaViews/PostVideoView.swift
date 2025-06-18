@@ -16,10 +16,13 @@ struct PostVideoView: View {
                 dimensions != nil ? (dimensions!.width / dimensions!.height) : 16/9,
                 contentMode: .fit
             )
-            .onAppear {
+            .task {
                 if let videoURL = videoURL, let url = URL(string: videoURL) {
-                    player = AVPlayer(url: url)
-                    player?.isMuted = true // Start muted by default
+                    let playerItem = AVPlayerItem(url: url)
+                    playerItem.preferredPeakBitRate = 500_000
+                    
+                    player = AVPlayer(playerItem: playerItem)
+                    player?.isMuted = true
                     player?.play()
                 }
             }
