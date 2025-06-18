@@ -56,6 +56,8 @@ struct PostGalleryView: View {
                         .foregroundColor(.white)
                 }
             }
+            .cornerRadius(12)
+            .clipped()
             .onTapGesture {
                 selectedIndex = 1
                 showFullscreen = true

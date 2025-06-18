@@ -52,7 +52,6 @@ extension RedditAPI {
             let (data, response) = try await URLSession.shared.data(for: request)
             
             if let httpResponse = response as? HTTPURLResponse {
-//                print("Reddit API Response Status: \(httpResponse.statusCode)")
                 if httpResponse.statusCode != 200 {
                     print("Reddit API Error: Status \(httpResponse.statusCode)")
                     return nil
