@@ -80,8 +80,8 @@ struct SearchTab: View {
             isLoading = false
         }
         
-        if let subredditData = await RedditAPI.shared.searchSubreddits(query, limit: 25) {
-            searchResults = subredditData.map { Subreddit(data: $0) }
+        if let subreddits: [Subreddit] = await RedditAPI.shared.searchSubreddits(query, limit: 25) {
+            searchResults = subreddits
         } else {
             searchResults = []
         }
