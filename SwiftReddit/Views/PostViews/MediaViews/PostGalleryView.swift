@@ -30,7 +30,7 @@ struct PostGalleryView: View {
         }
         .buttonStyle(.plain)
         .fullScreenCover(isPresented: $showFullscreen) {
-            ZoomableGalleryModal(images: images, initialIndex: selectedIndex)
+            ImageViewer(images: images, initialIndex: selectedIndex)
         }
     }
     
@@ -70,19 +70,7 @@ struct PostGalleryView: View {
             .buttonStyle(.plain)
         }
         .sheet(isPresented: $showFullscreen) {
-            NavigationStack {
-                ZoomableGalleryModal(images: images, initialIndex: selectedIndex)
-                    .toolbar {
-                         ToolbarItem(placement: .primaryAction) {
-                             Button {
-                                 showFullscreen = false
-                             } label: {
-                                 Image(systemName: "xmark")
-                             }
-                         }
-                     }
-            }
-   
+            ImageViewer(images: images, initialIndex: selectedIndex)
         }
     }
     

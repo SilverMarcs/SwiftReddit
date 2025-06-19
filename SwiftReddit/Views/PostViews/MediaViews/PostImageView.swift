@@ -36,7 +36,8 @@ struct PostImageView: View {
             }
             .buttonStyle(.plain)
             .sheet(isPresented: $showFullscreen) {
-                ImagePreviewModal(imageURL: image.url)
+//                ImagePreviewModal(imageURL: image.url)
+                ImageViewer(image: image)
             }
         }
     }
