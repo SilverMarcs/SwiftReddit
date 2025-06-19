@@ -14,7 +14,6 @@ struct PostRepostView: View {
     var body: some View {
         Button {
             config.path.append(originalPost)
-                
         } label: {
             VStack(alignment: .leading) {
                 // Repost header
@@ -38,8 +37,6 @@ struct PostRepostView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                .padding(.horizontal, 12)
-                .padding(.top, 8)
                 
                 // Original post content preview
                 VStack(alignment: .leading, spacing: 8) {
@@ -65,9 +62,7 @@ struct PostRepostView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                .padding(.horizontal, 12)
-                .padding(.bottom, 8)
-            }
+            } .padding(10)
             .background(
                 RoundedRectangle(
                     cornerRadius: 12,

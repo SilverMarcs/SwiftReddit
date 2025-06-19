@@ -22,46 +22,52 @@ struct PostGalleryView: View {
     
     // Single image layout
     private var singleImageView: some View {
-        imageView(for: images[0])
-            .onTapGesture {
-                selectedIndex = 0
-                showFullscreen = true
-            }
-            .fullScreenCover(isPresented: $showFullscreen) {
-                ZoomableGalleryModal(images: images, initialIndex: selectedIndex)
-            }
+        Button {
+            selectedIndex = 0
+            showFullscreen = true
+        } label: {
+            imageView(for: images[0])
+        }
+        .buttonStyle(.plain)
+        .fullScreenCover(isPresented: $showFullscreen) {
+            ZoomableGalleryModal(images: images, initialIndex: selectedIndex)
+        }
     }
     
     // Multiple images layout - always show only two images max
     private var multipleImagesView: some View {
         HStack(spacing: 4) {
             // First image
-            imageView(for: images[0])
-                .onTapGesture {
-                    selectedIndex = 0
-                    showFullscreen = true
-                }
+            Button {
+                selectedIndex = 0
+                showFullscreen = true
+            } label: {
+                imageView(for: images[0])
+            }
+            .buttonStyle(.plain)
             
             // Second image with potential overlay
-            ZStack {
-                imageView(for: images[1])
-                
-                // Show remaining count if more than 2 images
-                if images.count > 2 {
-                    Color.black.opacity(0.6)
-                    
-                    Text("+\(images.count - 2)")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                }
-            }
-            .cornerRadius(12)
-            .clipped()
-            .onTapGesture {
+            Button {
                 selectedIndex = 1
                 showFullscreen = true
+            } label: {
+                ZStack {
+                    imageView(for: images[1])
+                    
+                    // Show remaining count if more than 2 images
+                    if images.count > 2 {
+                        Color.black.opacity(0.6)
+                        
+                        Text("+\(images.count - 2)")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                    }
+                }
+                .cornerRadius(12)
+                .clipped()
             }
+            .buttonStyle(.plain)
         }
         .sheet(isPresented: $showFullscreen) {
             NavigationStack {

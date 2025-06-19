@@ -40,6 +40,7 @@ struct SubredditButton: View {
                 }
             }
         }
+        .buttonStyle(.plain)
     }
 }
 
