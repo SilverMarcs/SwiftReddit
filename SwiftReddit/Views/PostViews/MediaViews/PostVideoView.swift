@@ -28,6 +28,14 @@ struct PostVideoView: View {
             }
             .task {
                 if let videoURL = videoURL, let url = URL(string: videoURL) {
+                    // Configure audio session to allow mixing with other audio
+                    do {
+                        try AVAudioSession.sharedInstance().setCategory(.playback, options: [.mixWithOthers])
+                        try AVAudioSession.sharedInstance().setActive(true)
+                    } catch {
+                        print("Failed to configure audio session: \(error)")
+                    }
+                    
                     let playerItem = AVPlayerItem(url: url)
                     playerItem.preferredPeakBitRate = 1_000_000
                     

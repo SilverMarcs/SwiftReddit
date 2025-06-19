@@ -18,7 +18,7 @@ struct PostGalleryView: View {
                 nav.path.append(ImageModalData(images: images))
             } label: {
                 ImageView(url: URL(string: images[0].url), aspectRatio: images[0].dimensions.aspectRatio)
-                    .frame(maxHeight: 300)
+                    .frame(maxHeight: 200)
                     .matchedTransitionSource(id: images[0].url, in: zoomNamespace ?? Namespace().wrappedValue)
             }
             .cornerRadius(12)
