@@ -11,27 +11,17 @@ struct PostGIFView: View {
   let galleryImage: GalleryImage
   
   var body: some View {
-    ZStack {
+      ZStack(alignment: .bottomTrailing) {
         PostImageView(image: galleryImage)
       
-      // Always show GIF badge
-      VStack {
-        Spacer()
-        HStack {
-          Image(systemName: "livephoto")
-            .font(.caption)
           Text("GIF")
-            .font(.caption)
-            .fontWeight(.medium)
-          Spacer()
-        }
-        .foregroundColor(.white)
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
-        .background(Color.blue.opacity(0.8))
-        .cornerRadius(4)
-        .padding(8)
-      }
+              .font(.caption2)
+              .fontWeight(.bold)
+              .foregroundStyle(.white)
+              .padding(.horizontal, 6)
+              .padding(.vertical, 2)
+              .background(.black.secondary, in: .rect(cornerRadius: 5))
+              .padding(10)
     }
   }
 }

@@ -90,7 +90,7 @@ struct PostsList: View {
                     Button {
                         showingSubredditInfo = true
                     } label: {
-                        Image(systemName: "info")
+                        Image(systemName: "info.circle")
                     }
                     .tint(subreddit.color ?? .blue)
                     .sheet(isPresented: $showingSubredditInfo) {

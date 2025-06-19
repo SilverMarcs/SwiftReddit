@@ -10,7 +10,7 @@ import WebKit
 import Observation
 
 struct BasicWebview: View {
-    @Environment(\.colorScheme) private var colorScheme
+//    @Environment(\.colorScheme) private var colorScheme
     
     let linkMeta: LinkMetadata
     @State private var page = WebPage()
@@ -25,14 +25,14 @@ struct BasicWebview: View {
                 .onAppear {
                     let request = URLRequest(url: url)
                     page.load(request)
-                    Task {
-                        // wait 1 second for the page to load
-                        try? await Task.sleep(nanoseconds: 2_000_000_000)
-                        if colorScheme == .dark {
-                            isDarkModeEnabled = true
-                            toggleDarkMode()
-                        }
-                    }
+//                    Task {
+//                        // wait 1 second for the page to load
+//                        try? await Task.sleep(nanoseconds: 2_000_000_000)
+//                        if colorScheme == .dark {
+//                            isDarkModeEnabled = true
+//                            toggleDarkMode()
+//                        }
+//                    }
                 }
                 .toolbar {
                     ToolbarItemGroup(placement: .navigationBarTrailing) {
