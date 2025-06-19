@@ -84,7 +84,7 @@ struct CommentsListView: View {
         errorMessage = nil
     
         if let result = await RedditAPI.shared.fetchPostWithComments(
-            subreddit: post.subreddit.postListingId,
+            subreddit: post.subreddit.displayName,
             postID: post.id,
             sort: sortOption
         ) {

@@ -49,10 +49,10 @@ struct PostView: View {
           
           // Post metadata
           HStack {
-              SubredditButton(postList: post.subreddit.postListingId, type: .icon(iconUrl: post.subreddit.iconURL ?? ""))
+              SubredditButton(subreddit: post.subreddit, type: .icon(iconUrl: post.subreddit.iconURL ?? ""))
               
               VStack(alignment: .leading, spacing: 2) {
-                  SubredditButton(postList: post.subreddit.postListingId, type: .text)
+                  SubredditButton(subreddit: post.subreddit, type: .text)
                       
                   
                   HStack(spacing: 10) {

@@ -17,8 +17,26 @@ struct Subreddit: Identifiable, Hashable {
     let isSubscribed: Bool
     let publicDescription: String
     
-    var postListingId: PostListingId {
-        displayName
+    /// Special instance for home feed
+    static let home = Subreddit(
+        id: "home",
+        displayName: "",
+        displayNamePrefixed: "Home",
+        iconURL: nil,
+        subscriberCount: 0,
+        isSubscribed: false,
+        publicDescription: "Your personalized home feed"
+    )
+    
+    /// Direct initializer for creating Subreddit instances
+    init(id: String, displayName: String, displayNamePrefixed: String, iconURL: String?, subscriberCount: Int, isSubscribed: Bool, publicDescription: String) {
+        self.id = id
+        self.displayName = displayName
+        self.displayNamePrefixed = displayNamePrefixed
+        self.iconURL = iconURL
+        self.subscriberCount = subscriberCount
+        self.isSubscribed = isSubscribed
+        self.publicDescription = publicDescription
     }
     
     /// Convenience initializer that extracts necessary properties from SubredditData

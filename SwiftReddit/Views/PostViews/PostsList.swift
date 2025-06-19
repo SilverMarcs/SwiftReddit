@@ -14,8 +14,17 @@ struct PostsList: View {
     @State private var isLoading = false
     @State private var after: String?
     @State private var selectedSort: SubListingSortOption = .best
+    @State private var showingSubredditInfo = false
     
-    let listingId: PostListingId
+    let subreddit: Subreddit?
+    
+    private var listingId: String {
+        subreddit?.displayName ?? ""
+    }
+    
+    private var isHomeFeed: Bool {
+        subreddit == nil || subreddit?.displayName.isEmpty == true
+    }
     
     var body: some View {
         List {
@@ -58,7 +67,7 @@ struct PostsList: View {
             }
         }
         .listStyle(.plain)
-        .navigationTitle(listingId.isEmpty ? "Home" : "\(listingId.withSubredditPrefix)")
+        .navigationTitle(isHomeFeed ? "Home" : (subreddit?.displayNamePrefixed ?? ""))
         .toolbarTitleDisplayMode(.inlineLarge)
         .refreshable {
             await refreshPosts()
@@ -67,7 +76,7 @@ struct PostsList: View {
             await loadInitialPosts()
         }
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
+            ToolbarItemGroup(placement: .primaryAction) {
                 Menu {
                     ForEach(SubListingSortOption.allCases) { sort in
                         Button {
@@ -85,6 +94,30 @@ struct PostsList: View {
                         .labelStyle(.iconOnly)
                 }
                 .tint(.accent)
+                
+                if let subreddit = subreddit, !isHomeFeed {
+                    Button {
+                        showingSubredditInfo = true
+                    } label: {
+                        if let iconURL = subreddit.iconURL {
+                            AsyncImage(url: URL(string: iconURL)) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                Image(systemName: "info.circle")
+                            }
+                            .frame(width: 25, height: 25)
+                            .clipShape(Circle())
+                        } else {
+                            Image(systemName: "info.circle")
+                        }
+                    }
+//                    .sharedBackgroundVisibility(.hidden)
+                    .sheet(isPresented: $showingSubredditInfo) {
+                        SubredditInfoView(subreddit: subreddit)
+                    }
+                }
             }
         }
     }
@@ -114,7 +147,7 @@ struct PostsList: View {
     private func fetchPosts(isRefresh: Bool) async {
         let afterParam = isRefresh ? nil : after
         
-        let result = await RedditAPI.shared.fetchPosts(subreddit: listingId, sort: selectedSort, after: afterParam, limit: 20)
+        let result = await RedditAPI.shared.fetchPosts(subredditId: listingId, sort: selectedSort, after: afterParam, limit: 20)
         
         if let (newPosts, newAfter) = result {
             if isRefresh {
@@ -133,6 +166,5 @@ struct PostsList: View {
 }
 
 #Preview {
-    PostsList(listingId: "")
-        
+    PostsList(subreddit: nil)
 }

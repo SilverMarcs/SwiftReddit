@@ -8,9 +8,7 @@
 import Foundation
 import SwiftUI
 
-typealias PostListingId = String
-
-extension PostListingId {
+extension String {
     var withSubredditPrefix: String {
         return "r/\(self)"
     }

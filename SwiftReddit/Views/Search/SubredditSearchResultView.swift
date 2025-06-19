@@ -12,7 +12,7 @@ struct SubredditSearchResultView: View {
     let subreddit: Subreddit
     
     var body: some View {
-        NavigationLink(value: subreddit.postListingId) {
+        NavigationLink(value: subreddit) {
             Label {
                 Text(subreddit.displayNamePrefixed)
             } icon: {

@@ -9,13 +9,12 @@ import SwiftUI
 
 struct HomeTab: View {
     @Environment(AppConfig.self) var config
-    var listingId: PostListingId = ""
     
     var body: some View {
         @Bindable var config = config
         
         NavigationStack(path: $config.path) {
-            PostsList(listingId: listingId)
+            PostsList(subreddit: nil)
                 .navigationDestinations()
         }
     }

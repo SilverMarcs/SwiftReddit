@@ -9,16 +9,16 @@ import SwiftUI
 
 struct SubredditButton: View {
     @Environment(AppConfig.self) private var config
-    let postList: PostListingId
+    let subreddit: Subreddit
     let type: SubRedditButtonType
     
     var body: some View {
         Button {
-            config.path.append(postList)
+            config.path.append(subreddit)
         } label: {
             switch type {
             case .text:
-                Text(postList.withSubredditPrefix)
+                Text(subreddit.displayNamePrefixed)
                     .font(.caption)
                     .foregroundStyle(.link)
             case .icon(let iconURL):
@@ -46,8 +46,4 @@ struct SubredditButton: View {
 enum SubRedditButtonType {
     case icon(iconUrl: String)
     case text
-}
-
-#Preview {
-    SubredditButton(postList: "", type: .text)
 }
