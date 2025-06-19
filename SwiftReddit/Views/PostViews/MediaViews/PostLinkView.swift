@@ -30,26 +30,10 @@ struct PostLinkView: View {
               Spacer()
               
               if let thumbnailURL = metadata.thumbnailURL, let url = URL(string: thumbnailURL) {
-                  CachedAsyncImage(url: url)
+                  ImageView(url: url)
                       .frame(width: 90, height: 60)
                       .cornerRadius(12)
                       .clipped()
-                  
-//                  AsyncImage(url: url) { image in
-//                      image
-//                        .resizable()
-//                        .frame(width: 90, height: 60)
-//                        .cornerRadius(12)
-//                        .aspectRatio(contentMode: .fill)
-//                    } placeholder: {
-//                      Rectangle()
-//                        .fill(Color.gray.opacity(0.3))
-//                        .frame(width: 90, height: 60)
-//                        .overlay(
-//                          ProgressView()
-//                            .scaleEffect(0.8)
-//                        )
-//                    }
               }
           }
           .padding(10)

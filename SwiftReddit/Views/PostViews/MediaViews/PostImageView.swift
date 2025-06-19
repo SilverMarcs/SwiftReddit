@@ -17,28 +17,14 @@ struct PostImageView: View {
             Button {
                 showFullscreen = true
             } label: {
-                CachedAsyncImage(url: url, aspectRatio: aspectRatio)
+                ImageView(url: url, aspectRatio: aspectRatio)
                     .frame(maxHeight: 500)
                     .cornerRadius(12)
                     .clipped()
-                
-//                AsyncImage(url: url) { image in
-//                    image
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                } placeholder: {
-//                    Rectangle()
-//                        .fill(Color.gray.opacity(0.3))
-//                        .aspectRatio(aspectRatio, contentMode: .fit)
-//                        .overlay(
-//                            ProgressView()
-//                                .scaleEffect(0.8)
-//                        )
-//                }
             }
             .buttonStyle(.plain)
             .sheet(isPresented: $showFullscreen) {
-                ImageViewer(image: image)
+                ImageModal(image: image)
             }
         }
     }

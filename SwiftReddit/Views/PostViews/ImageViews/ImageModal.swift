@@ -1,5 +1,5 @@
 //
-//  ImageViewer.swift
+//  ImageModal.swift
 //  SwiftReddit
 //
 //  Created by Zabir Raihan on 18/06/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ImageViewer: View {
+struct ImageModal: View {
     @Environment(\.dismiss) private var dismiss
     let images: [GalleryImage]
     @State private var currentIndex: Int
@@ -26,21 +26,9 @@ struct ImageViewer: View {
         NavigationStack {
             TabView(selection: $currentIndex) {
                 ForEach(Array(images.enumerated()), id: \.element) { index, galleryImage in
-                    CachedAsyncImage(url: URL(string: galleryImage.url))
+                    ImageView(url: URL(string: galleryImage.url))
                         .zoomable()
                         .tag(index)
-                    
-//                    AsyncImage(url: URL(string: galleryImage.url)) { image in
-//                        image
-//                            .resizable()
-//                            .aspectRatio(contentMode: .fit)
-//                            .zoomable()
-//                    } placeholder: {
-//                        ProgressView()
-//                            .controlSize(.large)
-//                    }
-//                        .zoomable()
-//                        .tag(index)
                 }
             }
             .ignoresSafeArea()

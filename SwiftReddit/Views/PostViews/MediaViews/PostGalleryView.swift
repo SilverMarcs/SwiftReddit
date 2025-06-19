@@ -30,7 +30,7 @@ struct PostGalleryView: View {
         }
         .buttonStyle(.plain)
         .fullScreenCover(isPresented: $showFullscreen) {
-            ImageViewer(images: images, initialIndex: selectedIndex)
+            ImageModal(images: images, initialIndex: selectedIndex)
         }
     }
     
@@ -70,33 +70,16 @@ struct PostGalleryView: View {
             .buttonStyle(.plain)
         }
         .sheet(isPresented: $showFullscreen) {
-            ImageViewer(images: images, initialIndex: selectedIndex)
+            ImageModal(images: images, initialIndex: selectedIndex)
         }
     }
     
     // Image view implementation
     private func imageView(for galleryImage: GalleryImage) -> some View {
-        CachedAsyncImage(url: URL(string: galleryImage.url), aspectRatio: aspectRatio(for: galleryImage.dimensions))
+        ImageView(url: URL(string: galleryImage.url), aspectRatio: aspectRatio(for: galleryImage.dimensions))
             .frame(maxHeight: 500)
             .cornerRadius(12)
             .clipped()
-        
-//        AsyncImage(url: URL(string: galleryImage.url)) { image in
-//            image
-//                .resizable()
-//                .aspectRatio(contentMode: .fit)
-//        } placeholder: {
-//            Rectangle()
-//                .fill(Color.gray.opacity(0.3))
-//                .aspectRatio(aspectRatio(for: galleryImage.dimensions), contentMode: .fit)
-//                .overlay(
-//                    ProgressView()
-//                        .scaleEffect(0.8)
-//                )
-//        }
-//        .frame(maxHeight: 500)
-//        .cornerRadius(12)
-//        .clipped()
     }
     
     // Calculate aspect ratio from dimensions
