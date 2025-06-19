@@ -25,7 +25,7 @@ struct PostMediaView: View {
           PostGalleryView(images: images)
         
       case .video(let videoURL, let thumbnailURL, let dimensions):
-          PostVideoView(videoURL: videoURL, thumbnailURL: thumbnailURL, dimensions: dimensions)
+           PostVideoView(videoURL: videoURL, thumbnailURL: thumbnailURL, dimensions: dimensions)
         
       case .youtube(let videoID, let galleryImage):
           PostYouTubeView(videoID: videoID, galleryImage: galleryImage)

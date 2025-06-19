@@ -29,6 +29,18 @@ struct ImageViewer: View {
                     CachedAsyncImage(url: URL(string: galleryImage.url))
                         .zoomable()
                         .tag(index)
+                    
+//                    AsyncImage(url: URL(string: galleryImage.url)) { image in
+//                        image
+//                            .resizable()
+//                            .aspectRatio(contentMode: .fit)
+//                            .zoomable()
+//                    } placeholder: {
+//                        ProgressView()
+//                            .controlSize(.large)
+//                    }
+//                        .zoomable()
+//                        .tag(index)
                 }
             }
             .ignoresSafeArea()

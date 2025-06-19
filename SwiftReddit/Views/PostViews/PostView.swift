@@ -34,7 +34,7 @@ struct PostView: View {
             }
 
             if !post.selftext.isEmpty {
-                Text(LocalizedStringKey(post.selftext))
+                Text(LocalizedStringKey(isCompact ? String(post.selftext.prefix(100)) : post.selftext))
                     .font(.subheadline)
                     .foregroundStyle(isCompact ? .secondary : .primary)
                     .opacity(isCompact ? 1 : 0.9)
@@ -61,11 +61,10 @@ struct PostView: View {
           
           // Post metadata
           HStack {
-              SubredditButton(subreddit: post.subreddit, type: .icon(iconUrl: post.subreddit.iconURL ?? ""))
+//              SubredditButton(subreddit: post.subreddit, type: .icon(iconUrl: post.subreddit.iconURL ?? ""))
               
               VStack(alignment: .leading, spacing: 2) {
                   SubredditButton(subreddit: post.subreddit, type: .text)
-                      
                   
                   HStack(spacing: 10) {
                         HStack(spacing: 4) {

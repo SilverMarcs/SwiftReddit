@@ -100,9 +100,19 @@ struct PostsList: View {
                         showingSubredditInfo = true
                     } label: {
                         if let iconURL = subreddit.iconURL {
-                            CachedAsyncImage(url: URL(string: iconURL))
-                                .frame(width: 25, height: 25)
-                                .clipShape(Circle())
+//                            CachedAsyncImage(url: URL(string: iconURL))
+//                                .frame(width: 25, height: 25)
+//                                .clipShape(Circle())
+                            
+//                            AsyncImage(url: URL(string: iconURL)) { image in
+//                                image
+//                                    .resizable()
+//                                    .aspectRatio(contentMode: .fill)
+//                            } placeholder: {
+//                                Image(systemName: "info.circle")
+//                            }
+//                            .frame(width: 25, height: 25)
+//                            .clipShape(Circle())
                         } else {
                             Image(systemName: "r.circle")
                         }

@@ -56,7 +56,7 @@ struct PostRepostView: View {
                     
                     // Selftext preview for text posts
                     if originalPost.isSelf && !originalPost.selftext.isEmpty {
-                        Text(originalPost.selftext)
+                        Text(originalPost.selftext.prefix(100))
                             .font(.subheadline)
                             .lineLimit(2)
                             .foregroundStyle(.secondary)

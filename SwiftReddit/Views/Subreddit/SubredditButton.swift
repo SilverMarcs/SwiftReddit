@@ -23,9 +23,20 @@ struct SubredditButton: View {
                     .foregroundStyle(.link)
             case .icon(let iconURL):
                 if let url = URL(string: iconURL) {
-                    CachedAsyncImage(url: url)
-                        .frame(width: 32, height: 32)
-                        .clipShape(Circle())
+                    // CachedAsyncImage(url: url)
+                    //     .frame(width: 32, height: 32)
+                    //     .clipShape(Circle())
+                    
+//                    AsyncImage(url: url) { image in
+//                        image
+//                            .resizable()
+//                            .aspectRatio(contentMode: .fill)
+//                    } placeholder: {
+//                        Image(systemName: "r.circle")
+//                            .foregroundStyle(.secondary)
+//                    }
+//                    .frame(width: 32, height: 32)
+//                    .clipShape(Circle())
                 } else {
                     Image(systemName: "r.circle")
                         .font(.title)
