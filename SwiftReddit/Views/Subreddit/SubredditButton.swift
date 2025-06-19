@@ -14,7 +14,7 @@ struct SubredditButton: View {
     
     var body: some View {
         Button {
-            config.path.append(subreddit)
+            config.navigateToSubreddit(subreddit)
         } label: {
             switch type {
             case .text:

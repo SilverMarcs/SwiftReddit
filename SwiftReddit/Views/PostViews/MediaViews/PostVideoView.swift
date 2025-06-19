@@ -19,7 +19,7 @@ struct PostVideoView: View {
             .task {
                 if let videoURL = videoURL, let url = URL(string: videoURL) {
                     let playerItem = AVPlayerItem(url: url)
-                    playerItem.preferredPeakBitRate = 500_000
+                    playerItem.preferredPeakBitRate = 1_000_000
                     
                     player = AVPlayer(playerItem: playerItem)
                     player?.isMuted = true

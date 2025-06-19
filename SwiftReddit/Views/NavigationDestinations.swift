@@ -29,6 +29,7 @@ extension View {
                 )
                 
                 config.path.append(linkMetadata)
+//                config.navigateToLink(linkMetadata)
                 
                 return .handled
             })

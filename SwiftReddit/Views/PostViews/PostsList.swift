@@ -30,7 +30,7 @@ struct PostsList: View {
         List {
             ForEach(posts) { post in
                 Button {
-                    config.path.append(post)
+                    config.navigateToPost(post)
                 } label: {
                     PostView(post: post)
                         .navigationLinkIndicatorVisibility(.hidden)
