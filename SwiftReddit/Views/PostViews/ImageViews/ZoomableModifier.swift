@@ -58,7 +58,7 @@ struct ZoomableModifier: ViewModifier {
                         .identity
                     }
 
-                withAnimation(.linear(duration: 0.15)) {
+                withAnimation(.easeInOut(duration: 0.3)) {
                     transform = newTransform
                     lastTransform = newTransform
                 }
