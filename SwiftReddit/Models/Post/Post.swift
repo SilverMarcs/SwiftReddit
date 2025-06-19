@@ -66,36 +66,17 @@ struct Post: Identifiable, Hashable, Equatable {
     
     /// Basic relative time string for display
     var timeAgo: String {
-        let timeInterval = Date().timeIntervalSince1970 - created
-        let minutes = Int(timeInterval / 60)
-        let hours = Int(timeInterval / 3600)
-        let days = Int(timeInterval / 86400)
-        
-        if days > 0 {
-            return "\(days)d"
-        } else if hours > 0 {
-            return "\(hours)h"
-        } else if minutes > 0 {
-            return "\(minutes)m"
-        } else {
-            return "now"
-        }
+        return created.timeAgo
     }
     
     /// Format vote count for display
     var formattedUps: String {
-        if ups >= 1000 {
-            return String(format: "%.1fk", Double(ups) / 1000.0)
-        }
-        return String(ups)
+        return ups.formatted
     }
     
     /// Format comment count for display
     var formattedComments: String {
-        if numComments >= 1000 {
-            return String(format: "%.1fk", Double(numComments) / 1000.0)
-        }
-        return String(numComments)
+        return numComments.formatted
     }
     
     /// Get flair background color from Reddit API

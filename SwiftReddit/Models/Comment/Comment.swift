@@ -54,28 +54,12 @@ struct Comment: Identifiable, Hashable {
     
     /// Format time for display
     var timeAgo: String {
-        let timeInterval = Date().timeIntervalSince1970 - created
-        let minutes = Int(timeInterval / 60)
-        let hours = Int(timeInterval / 3600)
-        let days = Int(timeInterval / 86400)
-        
-        if days > 0 {
-            return "\(days)d"
-        } else if hours > 0 {
-            return "\(hours)h"
-        } else if minutes > 0 {
-            return "\(minutes)m"
-        } else {
-            return "now"
-        }
+        return created.timeAgo
     }
     
     /// Format score for display
     var formattedScore: String {
-        if score >= 1000 {
-            return String(format: "%.1fk", Double(score) / 1000.0)
-        }
-        return String(score)
+        return score.formatted
     }
     
     /// Get author flair background color
