@@ -41,7 +41,7 @@ struct PostsList: View {
             .listRowSeparator(.hidden)
             
             Color.clear
-                .frame(height: 10)
+                .frame(height: 1)
                 .onAppear {
                     if !isLoading && after != nil {
                         loadMorePosts()
@@ -49,19 +49,11 @@ struct PostsList: View {
                 }
                 .listRowSeparator(.hidden)
             
-            if after == nil && !isLoading {
-                Text("No more posts")
-                    .foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding()
-                    .listRowSeparator(.hidden)
-            }
-            
             if isLoading {
                 ProgressView()
+                    .id(UUID())
                     .controlSize(.large)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding()
                     .listRowSeparator(.hidden)
             }
         }
@@ -100,7 +92,6 @@ struct PostsList: View {
                     } label: {
                         Image(systemName: "info.circle")
                     }
-//                    .sharedBackgroundVisibility(.hidden)
                     .sheet(isPresented: $showingSubredditInfo) {
                         SubredditInfoView(subreddit: subreddit)
                     }
@@ -140,7 +131,6 @@ struct PostsList: View {
             if isRefresh {
                 posts = newPosts
             } else {
-                // Filter out duplicates when appending new posts
                 let existingIDs = Set(posts.map { $0.id })
                 let uniqueNewPosts = newPosts.filter { !existingIDs.contains($0.id) }
                 posts.append(contentsOf: uniqueNewPosts)
