@@ -7,6 +7,7 @@ struct PostVideoView: View {
     let dimensions: CGSize?
     
     @State private var player: AVPlayer?
+    @State private var showingFullscreen = false
     
     var body: some View {
         VideoPlayer(player: player)
@@ -16,6 +17,13 @@ struct PostVideoView: View {
                 dimensions != nil ? (dimensions!.width / dimensions!.height) : 16/9,
                 contentMode: .fit
             )
+            .onTapGesture {
+                showingFullscreen = true
+            }
+            .sheet(isPresented: $showingFullscreen) {
+                VideoPlayer(player: player)
+                    .ignoresSafeArea()
+            }
             .task {
                 if let videoURL = videoURL, let url = URL(string: videoURL) {
                     let playerItem = AVPlayerItem(url: url)
