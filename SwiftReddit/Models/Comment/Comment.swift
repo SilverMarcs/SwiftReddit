@@ -86,11 +86,6 @@ struct Comment: Identifiable, Hashable {
         return Color(hex: bgColor)
     }
     
-    /// Get comment depth indentation
-    var indentationWidth: CGFloat {
-        return CGFloat(depth * 12)
-    }
-    
     /// Check if comment has children
     var hasChildren: Bool {
         return !children.isEmpty
@@ -99,13 +94,6 @@ struct Comment: Identifiable, Hashable {
     /// Get total child count (recursive)
     var totalChildCount: Int {
         return children.reduce(children.count) { $0 + $1.totalChildCount }
-    }
-    
-    /// Toggle collapsed state and return new instance
-    func toggleCollapsed() -> Comment {
-        var newComment = self
-        newComment.isCollapsed.toggle()
-        return newComment
     }
     
     /// Set collapsed state and return new instance

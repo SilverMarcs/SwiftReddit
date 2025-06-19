@@ -15,7 +15,7 @@ struct PostsList: View {
     @State private var after: String?
     @State private var selectedSort: SubListingSortOption = .best
     
-    let subreddit: PostListingId
+    let listingId: PostListingId
     
     var body: some View {
         List {
@@ -58,7 +58,7 @@ struct PostsList: View {
             }
         }
         .listStyle(.plain)
-        .navigationTitle(subreddit.isEmpty ? "Home" : "\(subreddit.withSubredditPrefix)")
+        .navigationTitle(listingId.isEmpty ? "Home" : "\(listingId.withSubredditPrefix)")
         .toolbarTitleDisplayMode(.inlineLarge)
         .refreshable {
             await refreshPosts()
@@ -114,7 +114,7 @@ struct PostsList: View {
     private func fetchPosts(isRefresh: Bool) async {
         let afterParam = isRefresh ? nil : after
         
-        let result = await RedditAPI.shared.fetchPosts(subreddit: subreddit, sort: selectedSort, after: afterParam, limit: 20)
+        let result = await RedditAPI.shared.fetchPosts(subreddit: listingId, sort: selectedSort, after: afterParam, limit: 20)
         
         if let (newPosts, newAfter) = result {
             if isRefresh {
@@ -133,6 +133,6 @@ struct PostsList: View {
 }
 
 #Preview {
-    PostsList(subreddit: "")
+    PostsList(listingId: "")
         
 }

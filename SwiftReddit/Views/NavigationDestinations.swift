@@ -12,8 +12,8 @@ extension View {
         @Environment(AppConfig.self) var config
         
         return self
-            .navigationDestination(for: PostListingId.self) { subreddit in
-                PostsList(subreddit: subreddit)
+            .navigationDestination(for: PostListingId.self) { listingId in
+                PostsList(listingId: listingId)
             }
             .navigationDestination(for: Post.self) { post in
                 PostDetail(post: post)
