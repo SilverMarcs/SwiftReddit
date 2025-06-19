@@ -171,7 +171,8 @@ struct CommentView: View {
     
     private var commentBody: some View {
         Text(LocalizedStringKey(comment.body))
-            .font(.subheadline)
+//            .font(.subheadline)
+            .font(.callout)
             .opacity(0.85)
             .fixedSize(horizontal: false, vertical: true)
             .environment(\.openURL, OpenURLAction { url in

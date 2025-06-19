@@ -8,7 +8,7 @@
 import Foundation
 
 extension RedditAPI {
-    func searchSubreddits(_ query: String, limit: Int = 25) async -> [Subreddit]? {
+    func searchSubreddits(_ query: String, limit: Int = 30) async -> [Subreddit]? {
         guard !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             return []
         }
@@ -55,6 +55,8 @@ extension RedditAPI {
             let listingResponse = try JSONDecoder().decode(SubredditListing.self, from: data)
             let subreddits = listingResponse.data.children.compactMap { child -> Subreddit? in
                 guard child.kind == "t5" else { return nil }
+                // Filter out NSFW subreddits
+                guard child.data.over18 != true else { return nil }
                 return Subreddit(data: child.data)
             }
             

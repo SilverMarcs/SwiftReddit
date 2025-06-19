@@ -16,7 +16,8 @@ struct PostView: View {
       VStack(alignment: .leading, spacing: 8) {
           // Title and flair header
             Text(post.title)
-                .font(.system(size: 18)) // title3 is fine
+//              .font(.title3) // title3 is fine
+                .font(.system(size: 19)) // title3 is fine
                 .fontWeight(.semibold)
                 .lineLimit(3)
                 .multilineTextAlignment(.leading)
@@ -36,7 +37,8 @@ struct PostView: View {
             if !post.selftext.isEmpty {
 //                Text(LocalizedStringKey(isCompact ? String(post.selftext.prefix(100)) : post.selftext))
                 Text(LocalizedStringKey(post.selftext))
-                    .font(.subheadline)
+//                    .font(.subheadline)
+                    .font(.callout)
                     .foregroundStyle(isCompact ? .secondary : .primary)
                     .opacity(isCompact ? 1 : 0.9)
                     .lineLimit(isCompact ? 3 : nil)
@@ -64,7 +66,7 @@ struct PostView: View {
           HStack {
 //              SubredditButton(subreddit: post.subreddit, type: .icon(iconUrl: post.subreddit.iconURL ?? ""))
               
-              VStack(alignment: .leading, spacing: 2) {
+              VStack(alignment: .leading, spacing: 3) {
                   SubredditButton(subreddit: post.subreddit, type: .text)
                   
                   HStack(spacing: 10) {
