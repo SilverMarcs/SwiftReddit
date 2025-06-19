@@ -21,8 +21,10 @@ struct PostVideoView: View {
                 showingFullscreen = true
             }
             .sheet(isPresented: $showingFullscreen) {
-                VideoPlayer(player: player)
-                    .ignoresSafeArea()
+//                NavigationStack {
+                    VideoPlayer(player: player)
+//                }
+                    .ignoresSafeArea(edges: .bottom)
             }
             .task {
                 if let videoURL = videoURL, let url = URL(string: videoURL) {

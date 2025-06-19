@@ -26,16 +26,9 @@ struct ImageViewer: View {
         NavigationStack {
             TabView(selection: $currentIndex) {
                 ForEach(Array(images.enumerated()), id: \.element) { index, galleryImage in
-                    AsyncImage(url: URL(string: galleryImage.url)) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .zoomable()
-                    } placeholder: {
-                        ProgressView()
-                            .controlSize(.large)
-                    }
-                    .tag(index)
+                    CachedAsyncImage(url: URL(string: galleryImage.url))
+                        .zoomable()
+                        .tag(index)
                 }
             }
             .ignoresSafeArea()

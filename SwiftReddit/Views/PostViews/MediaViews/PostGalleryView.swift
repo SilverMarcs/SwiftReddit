@@ -76,22 +76,10 @@ struct PostGalleryView: View {
     
     // Image view implementation
     private func imageView(for galleryImage: GalleryImage) -> some View {
-        AsyncImage(url: URL(string: galleryImage.url)) { image in
-            image
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-        } placeholder: {
-            Rectangle()
-                .fill(Color.gray.opacity(0.3))
-                .aspectRatio(aspectRatio(for: galleryImage.dimensions), contentMode: .fit)
-                .overlay(
-                    ProgressView()
-                        .scaleEffect(0.8)
-                )
-        }
-        .frame(maxHeight: 500)
-        .cornerRadius(12)
-        .clipped()
+        CachedAsyncImage(url: URL(string: galleryImage.url), aspectRatio: aspectRatio(for: galleryImage.dimensions))
+            .frame(maxHeight: 500)
+            .cornerRadius(12)
+            .clipped()
     }
     
     // Calculate aspect ratio from dimensions
