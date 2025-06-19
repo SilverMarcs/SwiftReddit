@@ -10,7 +10,10 @@ import SwiftUI
 struct PostDetail: View {
     @Environment(Nav.self) var nav
     
-    var post: Post
+    let post: Post
+    
+    @State private var comments: [Comment] = []
+    @State private var isLoading = true
     @State private var sortOption: CommentSortOption = .confidence
     
     var body: some View {
@@ -18,21 +21,18 @@ struct PostDetail: View {
             LazyVStack(alignment: .leading) {
                 PostView(post: post, isCompact: false)
                 
-                CommentsListView(post: post, sortOption: sortOption)
-                    .environment(\.openURL, OpenURLAction { url in
-                        let linkMetadata = LinkMetadata(
-                            url: url.absoluteString,
-                            domain: url.host ?? "Unknown",
-                            thumbnailURL: nil
-                        )
-
-            //                      nav.path.append(linkMetadata)
-                                        nav.navigateToLink(linkMetadata)
-
-
-                        return .handled
-                    })
+                if isLoading {
+                    loadingView
+                } else {
+                    commentsList
+                }
             }
+        }
+        .task {
+            await loadComments()
+        }
+        .task(id: sortOption) {
+            await loadComments()
         }
         .navigationTitle(post.subreddit.displayName)
         .navigationSubtitle(post.formattedComments + " comments")
@@ -54,6 +54,67 @@ struct PostDetail: View {
                 }
                 .tint(.accent)
             }
+        }
+    }
+    
+    private var loadingView: some View {
+        ProgressView()
+            .controlSize(.large)
+            .frame(maxWidth: .infinity, minHeight: 200)
+    }
+    
+    @ViewBuilder
+    private var commentsList: some View {
+        Text("Comments")
+            .font(.title3)
+            .fontWeight(.bold)
+            .padding(.leading)
+        
+        ForEach(comments) { comment in
+            CommentView(comment: comment, onToggleCollapse: { updatedComment in
+                updateComment(updatedComment)
+            }, isTopLevel: true)
+            .padding(.horizontal, 5)
+        }
+    }
+    
+    private func loadComments() async {
+        guard comments.isEmpty || isLoading else { return }
+        isLoading = true
+    
+        if let result = await RedditAPI.shared.fetchPostWithComments(
+            subreddit: post.subreddit.displayName,
+            postID: post.id,
+            sort: sortOption
+        ) {
+            await MainActor.run {
+                self.comments = result.0
+                self.isLoading = false
+            }
+        } else {
+            await MainActor.run {
+                self.isLoading = false
+            }
+        }
+    }
+    
+    private func updateComment(_ updatedComment: Comment) {
+        // Find and update the comment in the array
+        if let index = comments.firstIndex(where: { $0.id == updatedComment.id }) {
+            comments[index] = updatedComment
+        } else {
+            // If not found in top level, recursively search in children
+            updateCommentRecursively(&comments, updatedComment)
+        }
+    }
+    
+    private func updateCommentRecursively(_ comments: inout [Comment], _ updatedComment: Comment) {
+        for index in comments.indices {
+            if comments[index].id == updatedComment.id {
+                comments[index] = updatedComment
+                return
+            }
+            updateCommentRecursively(&comments[index].children, updatedComment)
         }
     }
 }

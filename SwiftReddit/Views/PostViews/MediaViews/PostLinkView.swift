@@ -9,7 +9,7 @@ import SwiftUI
 import WebKit
 
 struct PostLinkView: View {
-    @Environment(Nav.self) private var nav
+  @Environment(Nav.self) private var nav
   let metadata: LinkMetadata
   
   var body: some View {
@@ -54,9 +54,19 @@ struct PostLinkView: View {
                   cornerRadius: 12,
               )
               .fill(.background.secondary)
-//          .stroke(.separator, lineWidth: 1)
           )
       }
       .buttonStyle(.plain)
+      .environment(\.openURL, OpenURLAction { url in
+          let linkMetadata = LinkMetadata(
+              url: url.absoluteString,
+              domain: url.host ?? "Unknown",
+              thumbnailURL: nil
+          )
+
+          nav.navigateToLink(linkMetadata)
+
+          return .handled
+      })
     }
 }

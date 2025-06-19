@@ -39,6 +39,17 @@ struct PostView: View {
                     .foregroundStyle(isCompact ? .secondary : .primary)
                     .opacity(isCompact ? 1 : 0.9)
                     .lineLimit(isCompact ? 3 : nil)
+                    .environment(\.openURL, OpenURLAction { url in
+                        let linkMetadata = LinkMetadata(
+                            url: url.absoluteString,
+                            domain: url.host ?? "Unknown",
+                            thumbnailURL: nil
+                        )
+
+                        nav.navigateToLink(linkMetadata)
+
+                        return .handled
+                    })
         }
           
           // Media component
@@ -96,18 +107,5 @@ struct PostView: View {
       .padding(.horizontal, isCompact ? 16 : nil)
       .padding(.vertical, isCompact ? 12 : nil)
       .background(isCompact ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 16))
-      .environment(\.openURL, OpenURLAction { url in
-          let linkMetadata = LinkMetadata(
-              url: url.absoluteString,
-              domain: url.host ?? "Unknown",
-              thumbnailURL: nil
-          )
-
-//                      nav.path.append(linkMetadata)
-                          nav.navigateToLink(linkMetadata)
-
-
-          return .handled
-      })
   }
 }
