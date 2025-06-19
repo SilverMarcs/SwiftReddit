@@ -21,27 +21,27 @@ struct SubredditButton: View {
                 Text(subreddit.displayNamePrefixed)
                     .font(.caption)
                     .foregroundStyle(.link)
-            case .icon(let iconURL):
-                if let url = URL(string: iconURL) {
-                     CachedAsyncImage(url: url)
-                         .frame(width: 32, height: 32)
-                         .clipShape(Circle())
-                    
-//                    AsyncImage(url: url) { image in
-//                        image
-//                            .resizable()
-//                            .aspectRatio(contentMode: .fill)
-//                    } placeholder: {
-//                        Image(systemName: "r.circle")
-//                            .foregroundStyle(.secondary)
-//                    }
-//                    .frame(width: 32, height: 32)
-//                    .clipShape(Circle())
-                } else {
-                    Image(systemName: "r.circle")
-                        .font(.title)
-                        .foregroundStyle(.secondary)
-                }
+//            case .icon(let iconURL):
+//                if let url = URL(string: iconURL) {
+//                     CachedAsyncImage(url: url)
+//                         .frame(width: 32, height: 32)
+//                         .clipShape(Circle())
+//                    
+////                    AsyncImage(url: url) { image in
+////                        image
+////                            .resizable()
+////                            .aspectRatio(contentMode: .fill)
+////                    } placeholder: {
+////                        Image(systemName: "r.circle")
+////                            .foregroundStyle(.secondary)
+////                    }
+////                    .frame(width: 32, height: 32)
+////                    .clipShape(Circle())
+//                } else {
+//                    Image(systemName: "r.circle")
+//                        .font(.title)
+//                        .foregroundStyle(.secondary)
+//                }
             }
         }
         .buttonStyle(.plain)
@@ -49,6 +49,6 @@ struct SubredditButton: View {
 }
 
 enum SubRedditButtonType {
-    case icon(iconUrl: String)
+//    case icon(iconUrl: String)
     case text
 }

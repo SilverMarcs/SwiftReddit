@@ -15,31 +15,21 @@ struct SubredditSearchResultView: View {
         Button {
             nav.navigateToSubreddit(subreddit)
         } label: {
-            Label {
-                Text(subreddit.displayNamePrefixed)
-            } icon: {
-//                if let url = subreddit.iconURL, let iconUrl = URL(string: url) {
-////                    CachedAsyncImage(url: iconUrl)
-////                        .frame(width: 40, height: 40)
-////                        .clipShape(Circle())
-//
-//                    AsyncImage(url: iconUrl) { image in
-//                        image
-//                            .resizable()
-//                            .aspectRatio(contentMode: .fill)
-//                    } placeholder: {
-//                        Image(systemName: "r.circle")
-//                            .foregroundStyle(.secondary)
-//                    }
-//                    .frame(width: 40, height: 40)
-//                    .clipShape(Circle())
-//                } else {
+            HStack {
+                Label {
+                    Text(subreddit.displayNamePrefixed)
+                    Text("\(subreddit.subscriberCount.formatted()) subscribers")
+                } icon: {
                     Image(systemName: "r.circle")
-                        .resizable()
-                        .foregroundStyle(.secondary)
-                        .frame(width: 40, height: 40)
-//                }
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(.secondary)
             }
+            .contentShape(.rect)
         }
+        .buttonStyle(.plain)
     }
 }

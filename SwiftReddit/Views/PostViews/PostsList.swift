@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import WebKit
 
 struct PostsList: View {
     @Environment(Nav.self) private var nav
@@ -99,23 +98,7 @@ struct PostsList: View {
                     Button {
                         showingSubredditInfo = true
                     } label: {
-                        if let iconURL = subreddit.iconURL {
-                            // CachedAsyncImage(url: URL(string: iconURL))
-                            //     .frame(width: 25, height: 25)
-                            //     .clipShape(Circle())
-                            
-//                            AsyncImage(url: URL(string: iconURL)) { image in
-//                                image
-//                                    .resizable()
-//                                    .aspectRatio(contentMode: .fill)
-//                            } placeholder: {
-//                                Image(systemName: "info.circle")
-//                            }
-//                            .frame(width: 25, height: 25)
-//                            .clipShape(Circle())
-                        } else {
-                            Image(systemName: "r.circle")
-                        }
+                        Image(systemName: "info.circle")
                     }
 //                    .sharedBackgroundVisibility(.hidden)
                     .sheet(isPresented: $showingSubredditInfo) {
