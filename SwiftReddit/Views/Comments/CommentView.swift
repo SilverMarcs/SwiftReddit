@@ -182,7 +182,7 @@ struct CommentView: View {
                     thumbnailURL: nil
                 )
 
-                nav.navigateToLink(linkMetadata)
+                nav.path.append(linkMetadata)
 
                 return .handled
             })

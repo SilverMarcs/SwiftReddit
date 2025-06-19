@@ -9,8 +9,9 @@ import SwiftUI
 
 struct PostView: View {
     @Environment(Nav.self) var nav
-  let post: Post
-  var isCompact: Bool = true
+    @Environment(\.isHomeFeed) private var isHomeFeed
+    let post: Post
+    var isCompact: Bool = true
   
   var body: some View {
       VStack(alignment: .leading, spacing: 8) {
@@ -49,7 +50,7 @@ struct PostView: View {
                             thumbnailURL: nil
                         )
 
-                        nav.navigateToLink(linkMetadata)
+                        nav.path.append(linkMetadata)
 
                         return .handled
                     })
@@ -67,7 +68,13 @@ struct PostView: View {
 //              SubredditButton(subreddit: post.subreddit, type: .icon(iconUrl: post.subreddit.iconURL ?? ""))
               
               VStack(alignment: .leading, spacing: 3) {
-                  SubredditButton(subreddit: post.subreddit, type: .text)
+                  if isHomeFeed {
+                      SubredditButton(subreddit: post.subreddit, type: .text)
+                  } else {
+                      Text("u/\(post.author)")
+                          .font(.caption)
+                          .foregroundStyle(.cyan)
+                  }
                   
                   HStack(spacing: 10) {
                         HStack(spacing: 4) {

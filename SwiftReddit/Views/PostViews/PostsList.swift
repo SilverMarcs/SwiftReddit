@@ -29,7 +29,7 @@ struct PostsList: View {
         List {
             ForEach(posts) { post in
                 Button {
-                    nav.navigateToPost(post)
+                    nav.path.append(post)
                 } label: {
                     PostView(post: post)
                         .navigationLinkIndicatorVisibility(.hidden)
@@ -58,6 +58,7 @@ struct PostsList: View {
             }
         }
         .listStyle(.plain)
+        .environment(\.isHomeFeed, isHomeFeed)
         .navigationTitle(isHomeFeed ? "Home" : (subreddit?.displayNamePrefixed ?? ""))
         .toolbarTitleDisplayMode(.inlineLarge)
         .refreshable {

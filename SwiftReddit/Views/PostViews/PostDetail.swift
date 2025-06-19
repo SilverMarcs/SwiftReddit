@@ -16,10 +16,17 @@ struct PostDetail: View {
     @State private var isLoading = true
     @State private var sortOption: CommentSortOption = .confidence
     
+    // Check if we came from a subreddit page (path length > 1 means we have Subreddit -> Post)
+    private var cameFromSubredditPage: Bool {
+        nav.path.count > 1
+    }
+    
     var body: some View {
+        // TODO: use list
         ScrollView {
             LazyVStack(alignment: .leading) {
                 PostView(post: post, isCompact: false)
+                    .environment(\.isHomeFeed, !cameFromSubredditPage)
                 
                 if isLoading {
                     loadingView
@@ -34,7 +41,7 @@ struct PostDetail: View {
         .task(id: sortOption) {
             await loadComments()
         }
-        .navigationTitle(post.subreddit.displayName)
+        .navigationTitle(post.subreddit.displayNamePrefixed)
         .navigationSubtitle(post.formattedComments + " comments")
         .toolbarTitleDisplayMode(.inline)
         .toolbar {

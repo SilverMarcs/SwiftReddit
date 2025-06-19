@@ -13,7 +13,7 @@ struct SubredditSearchResultView: View {
     
     var body: some View {
         Button {
-            nav.navigateToSubreddit(subreddit)
+            nav.path.append(subreddit)
         } label: {
             HStack {
                 Label {
