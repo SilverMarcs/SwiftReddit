@@ -62,7 +62,8 @@ struct PostRepostView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-            } .padding(10)
+            }
+            .padding(12)
             .background(
                 RoundedRectangle(
                     cornerRadius: 12,

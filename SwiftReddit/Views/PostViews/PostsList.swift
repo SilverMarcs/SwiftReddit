@@ -31,7 +31,7 @@ struct PostsList: View {
                 Button {
                     nav.path.append(post)
                 } label: {
-                    PostView(post: post)
+                    PostView(post: post, isHomeFeed: isHomeFeed)
                         .navigationLinkIndicatorVisibility(.hidden)
                 }
                 .buttonStyle(.plain)
@@ -58,7 +58,6 @@ struct PostsList: View {
             }
         }
         .listStyle(.plain)
-        .environment(\.isHomeFeed, isHomeFeed)
         .navigationTitle(isHomeFeed ? "Home" : (subreddit?.displayNamePrefixed ?? ""))
         .toolbarTitleDisplayMode(.inlineLarge)
         .refreshable {
@@ -91,7 +90,7 @@ struct PostsList: View {
                     Button {
                         showingSubredditInfo = true
                     } label: {
-                        Image(systemName: "info.circle")
+                        Image(systemName: "info")
                     }
                     .tint(subreddit.color ?? .blue)
                     .sheet(isPresented: $showingSubredditInfo) {

@@ -9,8 +9,8 @@ import SwiftUI
 
 struct PostView: View {
     @Environment(Nav.self) var nav
-    @Environment(\.isHomeFeed) private var isHomeFeed
     let post: Post
+    var isHomeFeed: Bool = true
     var isCompact: Bool = true
   
   var body: some View {

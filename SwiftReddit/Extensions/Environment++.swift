@@ -10,6 +10,5 @@ import SwiftUI
 
 extension EnvironmentValues {
     @Entry var isReplying = false
-    @Entry var isHomeFeed = true
     @Entry var imageZoomNamespace: Namespace.ID?
 }
