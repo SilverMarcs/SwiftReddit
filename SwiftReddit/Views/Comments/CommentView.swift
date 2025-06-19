@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CommentView: View {
+    @Environment(Nav.self) var nav
     @State var comment: Comment
     let onToggleCollapse: (Comment) -> Void
     let isTopLevel: Bool
@@ -173,6 +174,17 @@ struct CommentView: View {
             .font(.subheadline)
             .opacity(0.85)
             .fixedSize(horizontal: false, vertical: true)
+            .environment(\.openURL, OpenURLAction { url in
+                let linkMetadata = LinkMetadata(
+                    url: url.absoluteString,
+                    domain: url.host ?? "Unknown",
+                    thumbnailURL: nil
+                )
+
+                nav.navigateToLink(linkMetadata)
+
+                return .handled
+            })
     }
     
     private var collapsedIndicator: some View {

@@ -22,6 +22,21 @@ struct BasicWebview: View {
                     let request = URLRequest(url: url)
                     page.load(request)
                 }
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button {
+                            if let url = URL(string: linkMeta.url) {
+                                #if os(iOS)
+                                UIApplication.shared.open(url)
+                                #elseif os(macOS)
+                                NSWorkspace.shared.open(url)
+                                #endif
+                            }
+                        } label: {
+                            Label("Open in Safari", systemImage: "safari")
+                        }
+                    }
+                }
                 #if !os(macOS)
                 .toolbar(.hidden, for :.tabBar)
                 #endif
