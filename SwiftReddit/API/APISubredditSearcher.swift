@@ -27,7 +27,7 @@ extension RedditAPI {
             URLQueryItem(name: "sr_detail", value: "1"),
             URLQueryItem(name: "sort", value: "relevance"),
             URLQueryItem(name: "raw_json", value: "1"),
-            URLQueryItem(name: "typeahead_active", value: "true")
+//            URLQueryItem(name: "typeahead_active", value: "true")
         ]
         
         guard let url = components?.url else {
@@ -52,7 +52,7 @@ extension RedditAPI {
                 }
             }
             
-            let listingResponse = try JSONDecoder().decode(SubredditListingResponse.self, from: data)
+            let listingResponse = try JSONDecoder().decode(SubredditListing.self, from: data)
             let subreddits = listingResponse.data.children.compactMap { child -> SubredditData? in
                 guard child.kind == "t5" else { return nil }
                 return child.data
@@ -66,21 +66,4 @@ extension RedditAPI {
     }
 }
 
-// MARK: - Response Models
-struct SubredditListingResponse: Codable {
-    let kind: String
-    let data: SubredditListingData
-}
 
-struct SubredditListingData: Codable {
-    let modhash: String?
-    let dist: Int?
-    let children: [SubredditChild]
-    let after: String?
-    let before: String?
-}
-
-struct SubredditChild: Codable {
-    let kind: String
-    let data: SubredditData
-}

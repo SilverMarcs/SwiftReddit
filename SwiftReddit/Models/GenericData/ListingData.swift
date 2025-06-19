@@ -28,4 +28,5 @@ struct ListingChild<T: Codable>: Codable {
 typealias PostListing = Listing<PostData>
 typealias PostListingResponse = PostListing
 typealias CommentListing = Listing<CommentData>
+typealias SubredditListing = Listing<SubredditData>
 

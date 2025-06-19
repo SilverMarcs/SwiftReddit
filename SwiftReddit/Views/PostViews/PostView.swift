@@ -36,6 +36,7 @@ struct PostView: View {
                 Text(LocalizedStringKey(post.selftext))
                     .font(.subheadline)
                     .foregroundStyle(isCompact ? .secondary : .primary)
+                    .opacity(isCompact ? 1 : 0.9)
                     .lineLimit(isCompact ? 3 : nil)
         }
           

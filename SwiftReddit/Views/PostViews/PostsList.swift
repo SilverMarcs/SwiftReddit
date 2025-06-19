@@ -64,11 +64,7 @@ struct PostsList: View {
             await refreshPosts()
         }
         .task {
-            guard !config.hasLaunched || !subreddit.isEmpty else { return }
             await loadInitialPosts()
-            if subreddit.isEmpty {
-                config.hasLaunched = true
-            }
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -94,7 +90,7 @@ struct PostsList: View {
     }
     
     private func loadInitialPosts() async {
-        guard !isLoading else { return }
+        guard !isLoading && posts.isEmpty else { return }
         
         isLoading = true
         await fetchPosts(isRefresh: true)

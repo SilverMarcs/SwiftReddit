@@ -11,6 +11,4 @@ import SwiftUI
 @Observable
 class AppConfig {
     var path: NavigationPath = NavigationPath()
-
-    var hasLaunched: Bool = false
 }
