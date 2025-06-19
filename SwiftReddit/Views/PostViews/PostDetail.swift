@@ -19,7 +19,7 @@ struct PostDetail: View {
                 CommentsListView(post: post, sortOption: sortOption)
             }
         }
-        .navigationTitle(post.subreddit)
+        .navigationTitle(post.subreddit.displayName)
         .navigationSubtitle(post.formattedComments + " comments")
         .toolbarTitleDisplayMode(.inline)
         .toolbar {

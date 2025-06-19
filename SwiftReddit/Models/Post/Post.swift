@@ -14,8 +14,7 @@ struct Post: Identifiable, Hashable, Equatable {
     let id: String
     let title: String
     let author: String
-    let subreddit: String
-    let subredditNamePrefixed: String
+    let subreddit: Subreddit
     let ups: Int
     let numComments: Int
     let created: Double
@@ -31,9 +30,6 @@ struct Post: Identifiable, Hashable, Equatable {
     let linkFlairBackgroundColor: String?
     let over18: Bool?
     
-    // Subreddit details
-    let subredditIconURL: String?
-    
     //  media properties
     let mediaType: MediaType
     
@@ -47,8 +43,9 @@ struct Post: Identifiable, Hashable, Equatable {
         self.id = postData.id
         self.title = postData.title
         self.author = postData.author
-        self.subreddit = postData.subreddit
-        self.subredditNamePrefixed = postData.subreddit_name_prefixed
+        
+        self.subreddit = Subreddit(detail: postData.sr_detail!) // TODO: Handle optional safely
+        
         self.ups = postData.ups
         self.numComments = postData.num_comments
         self.created = postData.created
@@ -63,9 +60,6 @@ struct Post: Identifiable, Hashable, Equatable {
         self.linkFlairTextColor = postData.link_flair_text_color
         self.linkFlairBackgroundColor = postData.link_flair_background_color
         self.over18 = postData.over_18
-        
-        // Extract subreddit icon URL
-        self.subredditIconURL = Self.extractSubredditIcon(from: postData)
         
         // Extract media information with high-quality image support
         self.mediaType = Self.extractMedia(from: postData)
@@ -433,25 +427,5 @@ struct Post: Identifiable, Hashable, Equatable {
             domain: domain,
             thumbnailURL: thumbnailURL
         )
-    }
-        
-    /// Extract subreddit icon URL from PostData
-    private static func extractSubredditIcon(from data: PostData) -> String? {
-        // Check if subreddit details are available
-        guard let srDetail = data.sr_detail else { return nil }
-        
-        // Prefer community_icon over icon_img
-        if let communityIcon = srDetail.community_icon, !communityIcon.isEmpty {
-            // Remove query parameters from the URL for a cleaner icon
-            let cleanURL = communityIcon.components(separatedBy: "?").first ?? communityIcon
-            return cleanURL
-        }
-        
-        if let iconImg = srDetail.icon_img, !iconImg.isEmpty {
-            let cleanURL = iconImg.components(separatedBy: "?").first ?? iconImg
-            return cleanURL
-        }
-        
-        return nil
     }
 }

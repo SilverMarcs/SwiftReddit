@@ -23,7 +23,7 @@ struct PostRepostView: View {
                         .foregroundStyle(.secondary)
                         .font(.caption)
                     
-                    Text(originalPost.subredditNamePrefixed)
+                    Text(originalPost.subreddit.displayNamePrefixed)
                         .foregroundStyle(.secondary)
                         .font(.caption)
                     

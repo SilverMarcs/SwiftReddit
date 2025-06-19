@@ -40,4 +40,24 @@ struct Subreddit: Identifiable, Hashable {
             self.iconURL = nil
         }
     }
+    
+    /// Convenience initializer that extracts necessary properties from SubredditDetail
+    init(detail: SubredditDetail) {
+        self.id = detail.id
+        self.displayName = detail.display_name ?? ""
+        self.displayNamePrefixed = detail.display_name_prefixed ?? "r/\(self.displayName)"
+        self.subscriberCount = detail.subscribers ?? 0
+        self.isSubscribed = detail.user_is_subscriber ?? false
+        self.publicDescription = detail.public_description ?? ""
+        
+        // Priority: community_icon > icon_img
+        if let communityIcon = detail.community_icon, !communityIcon.isEmpty {
+            // Remove URL parameters if present
+            self.iconURL = communityIcon.components(separatedBy: "?").first
+        } else if let iconImg = detail.icon_img, !iconImg.isEmpty {
+            self.iconURL = iconImg.components(separatedBy: "?").first
+        } else {
+            self.iconURL = nil
+        }
+    }
 }

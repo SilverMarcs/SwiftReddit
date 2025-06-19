@@ -193,11 +193,34 @@ struct MediaMetadataItemSize: Codable, Hashable {
 // MARK: - Subreddit Detail Support
 
 struct SubredditDetail: Codable, Hashable {
-    let community_icon: String?
-    let icon_img: String?
+    let name: String // Full name like "t5_12hozx"
     let display_name: String?
     let display_name_prefixed: String?
+    let community_icon: String?
+    let icon_img: String?
     let public_description: String?
     let subscribers: Int?
-    let over18: Bool?
+    let over_18: Bool?
+    let user_is_subscriber: Bool?
+    let subreddit_type: String?
+    let created_utc: Double?
+    let title: String?
+    let url: String?
+    let description: String?
+    let banner_img: String?
+    let key_color: String?
+    let primary_color: String?
+    let quarantine: Bool?
+    let user_is_moderator: Bool?
+    let user_is_banned: Bool?
+    let user_is_contributor: Bool?
+    let user_is_muted: Bool?
+    
+    /// Extract the actual ID from the full name (e.g., "12hozx" from "t5_12hozx")
+    var id: String {
+        if name.hasPrefix("t5_") {
+            return String(name.dropFirst(3)) // Remove "t5_" prefix
+        }
+        return name
+    }
 }
