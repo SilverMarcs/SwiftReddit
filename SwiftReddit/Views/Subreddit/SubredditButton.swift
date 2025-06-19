@@ -23,9 +23,9 @@ struct SubredditButton: View {
                     .foregroundStyle(.link)
             case .icon(let iconURL):
                 if let url = URL(string: iconURL) {
-                    // CachedAsyncImage(url: url)
-                    //     .frame(width: 32, height: 32)
-                    //     .clipShape(Circle())
+                     CachedAsyncImage(url: url)
+                         .frame(width: 32, height: 32)
+                         .clipShape(Circle())
                     
 //                    AsyncImage(url: url) { image in
 //                        image
