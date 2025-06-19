@@ -15,12 +15,12 @@ struct SubredditInfoView: View {
             LabeledContent("Subreddit", value: subreddit.displayNamePrefixed)
             
             Section("Statistics") {
-                LabeledContent("Subscribers", value: "\(subreddit.subscriberCount)")
+                LabeledContent("Subscribers", value: "\(subreddit.subscriberCount.formatted())")
                 LabeledContent {
                     Image(systemName: subreddit.isSubscribed ? "checkmark.circle.fill" : "cross.circle.fill")
                         .foregroundStyle(subreddit.isSubscribed ? .green : .red)
                 } label: {
-                    Text("Is Subscribed")
+                    Text("Subscribed")
                 }
                     
             }
