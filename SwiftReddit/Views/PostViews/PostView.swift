@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct PostView: View {
+    @Environment(Nav.self) var nav
   let post: Post
   var isCompact: Bool = true
   
@@ -95,5 +96,18 @@ struct PostView: View {
       .padding(.horizontal, isCompact ? 16 : nil)
       .padding(.vertical, isCompact ? 12 : nil)
       .background(isCompact ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 16))
+      .environment(\.openURL, OpenURLAction { url in
+          let linkMetadata = LinkMetadata(
+              url: url.absoluteString,
+              domain: url.host ?? "Unknown",
+              thumbnailURL: nil
+          )
+
+//                      nav.path.append(linkMetadata)
+                          nav.navigateToLink(linkMetadata)
+
+
+          return .handled
+      })
   }
 }

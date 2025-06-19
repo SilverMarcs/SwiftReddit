@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct PostDetail: View {
+    @Environment(Nav.self) var nav
+    
     var post: Post
     @State private var sortOption: CommentSortOption = .confidence
     
@@ -17,6 +19,19 @@ struct PostDetail: View {
                 PostView(post: post, isCompact: false)
                 
                 CommentsListView(post: post, sortOption: sortOption)
+                    .environment(\.openURL, OpenURLAction { url in
+                        let linkMetadata = LinkMetadata(
+                            url: url.absoluteString,
+                            domain: url.host ?? "Unknown",
+                            thumbnailURL: nil
+                        )
+
+            //                      nav.path.append(linkMetadata)
+                                        nav.navigateToLink(linkMetadata)
+
+
+                        return .handled
+                    })
             }
         }
         .navigationTitle(post.subreddit.displayName)
