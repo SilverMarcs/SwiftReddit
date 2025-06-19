@@ -9,7 +9,7 @@ import SwiftUI
 
 extension View {
     func navigationDestinations() -> some View {
-        @Environment(AppConfig.self) var config
+        @Environment(Nav.self) var nav
         
         return self
             .navigationDestination(for: Subreddit.self) { subreddit in
@@ -21,17 +21,18 @@ extension View {
             .navigationDestination(for: LinkMetadata.self) { meta in
                 BasicWebview(linkMeta: meta)
             }
-            .environment(\.openURL, OpenURLAction { url in
-                let linkMetadata = LinkMetadata(
-                    url: url.absoluteString,
-                    domain: url.host ?? "Unknown",
-                    thumbnailURL: nil
-                )
-                
-                config.path.append(linkMetadata)
-//                config.navigateToLink(linkMetadata)
-                
-                return .handled
-            })
+//            .environment(\.openURL, OpenURLAction { url in
+//                let linkMetadata = LinkMetadata(
+//                    url: url.absoluteString,
+//                    domain: url.host ?? "Unknown",
+//                    thumbnailURL: nil
+//                )
+//                
+//                nav.path.append(linkMetadata)
+//                //                nav.navigateToLink(linkMetadata)
+//
+//                
+//                return .handled
+//            })
     }
 }

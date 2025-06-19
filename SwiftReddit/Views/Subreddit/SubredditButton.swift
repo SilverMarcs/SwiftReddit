@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct SubredditButton: View {
-    @Environment(AppConfig.self) private var config
+    @Environment(Nav.self) private var nav
     let subreddit: Subreddit
     let type: SubRedditButtonType
     
     var body: some View {
         Button {
-            config.navigateToSubreddit(subreddit)
+            nav.navigateToSubreddit(subreddit)
         } label: {
             switch type {
             case .text:

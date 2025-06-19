@@ -10,8 +10,8 @@ import SwiftUI
 struct ContentView: View {
     @State var selectedTab: Tabs = .posts
     
-    @State private var configHome = AppConfig()
-    @State private var configSearch = AppConfig()
+    @State private var configHome = Nav()
+    @State private var configSearch = Nav()
     
     var body: some View {
         TabView(selection: $selectedTab) {

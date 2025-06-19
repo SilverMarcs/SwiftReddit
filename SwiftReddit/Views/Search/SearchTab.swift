@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct SearchTab: View {
-    @Environment(AppConfig.self) private var config
+    @Environment(Nav.self) private var nav
     @State private var searchText = ""
     @State private var searchResults: [Subreddit] = []
     @State private var isLoading = false
     @State private var hasSearched = false
     
     var body: some View {
-        @Bindable var config = config
+        @Bindable var nav = nav
         
-        NavigationStack(path: $config.path) {
+        NavigationStack(path: $nav.path) {
             List {
                 if isLoading {
                     ProgressView()
@@ -90,5 +90,5 @@ struct SearchTab: View {
 
 #Preview {
     SearchTab()
-        .environment(AppConfig())
+        .environment(Nav())
 }

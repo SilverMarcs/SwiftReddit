@@ -9,7 +9,7 @@ import SwiftUI
 import WebKit
 
 struct PostsList: View {
-    @Environment(AppConfig.self) private var config
+    @Environment(Nav.self) private var nav
     @State private var posts: [Post] = []
     @State private var isLoading = false
     @State private var after: String?
@@ -30,7 +30,7 @@ struct PostsList: View {
         List {
             ForEach(posts) { post in
                 Button {
-                    config.navigateToPost(post)
+                    nav.navigateToPost(post)
                 } label: {
                     PostView(post: post)
                         .navigationLinkIndicatorVisibility(.hidden)

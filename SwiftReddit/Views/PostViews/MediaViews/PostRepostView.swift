@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct PostRepostView: View {
-    @Environment(AppConfig.self) private var config
+    @Environment(Nav.self) private var nav
     let originalPost: Post
     
     var body: some View {
         Button {
-            config.path.append(originalPost)
+            nav.path.append(originalPost)
         } label: {
             VStack(alignment: .leading) {
                 // Repost header

@@ -9,12 +9,12 @@ import SwiftUI
 import WebKit
 
 struct PostLinkView: View {
-    @Environment(AppConfig.self) private var config
+    @Environment(Nav.self) private var nav
   let metadata: LinkMetadata
   
   var body: some View {
       Button {
-          config.path.append(metadata)
+          nav.path.append(metadata)
       } label: {
           HStack(spacing: 12) {
               Image(systemName: "link")

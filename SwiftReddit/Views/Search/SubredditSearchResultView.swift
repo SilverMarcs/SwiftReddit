@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SubredditSearchResultView: View {
-    @Environment(AppConfig.self) private var config
+    @Environment(Nav.self) private var nav
     let subreddit: Subreddit
     
     var body: some View {

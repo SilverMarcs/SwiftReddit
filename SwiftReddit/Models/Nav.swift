@@ -1,5 +1,5 @@
 //
-//  AppConfig.swift
+//  Nav.swift
 //  SwiftReddit
 //
 //  Created by Zabir Raihan on 17/06/2025.
@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 @Observable
-class AppConfig {
+class Nav {
     var path: NavigationPath = NavigationPath()
     
     // Track navigation history for intelligent navigation

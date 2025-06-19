@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct HomeTab: View {
-    @Environment(AppConfig.self) var config
+    @Environment(Nav.self) var nav
     
     var body: some View {
-        @Bindable var config = config
+        @Bindable var nav = nav
         
-        NavigationStack(path: $config.path) {
+        NavigationStack(path: $nav.path) {
             PostsList(subreddit: nil)
                 .navigationDestinations()
         }
