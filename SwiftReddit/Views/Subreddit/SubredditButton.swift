@@ -20,7 +20,7 @@ struct SubredditButton: View {
             case .text:
                 Text(subreddit.displayNamePrefixed)
                     .font(.caption)
-                    .foregroundStyle(.link)
+                    .foregroundStyle(subreddit.color ?? .blue)
 //            case .icon(let iconURL):
 //                if let url = URL(string: iconURL) {
 //                     CachedAsyncImage(url: url)

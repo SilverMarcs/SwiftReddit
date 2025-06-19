@@ -37,4 +37,29 @@ extension Color {
         
         self.init(red: components.R, green: components.G, blue: components.B, opacity: components.a)
     }
+    
+    /// Calculate the brightness (luminance) of the color
+    /// Returns a value between 0.0 (black) and 1.0 (white)
+    var brightness: Double {
+        let uiColor = UIColor(self)
+        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+        uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        
+        // Calculate relative luminance using the formula for sRGB
+        return 0.299 * Double(red) + 0.587 * Double(green) + 0.114 * Double(blue)
+    }
+    
+    /// Check if the color is too dark or too bright for good readability
+    var isGoodForReadability: Bool {
+        let brightness = self.brightness
+        // Reject colors that are too dark (< 0.2) or too bright (> 0.8)
+        return brightness >= 0.2 && brightness <= 0.8
+    }
+    
+    /// Get a validated color that falls back to accent if too dark/bright
+    static func validatedColor(from hexString: String?) -> Color? {
+        guard let hexString = hexString, !hexString.isEmpty else { return nil }
+        let color = Color(hex: hexString)
+        return color.isGoodForReadability ? color : .accent
+    }
 }

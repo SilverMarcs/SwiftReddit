@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 /// Subreddit model with only necessary properties
 struct Subreddit: Identifiable, Hashable {
@@ -16,6 +17,7 @@ struct Subreddit: Identifiable, Hashable {
     let subscriberCount: Int
     let isSubscribed: Bool
     let publicDescription: String
+    let color: Color?
     
     /// Special instance for home feed
     static let home = Subreddit(
@@ -25,11 +27,12 @@ struct Subreddit: Identifiable, Hashable {
         iconURL: nil,
         subscriberCount: 0,
         isSubscribed: false,
-        publicDescription: "Your personalized home feed"
+        publicDescription: "Your personalized home feed",
+        color: nil
     )
     
     /// Direct initializer for creating Subreddit instances
-    init(id: String, displayName: String, displayNamePrefixed: String, iconURL: String?, subscriberCount: Int, isSubscribed: Bool, publicDescription: String) {
+    init(id: String, displayName: String, displayNamePrefixed: String, iconURL: String?, subscriberCount: Int, isSubscribed: Bool, publicDescription: String, color: Color?) {
         self.id = id
         self.displayName = displayName
         self.displayNamePrefixed = displayNamePrefixed
@@ -37,6 +40,7 @@ struct Subreddit: Identifiable, Hashable {
         self.subscriberCount = subscriberCount
         self.isSubscribed = isSubscribed
         self.publicDescription = publicDescription
+        self.color = color
     }
     
     /// Convenience initializer that extracts necessary properties from SubredditData
@@ -47,6 +51,13 @@ struct Subreddit: Identifiable, Hashable {
         self.subscriberCount = data.subscribers ?? 0
         self.isSubscribed = data.user_is_subscriber ?? false
         self.publicDescription = data.public_description
+        
+        // Convert key_color hex string to SwiftUI Color
+        if let keyColor = data.key_color, !keyColor.isEmpty {
+            self.color = Subreddit.validateColor(from: keyColor)
+        } else {
+            self.color = nil
+        }
         
         // Priority: community_icon > icon_img
         if let communityIcon = data.community_icon, !communityIcon.isEmpty {
@@ -68,6 +79,13 @@ struct Subreddit: Identifiable, Hashable {
         self.isSubscribed = detail.user_is_subscriber ?? false
         self.publicDescription = detail.public_description ?? ""
         
+        // Convert key_color hex string to SwiftUI Color
+        if let keyColor = detail.key_color, !keyColor.isEmpty {
+            self.color = Subreddit.validateColor(from: keyColor)
+        } else {
+            self.color = nil
+        }
+        
         // Priority: community_icon > icon_img
         if let communityIcon = detail.community_icon, !communityIcon.isEmpty {
             // Remove URL parameters if present
@@ -77,5 +95,10 @@ struct Subreddit: Identifiable, Hashable {
         } else {
             self.iconURL = nil
         }
+    }
+    
+    /// Helper method to validate and convert key_color to SwiftUI Color
+    private static func validateColor(from keyColor: String?) -> Color? {
+        return Color.validatedColor(from: keyColor)
     }
 }

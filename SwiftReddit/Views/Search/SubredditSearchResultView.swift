@@ -21,6 +21,7 @@ struct SubredditSearchResultView: View {
                     Text("\(subreddit.subscriberCount.formatted()) subscribers")
                 } icon: {
                     Image(systemName: "r.circle")
+                        .foregroundStyle(subreddit.color ?? .accent)
                 }
                 
                 Spacer()

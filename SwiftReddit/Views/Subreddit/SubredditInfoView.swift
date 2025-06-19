@@ -42,6 +42,7 @@ struct SubredditInfoView: View {
         iconURL: nil,
         subscriberCount: 50000,
         isSubscribed: false,
-        publicDescription: "A community for learning and developing iOS apps using SwiftUI"
+        publicDescription: "A community for learning and developing iOS apps using SwiftUI",
+        color: .blue
     ))
 }

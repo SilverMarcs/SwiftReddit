@@ -92,6 +92,7 @@ struct PostsList: View {
                     } label: {
                         Image(systemName: "info.circle")
                     }
+                    .tint(subreddit.color ?? .blue)
                     .sheet(isPresented: $showingSubredditInfo) {
                         SubredditInfoView(subreddit: subreddit)
                     }
