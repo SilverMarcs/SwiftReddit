@@ -53,6 +53,15 @@ struct SearchTab: View {
                     await performSearch(searchText)
                 }
             }
+            .toolbar {
+                ToolbarItem(placement: .destructiveAction) {
+                    Button("Clear", role: .destructive) {
+                        searchText = ""
+                        searchResults = []
+                        hasSearched = false
+                    }
+                }
+            }
         }
     }
     

@@ -49,33 +49,6 @@ struct PostRepostView: View {
                         .lineLimit(3)
                         .multilineTextAlignment(.leading)
                     
-//                     Post metadata
-//                    HStack {
-//                        Text("u/\(originalPost.author)")
-//                            .font(.caption)
-//                            .foregroundStyle(.secondary)
-//                        
-//                        Text("•")
-//                            .font(.caption)
-//                            .foregroundStyle(.secondary)
-//                        
-//                        Text(originalPost.timeAgo)
-//                            .font(.caption)
-//                            .foregroundStyle(.secondary)
-//                        
-//                        Spacer()
-//                        
-//                        // Vote count
-//                        HStack(spacing: 4) {
-//                            Image(systemName: "arrow.up")
-//                                .font(.caption)
-//                                .foregroundStyle(.secondary)
-//                            Text(originalPost.formattedUps)
-//                                .font(.caption)
-//                                .foregroundStyle(.secondary)
-//                        }
-//                    }
-                    
                     // Show original post's media if it has any (but smaller)
                     if originalPost.mediaType.hasMedia && !isRepostOfRepost(originalPost.mediaType) {
                         PostMediaView(mediaType: originalPost.mediaType)
@@ -87,7 +60,7 @@ struct PostRepostView: View {
                     // Selftext preview for text posts
                     if originalPost.isSelf && !originalPost.selftext.isEmpty {
                         Text(originalPost.selftext)
-                            .font(.body)
+                            .font(.subheadline)
                             .lineLimit(2)
                             .foregroundStyle(.secondary)
                     }
@@ -101,7 +74,6 @@ struct PostRepostView: View {
                 )
                 .fill(.background.secondary)
 //                .stroke(.separator, lineWidth: 1)
-
             )
         }
         .buttonStyle(.plain)

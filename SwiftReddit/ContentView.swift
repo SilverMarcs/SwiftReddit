@@ -10,10 +10,14 @@ import SwiftUI
 struct ContentView: View {
     @State var selectedTab: Tabs = .posts
     
+    @State private var configHome = AppConfig()
+    @State private var configSearch = AppConfig()
+    
     var body: some View {
         TabView(selection: $selectedTab) {
             Tab("Posts", systemImage: "doc.text.image", value: .posts) {
-                PostsNavigationView()
+                HomeTab()
+                    .environment(configHome)
             }
             
             Tab("Settings", systemImage: "gearshape.fill", value: .settings) {
@@ -22,6 +26,7 @@ struct ContentView: View {
             
             Tab(value: .search, role: .search) {
                 SearchTab()
+                    .environment(configSearch)
             }
                 
         }

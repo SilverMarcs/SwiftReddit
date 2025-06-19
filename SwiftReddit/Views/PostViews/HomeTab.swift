@@ -1,5 +1,5 @@
 //
-//  PostsNavigationView.swift
+//  HomeTab.swift
 //  SwiftReddit
 //
 //  Created by Winston Team on 18/06/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PostsNavigationView: View {
+struct HomeTab: View {
     @Environment(AppConfig.self) var config
     var initialSubreddit: PostListingId = ""
     
@@ -22,5 +22,5 @@ struct PostsNavigationView: View {
 }
 
 #Preview {
-    PostsNavigationView()
+    HomeTab()
 }

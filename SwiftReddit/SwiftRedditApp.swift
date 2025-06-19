@@ -9,12 +9,10 @@ import SwiftUI
 
 @main
 struct SwiftRedditApp: App {
-    @State private var config = AppConfig()
     
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(config)
         }
     }
 }
