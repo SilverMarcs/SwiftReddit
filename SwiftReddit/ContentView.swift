@@ -12,12 +12,14 @@ struct ContentView: View {
     
     @State private var configHome = Nav()
     @State private var configSearch = Nav()
+    @Namespace private var imageZoomNamespace
     
     var body: some View {
         TabView(selection: $selectedTab) {
             Tab("Posts", systemImage: "doc.text.image", value: .posts) {
                 HomeTab()
                     .environment(configHome)
+                    .environment(\.imageZoomNamespace, imageZoomNamespace)
             }
             
             Tab("Settings", systemImage: "gearshape.fill", value: .settings) {
@@ -27,6 +29,7 @@ struct ContentView: View {
             Tab(value: .search, role: .search) {
                 SearchTab()
                     .environment(configSearch)
+                    .environment(\.imageZoomNamespace, imageZoomNamespace)
             }
                 
         }

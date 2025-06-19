@@ -12,6 +12,18 @@ struct GalleryImage: Hashable {
     let dimensions: CGSize
 }
 
+struct ImageModalData: Hashable {
+    let images: [GalleryImage]
+    
+    init(images: [GalleryImage]) {
+        self.images = images
+    }
+    
+    init(image: GalleryImage) {
+        self.images = [image]
+    }
+}
+
 struct LinkMetadata: Hashable {
     let url: String
     let domain: String

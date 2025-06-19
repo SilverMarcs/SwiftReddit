@@ -19,5 +19,8 @@ extension View {
             .navigationDestination(for: LinkMetadata.self) { meta in
                 BasicWebview(linkMeta: meta)
             }
+            .navigationDestination(for: ImageModalData.self) { imageData in
+                ImageModal(images: imageData.images)
+            }
     }
 }

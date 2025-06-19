@@ -10,32 +10,22 @@ import SwiftUI
 struct PostImageView: View {
     var image: GalleryImage
     
-    @State private var showFullscreen = false
+    @Environment(\.imageZoomNamespace) private var zoomNamespace
+    @Environment(Nav.self) private var nav
     
     var body: some View {
         if let url = URL(string: image.url) {
             Button {
-                showFullscreen = true
+                nav.path.append(ImageModalData(image: image))
             } label: {
-                ImageView(url: url, aspectRatio: aspectRatio)
+                ImageView(url: url, aspectRatio: image.dimensions.aspectRatio)
                     .frame(maxHeight: 500)
                     .cornerRadius(12)
                     .clipped()
+                    .matchedTransitionSource(id: image.url, in: zoomNamespace ?? Namespace().wrappedValue)
             }
             .buttonStyle(.plain)
-            .sheet(isPresented: $showFullscreen) {
-                ImageModal(image: image)
-            }
         }
-    }
-    
-    private var aspectRatio: CGFloat {
-        let dimensions = image.dimensions
-            guard
-              dimensions.width > 0 && dimensions.height > 0 else {
-            return 16/9 // Default aspect ratio
-        }
-        return dimensions.width / dimensions.height
     }
 }
 

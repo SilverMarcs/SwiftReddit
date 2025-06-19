@@ -9,27 +9,34 @@ import SwiftUI
 
 struct ImageModal: View {
     let images: [GalleryImage]
-    @State private var currentIndex: Int
+    @Environment(\.imageZoomNamespace) private var zoomNamespace
     
-    init(images: [GalleryImage], initialIndex: Int) {
+    private var sourceID: String {
+        images.first?.url ?? ""
+    }
+    
+    private var namespace: Namespace.ID {
+        zoomNamespace ?? Namespace().wrappedValue
+    }
+    
+    init(images: [GalleryImage]) {
         self.images = images
-        self._currentIndex = State(initialValue: initialIndex)
     }
     
     init(image: GalleryImage) {
         self.images = [image]
-        self._currentIndex = State(initialValue: 0)
     }
     
     var body: some View {
-        TabView(selection: $currentIndex) {
+        TabView {
             ForEach(Array(images.enumerated()), id: \.element) { index, galleryImage in
-                ImageView(url: URL(string: galleryImage.url))
+                ImageView(url: URL(string: galleryImage.url), aspectRatio: galleryImage.dimensions.width/galleryImage.dimensions.height)
                     .zoomable()
                     .tag(index)
             }
         }
         .ignoresSafeArea()
         .tabViewStyle(.page)
+        .navigationTransition(.zoom(sourceID: sourceID, in: namespace))
     }
 }
