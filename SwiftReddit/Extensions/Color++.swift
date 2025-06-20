@@ -41,9 +41,13 @@ extension Color {
     /// Calculate the brightness (luminance) of the color
     /// Returns a value between 0.0 (black) and 1.0 (white)
     var brightness: Double {
-        let uiColor = UIColor(self)
+        #if os(macOS)
+        let color = NSColor(self)
+        #else
+        let color = UIColor(self)
+        #endif
         var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
-        uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
         
         // Calculate relative luminance using the formula for sRGB
         return 0.299 * Double(red) + 0.587 * Double(green) + 0.114 * Double(blue)

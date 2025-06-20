@@ -35,7 +35,7 @@ struct BasicWebview: View {
 //                    }
                 }
                 .toolbar {
-                    ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    ToolbarItemGroup(placement: .primaryAction) {
                         Button {
                             isDarkModeEnabled.toggle()
                             toggleDarkMode()

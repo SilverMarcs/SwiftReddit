@@ -36,7 +36,9 @@ struct ImageModal: View {
             }
         }
         .ignoresSafeArea()
+        #if !os(macOS)
         .tabViewStyle(.page)
         .navigationTransition(.zoom(sourceID: sourceID, in: namespace))
+        #endif
     }
 }
