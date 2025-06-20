@@ -43,17 +43,7 @@ struct PostView: View {
                     .foregroundStyle(isCompact ? .secondary : .primary)
                     .opacity(isCompact ? 1 : 0.9)
                     .lineLimit(isCompact ? 3 : nil)
-                    .environment(\.openURL, OpenURLAction { url in
-                        let linkMetadata = LinkMetadata(
-                            url: url.absoluteString,
-                            domain: url.host ?? "Unknown",
-                            thumbnailURL: nil
-                        )
-
-                        nav.path.append(linkMetadata)
-
-                        return .handled
-                    })
+                    .handleURLs()
         }
           
           // Media component

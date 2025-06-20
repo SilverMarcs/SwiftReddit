@@ -175,17 +175,7 @@ struct CommentView: View {
             .font(.callout)
             .opacity(0.85)
             .fixedSize(horizontal: false, vertical: true)
-            .environment(\.openURL, OpenURLAction { url in
-                let linkMetadata = LinkMetadata(
-                    url: url.absoluteString,
-                    domain: url.host ?? "Unknown",
-                    thumbnailURL: nil
-                )
-
-                nav.path.append(linkMetadata)
-
-                return .handled
-            })
+            .handleURLs()
     }
     
     private var collapsedIndicator: some View {

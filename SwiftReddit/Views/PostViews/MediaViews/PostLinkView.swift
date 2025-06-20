@@ -45,16 +45,6 @@ struct PostLinkView: View {
           )
       }
       .buttonStyle(.plain)
-      .environment(\.openURL, OpenURLAction { url in
-          let linkMetadata = LinkMetadata(
-              url: url.absoluteString,
-              domain: url.host ?? "Unknown",
-              thumbnailURL: nil
-          )
-
-          nav.path.append(linkMetadata)
-
-          return .handled
-      })
+      .handleURLs()
     }
 }
