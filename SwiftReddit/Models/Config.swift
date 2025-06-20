@@ -6,13 +6,14 @@
 //
 
 import Foundation
+import SwiftUI
 import Combine
 
 class Config: ObservableObject {
     static let shared = Config()
     
-    private init() { }
+    @AppStorage("autoplay") var autoplay: Bool = true
+    @AppStorage("muteOnPlay") var muteOnPlay: Bool = false
     
-    @Published var autoplay: Bool = true
-    @Published var muteOnPlay: Bool = false
+    private init() { }
 }
