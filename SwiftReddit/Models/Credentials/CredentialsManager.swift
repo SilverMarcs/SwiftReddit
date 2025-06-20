@@ -13,7 +13,7 @@ import Combine
 class CredentialsManager {
     static let shared = CredentialsManager()
     
-    private let userDefaults = UserDefaults.standard
+    private let keychainManager = KeychainManager.shared
     private let credentialsKey = "reddit_credential" // Changed to singular
     
     // Single credential instead of array
@@ -29,48 +29,38 @@ class CredentialsManager {
     func saveCredential(_ newCredential: RedditCredential) {
         // Replace any existing credential with the new one
         credential = newCredential
-        saveToUserDefaults()
+        saveToKeychain()
     }
     
     func deleteCredential(_ credentialToDelete: RedditCredential) {
         // Only delete if it matches the current credential
         if credential?.id == credentialToDelete.id {
             credential = nil
-            saveToUserDefaults()
+            keychainManager.delete(key: credentialsKey)
         }
     }
     
     func deleteAllCredentials() {
         credential = nil
-        saveToUserDefaults()
+        keychainManager.delete(key: credentialsKey)
     }
     
     private func loadCredentials() {
-        // Try to load single credential first
-        if let data = userDefaults.data(forKey: credentialsKey),
+        // Load credential directly from keychain
+        if let credentialData = keychainManager.load(key: credentialsKey),
+           let data = credentialData.data(using: .utf8),
            let loadedCredential = try? JSONDecoder().decode(RedditCredential.self, from: data) {
             self.credential = loadedCredential
-            return
-        }
-        
-        // Migration: Try to load from old multiple credentials format
-        if let data = userDefaults.data(forKey: "reddit_credentials"),
-           let loadedCredentials = try? JSONDecoder().decode([RedditCredential].self, from: data),
-           let firstCredential = loadedCredentials.first {
-            self.credential = firstCredential
-            // Clear old format and save in new format
-            userDefaults.removeObject(forKey: "reddit_credentials")
-            userDefaults.removeObject(forKey: "selected_credential_id")
-            saveToUserDefaults()
         }
     }
     
-    private func saveToUserDefaults() {
+    private func saveToKeychain() {
         if let credential = credential,
-           let data = try? JSONEncoder().encode(credential) {
-            userDefaults.set(data, forKey: credentialsKey)
+           let data = try? JSONEncoder().encode(credential),
+           let jsonString = String(data: data, encoding: .utf8) {
+            keychainManager.save(key: credentialsKey, data: jsonString)
         } else {
-            userDefaults.removeObject(forKey: credentialsKey)
+            keychainManager.delete(key: credentialsKey)
         }
     }
     
