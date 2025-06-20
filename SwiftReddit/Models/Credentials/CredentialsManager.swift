@@ -87,23 +87,45 @@ class CredentialsManager {
         
         let urlString = "https://www.reddit.com/api/v1/authorize.compact?client_id=\(appID.trimmingCharacters(in: .whitespaces))&response_type=\(response_type)&state=\(state)&redirect_uri=\(redirect_uri)&duration=\(duration)&scope=\(scope)"
         
-        return URL(string: urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!
+        let finalURL = URL(string: urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!
+        
+        return finalURL
     }
     
     func getAuthCodeFromURL(_ rawUrl: URL) -> String? {
-        if let url = URL(string: rawUrl.absoluteString.replacingOccurrences(of: "winstonapp://", with: "https://app.winston.cafe/")),
-           url.lastPathComponent == "auth-success",
-           let query = URLComponents(url: url, resolvingAgainstBaseURL: false),
-           let state = query.queryItems?.first(where: { $0.name == "state" })?.value,
-           let code = query.queryItems?.first(where: { $0.name == "code" })?.value,
-           state == lastAuthState {
-            return code
+        
+        // Parse URL components directly from the raw URL without conversion
+        guard let components = URLComponents(url: rawUrl, resolvingAgainstBaseURL: false) else {
+            return nil
         }
-        return nil
+        
+        // Check if this is our expected redirect URL
+        // Handle both direct custom scheme and web-based redirects
+        let isValidURL = (components.scheme == "winstonapp" && components.host == "auth-success") ||
+                        (components.scheme == "winstonapp" && components.path.contains("auth-success"))
+        
+        guard isValidURL else {
+            return nil
+        }
+        
+        // Extract state and code from query parameters
+        guard let state = components.queryItems?.first(where: { $0.name == "state" })?.value,
+              let code = components.queryItems?.first(where: { $0.name == "code" })?.value else {
+            return nil
+        }
+        
+        // Validate state matches
+        guard state == lastAuthState else {
+            return nil
+        }
+        
+        return code
     }
     
     func authorizeCredential(_ credential: RedditCredential, authCode: String) async -> Bool {
-        guard !credential.apiAppID.isEmpty && !credential.apiAppSecret.isEmpty else { return false }
+        guard !credential.apiAppID.isEmpty && !credential.apiAppSecret.isEmpty else {
+            return false 
+        }
         
         // Exchange auth code for tokens
         guard let tokenResponse = await RedditAPI.shared.exchangeAuthCodeForTokens(

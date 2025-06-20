@@ -33,6 +33,7 @@ struct ContentView: View {
             }
                 
         }
+        .tabViewStyle(.sidebarAdaptable)
         #if !os(macOS)
         .tabBarMinimizeBehavior(.onScrollDown)
         #endif
