@@ -8,16 +8,26 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @ObservedObject private var config = Config.shared
+    
     var body: some View {
         NavigationStack {
-            List {
+            Form {
                 Section("Reddit API") {
                     NavigationLink(destination: CredentialsView()) {
                         Label("Credentials", systemImage: "key.fill")
                     }
                 }
-                
+                Section("Playback Settings") {
+                    Toggle(isOn: $config.autoplay) {
+                        Label("Autoplay Videos", systemImage: "play.fill")
+                    }
+                    Toggle(isOn: $config.muteOnPlay) {
+                        Label("Mute on Play", systemImage: "speaker.slash.fill")
+                    }
+                }
             }
+            .formStyle(.grouped)
             .navigationTitle("Settings")
             .toolbarTitleDisplayMode(.inlineLarge)
         }

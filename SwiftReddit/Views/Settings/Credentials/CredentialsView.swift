@@ -118,7 +118,7 @@ struct CredentialsView: View {
             }
         }
         .formStyle(.grouped)
-        .navigationTitle("Reddit Credential")
+        .navigationTitle("Credentials")
         .toolbarTitleDisplayMode(.inline)
         .alert("Error", isPresented: $showingError) {
             Button("OK") {

@@ -2,6 +2,7 @@ import SwiftUI
 import AVKit
 
 struct PostVideoView: View {
+    @ObservedObject private var config = Config.shared
     let videoURL: String?
     let thumbnailURL: String?
     let dimensions: CGSize?
@@ -21,9 +22,7 @@ struct PostVideoView: View {
                 showingFullscreen = true
             }
             .sheet(isPresented: $showingFullscreen) {
-//                NavigationStack {
-                    VideoPlayer(player: player)
-//                }
+                VideoPlayer(player: player)
                     .ignoresSafeArea(edges: .bottom)
             }
             .task {
@@ -40,8 +39,10 @@ struct PostVideoView: View {
                     playerItem.preferredPeakBitRate = 1_000_000
                     
                     player = AVPlayer(playerItem: playerItem)
-                    player?.isMuted = true
-                    player?.play()
+                    player?.isMuted = config.muteOnPlay
+                    if config.autoplay {
+                        player?.play()
+                    }
                 }
             }
             .onDisappear {
