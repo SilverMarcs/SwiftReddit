@@ -55,7 +55,14 @@ struct PostView: View {
           
           // Post metadata
           HStack {
-//              SubredditButton(subreddit: post.subreddit, type: .icon(iconUrl: post.subreddit.iconURL ?? ""))
+              if isHomeFeed {
+                  SubredditButton(subreddit: post.subreddit, type: .icon(iconUrl: post.subreddit.iconURL ?? ""))
+              } else {
+                  Image(systemName: "person.crop.circle")
+                      .resizable()
+                      .frame(width: 32, height: 32)
+                      .foregroundStyle(.secondary)
+              }
               
               VStack(alignment: .leading, spacing: 3) {
                   if isHomeFeed {

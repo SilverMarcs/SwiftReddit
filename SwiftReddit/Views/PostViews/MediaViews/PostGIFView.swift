@@ -8,20 +8,32 @@
 import SwiftUI
 
 struct PostGIFView: View {
+    @Environment(Nav.self) private var nav
   let galleryImage: GalleryImage
   
   var body: some View {
-      ZStack(alignment: .bottomTrailing) {
-        PostImageView(image: galleryImage)
-      
-          Text("GIF")
-              .font(.caption2)
-              .fontWeight(.bold)
-              .foregroundStyle(.white)
-              .padding(.horizontal, 6)
-              .padding(.vertical, 2)
-              .background(.black.secondary, in: .rect(cornerRadius: 5))
-              .padding(10)
-    }
+      Button {
+          let linkMetadata = LinkMetadata(
+            url: galleryImage.url,
+            domain: galleryImage.url,
+            thumbnailURL: nil
+          )
+          nav.path.append(linkMetadata)
+      } label: {
+          ZStack(alignment: .bottomTrailing) {
+              PostImageView(image: galleryImage)
+                  .disabled(true)
+              
+              Text("GIF")
+                  .font(.caption2)
+                  .fontWeight(.bold)
+                  .foregroundStyle(.white)
+                  .padding(.horizontal, 6)
+                  .padding(.vertical, 2)
+                  .background(.black.secondary, in: .rect(cornerRadius: 5))
+                  .padding(10)
+          }
+      }
+      .buttonStyle(.plain)
   }
 }

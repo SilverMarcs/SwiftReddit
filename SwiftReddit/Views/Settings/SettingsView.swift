@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct SettingsView: View {
     @ObservedObject private var config = Config.shared
@@ -35,7 +36,7 @@ struct SettingsView: View {
                     
                     LabeledContent("Clear Image Cache") {
                         Button("Clear") {
-                            URLCache.shared.removeAllCachedResponses()
+                            ImageCache.default.clearCache()
                         }
                     }
                 }

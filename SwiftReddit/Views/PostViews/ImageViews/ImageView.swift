@@ -6,37 +6,38 @@
 //
 
 import SwiftUI
+import Kingfisher
+import Kingfisher
 
 struct ImageView: View {
     var url: URL?
     var aspectRatio: CGFloat? = 16/9 // Sensible default aspect ratio
     
     var body: some View {
-        // Easy place to switch between implementations
-        
-        CachedAsyncImage(url: url) { phase in
-            switch phase {
-            case .empty:
-                placeholder
-            case .success(let image):
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-            case .failure(let error):
-                largeImagePlaceholder
-            @unknown default:
-                failurePlaceholder
+        KFImage(url)
+            .placeholder { // during loading
+                Rectangle()
+                    .fill(.background.secondary)
+                    .aspectRatio(aspectRatio, contentMode: .fit)
+                    .cornerRadius(12)
+                    .clipped()
+                    .overlay(
+                        ProgressView()
+                    )
             }
-        }
-        
-        // Uncomment below and comment above to use regular AsyncImage
-//        AsyncImage(url: url) { image in
-//            image
-//                .resizable()
-//                .aspectRatio(contentMode: .fit)
-//        } placeholder: {
-//            placeholder
-//        }
+            .downsampling(size: CGSize(width: 500, height: 500))
+            .setProcessor(DownsamplingImageProcessor(size: CGSize(width: 500, height: 500)))
+            .processingQueue(.dispatch(.global()))
+            .fade(duration: 0.1)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(
+                maxWidth: .infinity,
+                maxHeight: 500,
+                alignment: .center
+            )
+            .cornerRadius(12)
+            .clipped()
     }
     
     var placeholder: some View {
