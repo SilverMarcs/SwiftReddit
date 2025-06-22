@@ -9,6 +9,7 @@ struct PostVideoView: View {
     
     @State private var player: AVPlayer?
     @State private var showingFullscreen = false
+    @Namespace private var videoAnimation
     
     var body: some View {
         VideoPlayer(player: player)
