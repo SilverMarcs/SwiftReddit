@@ -25,19 +25,12 @@ struct ImageView: View {
                         ProgressView()
                     )
             }
-            .downsampling(size: CGSize(width: 500, height: 500))
-            .setProcessor(DownsamplingImageProcessor(size: CGSize(width: 500, height: 500)))
+            .downsampling(size: CGSize(width: 600, height: 600))
+            .serialize(as: .JPEG)
             .processingQueue(.dispatch(.global()))
             .fade(duration: 0.1)
             .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(
-                maxWidth: .infinity,
-                maxHeight: 500,
-                alignment: .center
-            )
-            .cornerRadius(12)
-            .clipped()
+            .aspectRatio(aspectRatio, contentMode: .fit)
     }
     
     var placeholder: some View {
