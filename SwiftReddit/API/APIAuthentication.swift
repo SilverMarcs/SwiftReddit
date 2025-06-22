@@ -8,6 +8,8 @@
 import Foundation
 
 extension RedditAPI {
+    static let appRedirectURI: String = "https://app.winston.cafe/auth-success"
+    
     private func createBasicAuthHeader(appID: String, appSecret: String) -> String {
         let credentials = "\(appID):\(appSecret)"
         let base64Credentials = Data(credentials.utf8).base64EncodedString()

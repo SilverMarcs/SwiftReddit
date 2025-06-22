@@ -11,7 +11,6 @@ class RedditAPI {
     static let shared = RedditAPI()
     static let redditApiURLBase = "https://oauth.reddit.com"
     static let redditWWWApiURLBase = "https://www.reddit.com"
-    static let appRedirectURI: String = "https://app.winston.cafe/auth-success"
     
     private init() {}
     
