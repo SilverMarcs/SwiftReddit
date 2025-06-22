@@ -12,7 +12,6 @@ struct ContentView: View {
     
     @State private var configHome = Nav()
     @State private var configSearch = Nav()
-    @State private var configProfile = Nav()
     @Namespace private var imageZoomNamespace
     
     var body: some View {
@@ -23,10 +22,8 @@ struct ContentView: View {
                     .environment(\.imageZoomNamespace, imageZoomNamespace)
             }
             
-            Tab("Profile", systemImage: "person.crop.circle.fill", value: .profile) {
-                ProfileView()
-                    .environment(configProfile)
-                    .environment(\.imageZoomNamespace, imageZoomNamespace)
+            Tab("Settings", systemImage: "gearshape.fill", value: .settings) {
+                SettingsView()
             }
             
             Tab(value: .search, role: .search) {
@@ -44,7 +41,7 @@ struct ContentView: View {
 
 enum Tabs: Hashable {
     case posts
-    case profile
+    case settings
     case search
 }
 

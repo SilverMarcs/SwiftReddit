@@ -13,43 +13,24 @@ extension RedditAPI {
             return []
         }
         
+        guard let url = buildSubredditSearchURL(query: query, limit: limit) else {
+            print("Failed to construct search URL")
+            return nil
+        }
+        
         guard let accessToken = await CredentialsManager.shared.getValidAccessToken() else {
             print("No valid credential or access token")
             return nil
         }
         
-        var components = URLComponents(string: "\(Self.redditApiURLBase)/subreddits/search")
-        components?.queryItems = [
-            URLQueryItem(name: "q", value: query),
-            URLQueryItem(name: "count", value: "10"),
-            URLQueryItem(name: "limit", value: String(limit)),
-            URLQueryItem(name: "show", value: "all"),
-            URLQueryItem(name: "sr_detail", value: "1"),
-            URLQueryItem(name: "sort", value: "relevance"),
-            URLQueryItem(name: "raw_json", value: "1"),
-//            URLQueryItem(name: "typeahead_active", value: "true")
-        ]
-        
-        guard let url = components?.url else {
-            print("Failed to construct search URL")
-            return nil
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        
-        let userName = CredentialsManager.shared.credential?.userName ?? "UnknownUser"
-        request.setValue("ios:lo.cafe.winston:v0.1.0 (by /u/\(userName))", forHTTPHeaderField: "User-Agent")
+        let request = createAuthenticatedRequest(url: url, accessToken: accessToken)
         
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             
-            if let httpResponse = response as? HTTPURLResponse {
-                if httpResponse.statusCode != 200 {
-                    print("Reddit API Error: Status \(httpResponse.statusCode)")
-                    return nil
-                }
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+                print("Reddit API Error: Status \(httpResponse.statusCode)")
+                return nil
             }
             
             let listingResponse = try JSONDecoder().decode(SubredditListing.self, from: data)
@@ -65,6 +46,23 @@ extension RedditAPI {
             print("Search subreddits error: \(error)")
             return nil
         }
+    }
+    
+    // MARK: - Private Helper Methods
+    
+    private func buildSubredditSearchURL(query: String, limit: Int) -> URL? {
+        var components = URLComponents(string: "\(Self.redditApiURLBase)/subreddits/search")
+        components?.queryItems = [
+            URLQueryItem(name: "q", value: query),
+            URLQueryItem(name: "count", value: "10"),
+            URLQueryItem(name: "limit", value: String(limit)),
+            URLQueryItem(name: "show", value: "all"),
+            URLQueryItem(name: "sr_detail", value: "1"),
+            URLQueryItem(name: "sort", value: "relevance"),
+            URLQueryItem(name: "raw_json", value: "1")
+        ]
+        
+        return components?.url
     }
 }
 

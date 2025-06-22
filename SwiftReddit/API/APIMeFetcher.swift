@@ -8,6 +8,12 @@
 import Foundation
 
 extension RedditAPI {
+    func fetchMe() async -> UserData? {
+        guard let url = URL(string: "\(Self.redditApiURLBase)/api/v1/me") else { return nil }
+        return await performAuthenticatedRequest(url: url, responseType: UserData.self)
+    }
+    
+    // Legacy method for backward compatibility
     func fetchMe(with accessToken: String, userAgent: String) async -> UserData? {
         guard let url = URL(string: "\(Self.redditApiURLBase)/api/v1/me") else { return nil }
         
@@ -18,8 +24,7 @@ extension RedditAPI {
         
         do {
             let (data, _) = try await URLSession.shared.data(for: request)
-            let userData = try JSONDecoder().decode(UserData.self, from: data)
-            return userData
+            return try JSONDecoder().decode(UserData.self, from: data)
         } catch {
             print("Fetch me error: \(error)")
             return nil

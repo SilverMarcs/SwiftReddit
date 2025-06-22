@@ -17,18 +17,50 @@ extension RedditAPI {
         limit: Int = 100,
         depth: Int = 15
     ) async -> ([Comment], String?)? {
+        guard let url = buildCommentsURL(
+            subreddit: subreddit, 
+            postID: postID, 
+            commentID: commentID, 
+            sort: sort, 
+            limit: limit, 
+            depth: depth
+        ) else { return nil }
+        
         guard let accessToken = await CredentialsManager.shared.getValidAccessToken() else {
             print("No valid credential or access token")
             return nil
         }
         
-        // Clean postID (remove t3_ prefix if present)
-        let cleanPostID = postID.hasPrefix("t3_") ? String(postID.dropFirst(3)) : postID
+        let request = createAuthenticatedRequest(url: url, accessToken: accessToken)
         
-        // Build URL
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+                print("Reddit API Error: Status \(httpResponse.statusCode)")
+                return nil
+            }
+            
+            return parseCommentsResponse(data: data)
+        } catch {
+            print("Fetch comments error: \(error)")
+            return nil
+        }
+    }
+    
+    // MARK: - Private Helper Methods
+    
+    private func buildCommentsURL(
+        subreddit: String,
+        postID: String,
+        commentID: String?,
+        sort: CommentSortOption,
+        limit: Int,
+        depth: Int
+    ) -> URL? {
+        let cleanPostID = postID.hasPrefix("t3_") ? String(postID.dropFirst(3)) : postID
         var urlString = "\(Self.redditApiURLBase)/r/\(subreddit)/comments/\(cleanPostID)"
         
-        // Add specific comment path if provided
         if let commentID = commentID {
             let cleanCommentID = commentID.hasPrefix("t1_") ? String(commentID.dropFirst(3)) : commentID
             urlString += "/comment/\(cleanCommentID)"
@@ -44,26 +76,11 @@ extension RedditAPI {
             URLQueryItem(name: "raw_json", value: "1")
         ]
         
-        guard let url = components?.url else { return nil }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        let userName = CredentialsManager.shared.credential?.userName ?? "UnknownUser"
-        request.setValue("ios:lo.cafe.winston:v0.1.0 (by /u/\(userName))", forHTTPHeaderField: "User-Agent")
-        
+        return components?.url
+    }
+    
+    private func parseCommentsResponse(data: Data) -> ([Comment], String?)? {
         do {
-            let (data, response) = try await URLSession.shared.data(for: request)
-            
-            if let httpResponse = response as? HTTPURLResponse {
-                if httpResponse.statusCode != 200 {
-                    print("Reddit API Error: Status \(httpResponse.statusCode)")
-                    return nil
-                }
-            }
-            
-            // Reddit returns an array with 2 elements: [post_listing, comments_listing]
-            // We need to handle this as a mixed response since posts and comments have different structures
             let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
             guard let responseArray = jsonObject as? [[String: Any]],
                   responseArray.count >= 2,
@@ -74,32 +91,26 @@ extension RedditAPI {
                 return nil
             }
             
-            // Parse comments manually to handle the nested structure properly
-            var comments: [Comment] = []
-            
-            for childData in commentsChildren {
-                if let kind = childData["kind"] as? String,
-                   kind == "t1",
-                   let commentDataDict = childData["data"] as? [String: Any] {
-                    
-                    if let commentData = try? parseCommentData(from: commentDataDict) {
-                        comments.append(Comment(from: commentData))
-                    }
+            let comments = commentsChildren.compactMap { childData -> Comment? in
+                guard let kind = childData["kind"] as? String, kind == "t1",
+                      let commentDataDict = childData["data"] as? [String: Any],
+                      let commentData = try? parseCommentData(from: commentDataDict) else {
+                    return nil
                 }
+                return Comment(from: commentData)
             }
             
             let after = commentsData["after"] as? String
             return (comments, after)
-            
         } catch {
-            print("Fetch comments error: \(error)")
+            print("Comment parsing error: \(error)")
             return nil
         }
     }
     
+    
     /// Helper method to parse comment data from dictionary
     private func parseCommentData(from dict: [String: Any]) throws -> CommentData {
-        // Extract required fields
         guard let id = dict["id"] as? String,
               let author = dict["author"] as? String,
               let body = dict["body"] as? String,
@@ -109,35 +120,7 @@ extension RedditAPI {
             throw NSError(domain: "CommentParsingError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing required comment fields"])
         }
         
-        // Parse replies recursively
-        var replies: CommentReplies? = nil
-        if let repliesData = dict["replies"] as? [String: Any] {
-            // This is a nested listing, parse recursively
-            if let data = repliesData["data"] as? [String: Any],
-               let children = data["children"] as? [[String: Any]] {
-                
-                var childComments: [CommentData] = []
-                for child in children {
-                    if let childKind = child["kind"] as? String,
-                       childKind == "t1",
-                       let childDataDict = child["data"] as? [String: Any],
-                       let childComment = try? parseCommentData(from: childDataDict) {
-                        childComments.append(childComment)
-                    }
-                }
-                
-                let listingData = ListingData<CommentData>(
-                    after: data["after"] as? String,
-                    before: data["before"] as? String,
-                    children: childComments.map { ListingChild(kind: "t1", data: $0) }
-                )
-                
-                let listing = Listing<CommentData>(kind: repliesData["kind"] as? String ?? "Listing", data: listingData)
-                replies = .listing(listing)
-            }
-        } else if dict["replies"] as? String != nil {
-            replies = .empty("")
-        }
+        let replies = parseCommentReplies(from: dict["replies"])
         
         return CommentData(
             id: id,
@@ -177,5 +160,41 @@ extension RedditAPI {
             top_awarded_type: dict["top_awarded_type"] as? String,
             replies: replies
         )
+    }
+    
+    private func parseCommentReplies(from repliesData: Any?) -> CommentReplies? {
+        guard let repliesDict = repliesData as? [String: Any] else {
+            if repliesData as? String != nil {
+                return .empty("")
+            }
+            return nil
+        }
+        
+        guard let data = repliesDict["data"] as? [String: Any],
+              let children = data["children"] as? [[String: Any]] else {
+            return nil
+        }
+        
+        let childComments = children.compactMap { child -> CommentData? in
+            guard let childKind = child["kind"] as? String, childKind == "t1",
+                  let childDataDict = child["data"] as? [String: Any],
+                  let childComment = try? parseCommentData(from: childDataDict) else {
+                return nil
+            }
+            return childComment
+        }
+        
+        let listingData = ListingData<CommentData>(
+            after: data["after"] as? String,
+            before: data["before"] as? String,
+            children: childComments.map { ListingChild(kind: "t1", data: $0) }
+        )
+        
+        let listing = Listing<CommentData>(
+            kind: repliesDict["kind"] as? String ?? "Listing", 
+            data: listingData
+        )
+        
+        return .listing(listing)
     }
 }

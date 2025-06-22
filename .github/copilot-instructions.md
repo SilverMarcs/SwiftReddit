@@ -6,3 +6,4 @@ dont create any example usage files, use directly what you create
 dont creates any markdown instruction files
 keep code clean and modular
 never write any tests
+never check for compile errors or problems
