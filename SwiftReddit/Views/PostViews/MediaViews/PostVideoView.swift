@@ -42,12 +42,31 @@ struct PostVideoView: View {
                     
                     player = AVPlayer(playerItem: playerItem)
                     player?.isMuted = config.muteOnPlay
+                    
+                    // Add observer for video loop
+                    NotificationCenter.default.addObserver(
+                        forName: .AVPlayerItemDidPlayToEndTime,
+                        object: playerItem,
+                        queue: .main
+                    ) { _ in
+                        player?.seek(to: .zero)
+                        player?.play()
+                    }
+                    
                     if config.autoplay {
                         player?.play()
                     }
                 }
             }
             .onDisappear {
+                // Remove observer when view disappears
+                if let playerItem = player?.currentItem {
+                    NotificationCenter.default.removeObserver(
+                        self,
+                        name: .AVPlayerItemDidPlayToEndTime,
+                        object: playerItem
+                    )
+                }
                 player?.pause()
                 player = nil
             }
