@@ -68,6 +68,7 @@ enum AppLogger {
             return
         }
         
-        Self.info("Raw API Response for \(endpoint):\n\(prettyPrintedString)")
+        Self.info("Raw API Response for \(endpoint)\n")
+        print(prettyPrintedString)     
     }
 }

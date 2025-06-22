@@ -38,31 +38,15 @@ extension RedditAPI {
     }
     
     private func fetchPostsFromURL(url: URL) async -> ([Post], String?)? {
-        guard let accessToken = await CredentialsManager.shared.getValidAccessToken() else {
-            print("No valid credential or access token")
+        guard let listingResponse = await performAuthenticatedRequest(url: url, responseType: PostListingResponse.self) else {
             return nil
         }
         
-        let request = createAuthenticatedRequest(url: url, accessToken: accessToken)
-        
-        do {
-            let (data, response) = try await URLSession.shared.data(for: request)
-            
-            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
-                print("Reddit API Error: Status \(httpResponse.statusCode)")
-                return nil
-            }
-            
-            let listingResponse = try JSONDecoder().decode(PostListingResponse.self, from: data)
-            let posts = listingResponse.data.children.compactMap { child -> Post? in
-                guard child.kind == "t3" else { return nil }
-                return Post(from: child.data)
-            }
-            
-            return (posts, listingResponse.data.after)
-        } catch {
-            print("Fetch posts error: \(error)")
-            return nil
+        let posts = listingResponse.data.children.compactMap { child -> Post? in
+            guard child.kind == "t3" else { return nil }
+            return Post(from: child.data)
         }
+        
+        return (posts, listingResponse.data.after)
     }
 }
