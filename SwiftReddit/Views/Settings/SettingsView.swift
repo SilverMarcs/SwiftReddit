@@ -32,6 +32,12 @@ struct SettingsView: View {
                     Toggle(isOn: $config.printDebug) {
                         Label("Print Debug Info", systemImage: "terminal.fill")
                     }
+                    
+                    LabeledContent("Clear Image Cache") {
+                        Button("Clear") {
+                            URLCache.shared.removeAllCachedResponses()
+                        }
+                    }
                 }
             }
             .formStyle(.grouped)
