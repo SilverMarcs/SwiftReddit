@@ -35,20 +35,6 @@ struct SubredditButton: View {
                         .processingQueue(.dispatch(.global()))
                         .fade(duration: 0.1)
                         .clipShape(Circle())
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(maxHeight: 500)
-                    
-//                    AsyncImage(url: url) { image in
-//                        image
-//                            .resizable()
-//                            .aspectRatio(contentMode: .fill)
-//                    } placeholder: {
-//                        Image(systemName: "r.circle")
-//                            .foregroundStyle(.secondary)
-//                    }
-//                    .frame(width: 32, height: 32)
-//                    .clipShape(Circle())
                 } else {
                     Image(systemName: "r.circle")
                         .font(.title)

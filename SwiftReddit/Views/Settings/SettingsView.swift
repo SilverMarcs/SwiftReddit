@@ -10,6 +10,7 @@ import Kingfisher
 
 struct SettingsView: View {
     @ObservedObject private var config = Config.shared
+    @State private var deleteAlertPresented = false
     
     var body: some View {
         NavigationStack {
@@ -34,16 +35,24 @@ struct SettingsView: View {
                         Label("Print Debug Info", systemImage: "terminal.fill")
                     }
                     
-                    LabeledContent("Clear Image Cache") {
-                        Button("Clear") {
+                    Button(role: .destructive) {
+                        deleteAlertPresented = true
+                    } label: {
+                        Label("Clear Image Cache", systemImage: "trash")
+                    }
+                    .alert("Clear Image Cache", isPresented: $deleteAlertPresented) {
+                        Button("Clear", role: .destructive) {
                             ImageCache.default.clearCache()
                         }
+                        Button("Cancel", role: .cancel) { }
+                    } message: {
+                        Text("This will clear all cached images, freeing up storage space.")
                     }
                 }
             }
             .formStyle(.grouped)
             .navigationTitle("Settings")
-            .toolbarTitleDisplayMode(.inline)
+            .toolbarTitleDisplayMode(.inlineLarge)
         }
     }
 }

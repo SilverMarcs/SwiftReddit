@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct PostsList: View {
     @Environment(Nav.self) private var nav
@@ -87,9 +88,17 @@ struct PostsList: View {
                     Button {
                         showingSubredditInfo = true
                     } label: {
-                        Image(systemName: "info.circle")
+                        if let url = URL(string: subreddit.iconURL ?? "") {
+                            KFImage(url)
+                                .downsampling(size: CGSize(width: 30, height: 20))
+                                .processingQueue(.dispatch(.global()))
+                                .fade(duration: 0.1)
+                                .clipShape(Circle())
+                        } else {
+                            Image(systemName: "info.circle")
+                                .tint(subreddit.color ?? .blue)
+                        }
                     }
-                    .tint(subreddit.color ?? .blue)
                     .sheet(isPresented: $showingSubredditInfo) {
                         SubredditInfoView(subreddit: subreddit)
                     }
