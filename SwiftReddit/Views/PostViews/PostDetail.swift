@@ -94,14 +94,10 @@ struct PostDetail: View {
             postID: post.id,
             sort: sortOption
         ) {
-            await MainActor.run {
-                self.comments = result.0
-                self.isLoading = false
-            }
+            comments = result.0
+            isLoading = false
         } else {
-            await MainActor.run {
-                self.isLoading = false
-            }
+            isLoading = false
         }
     }
     

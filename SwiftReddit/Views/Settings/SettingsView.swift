@@ -18,12 +18,19 @@ struct SettingsView: View {
                         Label("Credentials", systemImage: "key.fill")
                     }
                 }
+                
                 Section("Playback Settings") {
                     Toggle(isOn: $config.autoplay) {
                         Label("Autoplay Videos", systemImage: "play.fill")
                     }
                     Toggle(isOn: $config.muteOnPlay) {
                         Label("Mute on Play", systemImage: "speaker.slash.fill")
+                    }
+                }
+                
+                Section("Debug") {
+                    Toggle(isOn: $config.printDebug) {
+                        Label("Print Debug Info", systemImage: "terminal.fill")
                     }
                 }
             }

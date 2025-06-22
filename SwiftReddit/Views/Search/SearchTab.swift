@@ -65,7 +65,6 @@ struct SearchTab: View {
         }
     }
     
-    @MainActor
     private func performSearch(_ query: String) async {
         guard !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             searchResults = []
