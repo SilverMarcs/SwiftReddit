@@ -62,4 +62,61 @@ extension RedditAPI {
             return nil
         }
     }
+    
+    func fetchSavedPosts(after: String? = nil, limit: Int = 10) async -> ([Post], String?)? {
+        guard let accessToken = await CredentialsManager.shared.getValidAccessToken() else {
+            print("No valid credential or access token")
+            return nil
+        }
+        
+        guard let username = CredentialsManager.shared.credential?.userName else {
+            print("No username available")
+            return nil
+        }
+        
+        let urlString = "\(Self.redditApiURLBase)/user/\(username)/saved"
+        
+        var components = URLComponents(string: urlString)
+        components?.queryItems = [
+            URLQueryItem(name: "type", value: "links"),
+            URLQueryItem(name: "limit", value: String(limit)),
+            URLQueryItem(name: "raw_json", value: "1"),
+            URLQueryItem(name: "sr_detail", value: "1")
+        ]
+        
+        if let after = after {
+            components?.queryItems?.append(URLQueryItem(name: "after", value: after))
+        }
+        
+        guard let url = components?.url else { return nil }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        let userName = CredentialsManager.shared.credential?.userName ?? "UnknownUser"
+        request.setValue("ios:lo.cafe.winston:v0.1.0 (by /u/\(userName))", forHTTPHeaderField: "User-Agent")
+        
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                if httpResponse.statusCode != 200 {
+                    print("Reddit API Error: Status \(httpResponse.statusCode)")
+                    return nil
+                }
+            }
+            
+            let listingResponse = try JSONDecoder().decode(PostListingResponse.self, from: data)
+            let posts = listingResponse.data.children.compactMap { child -> Post? in
+                // TODO: chekc if we are receiving comments . if got then non need comment fecher func really.
+                guard child.kind == "t3" else { return nil } // Only return posts (t3), filter out comments (t1)
+                return Post(from: child.data)
+            }
+            
+            return (posts, listingResponse.data.after)
+        } catch {
+            print("Fetch saved posts error: \(error)")
+            return nil
+        }
+    }
 }
