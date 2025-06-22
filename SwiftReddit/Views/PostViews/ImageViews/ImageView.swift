@@ -25,9 +25,9 @@ struct ImageView: View {
                         ProgressView()
                     )
             }
-            .downsampling(size: CGSize(width: 600, height: 600))
+            .downsampling(size: CGSize(width: 800, height: 800))
             .serialize(as: .JPEG)
-            .processingQueue(.dispatch(.global()))
+//            .processingQueue(.dispatch(.global()))
             .fade(duration: 0.2)
             .resizable()
             .aspectRatio(aspectRatio, contentMode: .fit)

@@ -27,16 +27,22 @@ struct SubredditButton: View {
                     KFImage(url)
                         .placeholder { // during loading
                             Image(systemName: "r.circle")
-                                   .foregroundStyle(.secondary)
-                                   .clipShape(Circle())
+                                .resizable()
+                                .frame(width: 32, height: 32)
+                                .foregroundStyle(subreddit.color ?? .secondary)
+                               .clipShape(Circle())
             //                    .aspectRatio(aspectRatio, contentMode: .fit) // Use known aspect ratio
                         }
-                        .downsampling(size: CGSize(width: 32, height: 32))
+                        .downsampling(size: CGSize(width: 60, height: 60))
                         .processingQueue(.dispatch(.global()))
                         .fade(duration: 0.1)
+                        .resizable()
+                        .frame(width: 32, height: 32)
                         .clipShape(Circle())
                 } else {
                     Image(systemName: "r.circle")
+                        .resizable()
+                        .frame(width: 32, height: 32)
                         .font(.title)
                         .foregroundStyle(.secondary)
                 }
