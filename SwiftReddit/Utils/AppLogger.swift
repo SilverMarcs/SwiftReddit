@@ -34,22 +34,22 @@ enum AppLogger {
     }
     
     static func error(_ message: String) {
-        guard Config.shared.printDebug else { return }
+//        guard Config.shared.printDebug else { return }
         baseLogger.error("\(message)")
     }
     
     static func warning(_ message: String) {
-        guard Config.shared.printDebug else { return }
+//        guard Config.shared.printDebug else { return }
         baseLogger.warning("\(message)")
     }
     
     static func critical(_ message: String) {
-        guard Config.shared.printDebug else { return }
+//        guard Config.shared.printDebug else { return }
         baseLogger.critical("\(message)")
     }
     
     static func fault(_ message: String) {
-        guard Config.shared.printDebug else { return }
+//        guard Config.shared.printDebug else { return }
         baseLogger.fault("\(message)")
     }
     
