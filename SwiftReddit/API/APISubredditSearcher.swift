@@ -18,12 +18,10 @@ extension RedditAPI {
             return nil
         }
         
-        guard let accessToken = await CredentialsManager.shared.getValidAccessToken() else {
-            print("No valid credential or access token")
+        guard let request = await createAuthenticatedRequest(url: url) else {
+            print("Failed to create authenticated request")
             return nil
         }
-        
-        let request = createAuthenticatedRequest(url: url, accessToken: accessToken)
         
         do {
             let (data, response) = try await URLSession.shared.data(for: request)

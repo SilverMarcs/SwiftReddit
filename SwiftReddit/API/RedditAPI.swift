@@ -19,7 +19,12 @@ class RedditAPI {
         return "ios:com.SilverMarcs.SwiftReddit:v0.1.0 (by /u/\(userName))"
     }
     
-    internal func createAuthenticatedRequest(url: URL, method: String = "GET", accessToken: String) -> URLRequest {
+    internal func createAuthenticatedRequest(url: URL, method: String = "GET") async -> URLRequest? {
+        guard let accessToken = await CredentialsManager.shared.getValidAccessToken() else {
+            AppLogger.error("No valid credential or access token")
+            return nil
+        }
+        
         var request = URLRequest(url: url)
         request.httpMethod = method
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
@@ -28,12 +33,9 @@ class RedditAPI {
     }
     
     internal func performAuthenticatedRequest<T: Codable>(url: URL, responseType: T.Type) async -> T? {
-        guard let accessToken = await CredentialsManager.shared.getValidAccessToken() else {
-            AppLogger.error("No valid credential or access token")
+        guard let request = await createAuthenticatedRequest(url: url) else {
             return nil
         }
-        
-        let request = createAuthenticatedRequest(url: url, accessToken: accessToken)
         
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
