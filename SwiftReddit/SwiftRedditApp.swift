@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 @main
 struct SwiftRedditApp: App {
@@ -17,13 +18,8 @@ struct SwiftRedditApp: App {
     }
     
     init() {
-        let cachesURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-        let diskCacheURL = cachesURL.appendingPathComponent("ImageCache")
-        let cache = URLCache(
-            memoryCapacity: 50_000_000, // 50 MB
-            diskCapacity: 200_000_000,  // 100 MB
-            directory: diskCacheURL
-        )
-        URLCache.shared = cache
+        ImageCache.default.memoryStorage.config.totalCostLimit = 1024 * 1024 * 60 // 60 MB
+        ImageCache.default.diskStorage.config.sizeLimit = 1024 * 1024 * 300 // 300 MB
+        ImageCache.default.diskStorage.config.expiration = .days(2) // 1 day
     }
 }

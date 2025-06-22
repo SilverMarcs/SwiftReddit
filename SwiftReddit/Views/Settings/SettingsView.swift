@@ -11,6 +11,7 @@ import Kingfisher
 struct SettingsView: View {
     @ObservedObject private var config = Config.shared
     @State private var deleteAlertPresented = false
+    @State private var cacheSize: String = "Calculating..."
     
     var body: some View {
         NavigationStack {
@@ -35,14 +36,26 @@ struct SettingsView: View {
                         Label("Print Debug Info", systemImage: "terminal.fill")
                     }
                     
-                    Button(role: .destructive) {
+                    Button {
                         deleteAlertPresented = true
                     } label: {
-                        Label("Clear Image Cache", systemImage: "trash")
+                        HStack {
+                            Label {
+                                Text("Clear Image Cache")
+                                
+                            } icon: {
+                                Image(systemName: "trash")
+                            }
+                            
+                            Spacer()
+                            
+                            Text("\(cacheSize)")
+                        }
                     }
                     .alert("Clear Image Cache", isPresented: $deleteAlertPresented) {
                         Button("Clear", role: .destructive) {
                             ImageCache.default.clearCache()
+                            calculateCacheSize()
                         }
                         Button("Cancel", role: .cancel) { }
                     } message: {
@@ -50,9 +63,25 @@ struct SettingsView: View {
                     }
                 }
             }
+            .task {
+                calculateCacheSize()
+            }
             .formStyle(.grouped)
             .navigationTitle("Settings")
             .toolbarTitleDisplayMode(.inlineLarge)
+        }
+    }
+    
+    private func calculateCacheSize() {
+        ImageCache.default.calculateDiskStorageSize { result in
+            Task { @MainActor in
+                switch result {
+                case .success(let size):
+                    self.cacheSize = String(format: "%.2f MB", Double(size) / 1024 / 1024)
+                case .failure:
+                    self.cacheSize = "Unknown"
+                }
+            }
         }
     }
 }

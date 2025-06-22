@@ -28,7 +28,7 @@ struct ImageView: View {
             .downsampling(size: CGSize(width: 600, height: 600))
             .serialize(as: .JPEG)
             .processingQueue(.dispatch(.global()))
-            .fade(duration: 0.1)
+            .fade(duration: 0.2)
             .resizable()
             .aspectRatio(aspectRatio, contentMode: .fit)
     }

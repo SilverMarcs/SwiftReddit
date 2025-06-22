@@ -18,11 +18,11 @@ struct PostGalleryView: View {
                 nav.path.append(ImageModalData(images: images))
             } label: {
                 ImageView(url: URL(string: images[0].url), aspectRatio: images[0].dimensions.aspectRatio)
+                    .cornerRadius(12)
+                    .clipped()
                     .frame(maxHeight: 200)
                     .matchedTransitionSource(id: images[0].url, in: zoomNamespace ?? Namespace().wrappedValue)
             }
-            .cornerRadius(12)
-            .clipped()
             .buttonStyle(.plain)
             
             Button {
@@ -30,6 +30,8 @@ struct PostGalleryView: View {
             } label: {
                 // TODO: make clickable and show more
                 ImageView(url: URL(string: images[1].url), aspectRatio: images[1].dimensions.aspectRatio)
+                    .cornerRadius(12)
+                    .clipped()
                     .frame(maxWidth: .infinity, maxHeight: 200)
                     .overlay {
                         if images.count > 2 {
@@ -42,8 +44,6 @@ struct PostGalleryView: View {
                         }
                     }
             }
-            .cornerRadius(12)
-            .clipped()
             .buttonStyle(.plain)
         }
     }
