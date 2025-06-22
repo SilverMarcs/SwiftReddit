@@ -29,9 +29,6 @@ struct PostDetail: View {
                 }
             }
         }
-        .task {
-            await loadComments()
-        }
         .task(id: sortOption) {
             await loadComments()
         }

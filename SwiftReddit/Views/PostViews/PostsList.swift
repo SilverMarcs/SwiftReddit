@@ -63,7 +63,7 @@ struct PostsList: View {
         .refreshable {
             await refreshPosts()
         }
-        .task {
+        .task(id: selectedSort) {
             await loadInitialPosts()
         }
         .toolbar {
@@ -72,9 +72,6 @@ struct PostsList: View {
                     ForEach(SubListingSortOption.allCases) { sort in
                         Button {
                             selectedSort = sort
-                            Task {
-                                await refreshPosts()
-                            }
                         } label: {
                             Label(sort.displayName, systemImage: sort.icon)
                                 .tag(sort)
