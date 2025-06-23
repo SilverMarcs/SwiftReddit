@@ -7,9 +7,13 @@
 
 import Foundation
 
-struct GalleryImage: Hashable {
+struct GalleryImage: Hashable, Identifiable {
     let url: String
     let dimensions: CGSize
+    
+    var id: String {
+        return url
+    }
 }
 
 struct ImageModalData: Hashable {

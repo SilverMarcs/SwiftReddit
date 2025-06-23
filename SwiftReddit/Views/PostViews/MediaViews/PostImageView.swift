@@ -21,12 +21,12 @@ struct PostImageView: View {
                 ImageView(url: url, aspectRatio: image.dimensions.aspectRatio)
                     .cornerRadius(12)
                     .clipped()
+                    .matchedTransitionSource(id: image.url, in: zoomNamespace ?? Namespace().wrappedValue)
                     .frame(
                         maxWidth: .infinity,
                         maxHeight: 500,
                         alignment: .center
                     )
-                    .matchedTransitionSource(id: image.url, in: zoomNamespace ?? Namespace().wrappedValue)
             }
             .buttonStyle(.plain)
         }

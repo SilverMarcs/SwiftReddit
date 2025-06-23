@@ -20,8 +20,7 @@ struct PostGalleryView: View {
                 ImageView(url: URL(string: images[0].url), aspectRatio: images[0].dimensions.aspectRatio)
                     .cornerRadius(12)
                     .clipped()
-                    .frame(maxHeight: 200)
-                    .aspectRatio(contentMode: .fill)
+                    .frame(maxHeight: 300)
                     .matchedTransitionSource(id: images[0].url, in: zoomNamespace ?? Namespace().wrappedValue)
             }
             .buttonStyle(.plain)
@@ -33,8 +32,7 @@ struct PostGalleryView: View {
                 ImageView(url: URL(string: images[1].url), aspectRatio: images[1].dimensions.aspectRatio)
                     .cornerRadius(12)
                     .clipped()
-                    .frame(maxWidth: .infinity, maxHeight: 200)
-                    .aspectRatio(contentMode: .fill)
+                    .frame(maxWidth: .infinity, maxHeight: 300)
                     .overlay {
                         if images.count > 2 {
                             Color.black.opacity(0.5)

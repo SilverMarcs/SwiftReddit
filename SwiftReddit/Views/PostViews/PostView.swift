@@ -20,7 +20,7 @@ struct PostView: View {
 //              .font(.title3) // title3 is fine
                 .font(.system(size: 19)) // title3 is fine
                 .fontWeight(.semibold)
-                .lineLimit(3)
+                .lineLimit(isCompact ? 3 : nil)
                 .multilineTextAlignment(.leading)
             
             // Flair if available
@@ -113,5 +113,12 @@ struct PostView: View {
       .padding(.horizontal, isCompact ? 16 : nil)
       .padding(.vertical, isCompact ? 12 : nil)
       .background(isCompact ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 16))
+      .contextMenu {
+          if let redditURL = post.redditURL {
+              ShareLink(item: redditURL) {
+                  Label("Share", systemImage: "square.and.arrow.up")
+              }
+          }
+      }
   }
 }

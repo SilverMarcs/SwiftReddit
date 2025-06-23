@@ -33,6 +33,7 @@ struct PostsList: View {
                     nav.path.append(post)
                 } label: {
                     PostView(post: post, isHomeFeed: isHomeFeed)
+                        .contentShape(.contextMenuPreview, .rect(cornerRadius: 16))
                         .navigationLinkIndicatorVisibility(.hidden)
                 }
                 .buttonStyle(.plain)

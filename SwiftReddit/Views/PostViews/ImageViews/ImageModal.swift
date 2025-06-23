@@ -29,10 +29,10 @@ struct ImageModal: View {
     
     var body: some View {
         TabView {
-            ForEach(Array(images.enumerated()), id: \.element) { index, galleryImage in
+            ForEach(images) { galleryImage in
                 ImageView(url: URL(string: galleryImage.url), aspectRatio: galleryImage.dimensions.width/galleryImage.dimensions.height)
                     .zoomable()
-                    .tag(index)
+                    .tag(galleryImage.id)
             }
         }
         .ignoresSafeArea()

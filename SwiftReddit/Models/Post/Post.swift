@@ -97,4 +97,9 @@ struct Post: Identifiable, Hashable, Equatable {
         
         return .black // Default
     }
+    
+    /// Full Reddit URL for sharing
+    var redditURL: URL? {
+        return URL(string: "https://reddit.com\(permalink)")
+    }
 }

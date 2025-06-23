@@ -49,7 +49,7 @@ struct PostRepostView: View {
                     // Show original post's media if it has any (but smaller)
                     if originalPost.mediaType.hasMedia && !isRepostOfRepost(originalPost.mediaType) {
                         PostMediaView(mediaType: originalPost.mediaType)
-                            .frame(maxHeight: 120)
+                            .frame(maxHeight: 250)
                             .clipped()
                             .cornerRadius(8)
                     }
