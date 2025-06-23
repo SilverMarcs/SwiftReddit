@@ -31,9 +31,9 @@ struct Comment: Identifiable, Hashable {
     
     init(from commentData: CommentData) {
         self.id = commentData.id
-        self.author = commentData.author
-        self.body = commentData.body
-        self.created = commentData.created_utc
+        self.author = commentData.author ?? "[deleted]"
+        self.body = commentData.body ?? "[deleted]"
+        self.created = commentData.created_utc ?? 0
         self.score = commentData.score ?? commentData.ups ?? 0
         self.ups = commentData.ups ?? 0
         self.depth = commentData.depth ?? 0

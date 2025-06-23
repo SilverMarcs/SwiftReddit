@@ -43,11 +43,11 @@ class RedditAPI {
                 return nil
             }
             
-            AppLogger.logAPIResponse(data, endpoint: url.absoluteString)
-            
+            AppLogger.logAPIResponse(data, responseType: responseType, endpoint: url.absoluteString)
             return try JSONDecoder().decode(responseType, from: data)
+
         } catch {
-            AppLogger.error(error.localizedDescription)
+            AppLogger.critical("Network error: \(error.localizedDescription)")
             return nil
         }
     }

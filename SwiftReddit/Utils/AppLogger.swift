@@ -58,7 +58,25 @@ enum AppLogger {
         baseLogger.log(level: level, "\(message)")
     }
     
-    static func logAPIResponse(_ data: Data, endpoint: String = "No endpoint") {
+    static func logAPIResponse<T: Codable>(_ data: Data, responseType: T.Type, endpoint: String = "No endpoint") {        
+//        do {
+//            let _  = try JSONDecoder().decode(responseType, from: data)
+//        } catch let DecodingError.dataCorrupted(context) {
+//            AppLogger.critical("Data corrupted: \(context.debugDescription)")
+//            AppLogger.critical("Coding path: \(context.codingPath)")
+//        } catch let DecodingError.keyNotFound(key, context) {
+//            AppLogger.critical("Key '\(key.stringValue)' not found: \(context.debugDescription)")
+//            AppLogger.critical("Coding path: \(context.codingPath)")
+//        } catch let DecodingError.valueNotFound(type, context) {
+//            AppLogger.critical("Value of type '\(type)' not found: \(context.debugDescription)")
+//            AppLogger.critical("Coding path: \(context.codingPath)")
+//        } catch let DecodingError.typeMismatch(type, context) {
+//            AppLogger.critical("Type '\(type)' mismatch: \(context.debugDescription)")
+//            AppLogger.critical("Coding path: \(context.codingPath)")
+//        } catch {
+//            AppLogger.critical("Decoding error: \(error.localizedDescription)")
+//        }
+        
         guard Config.shared.printDebug else { return }
         
         guard let json = try? JSONSerialization.jsonObject(with: data),
