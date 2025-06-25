@@ -9,53 +9,36 @@ import SwiftUI
 
 struct AccountRowView: View {
     let credential: RedditCredential
-    let isActive: Bool
-    let onSelect: () -> Void
-    let onDelete: () -> Void
+    
+    private var isActive: Bool {
+        CredentialsManager.shared.activeCredentialId == credential.id
+    }
     
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
+        Button {
+            if !isActive {
+                CredentialsManager.shared.setActiveCredential(credential.id)
+            }
+        } label: {
+            HStack {
+                Label {
                     Text(credential.userName ?? "Unknown User")
-                        .font(.headline)
-                    
-                    if isActive {
-                        Text("Active")
-                            .font(.caption)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 2)
-                            .background(.blue)
-                            .foregroundStyle(.white)
-                            .clipShape(Capsule())
-                    }
-                }
-                
-                HStack {
+                    Text(credential.validationStatus.meta.label)
+                } icon: {
                     Image(systemName: "key.fill")
                         .foregroundStyle(credential.validationStatus.meta.color)
-                        .font(.caption)
-                    
-                    Text(credential.validationStatus.meta.label)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                }
+                
+                Spacer()
+                
+                if isActive {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                        .font(.title2)
                 }
             }
-            
-            Spacer()
-            
-            Button {
-                onDelete()
-            } label: {
-                Image(systemName: "trash.fill")
-                    .foregroundStyle(.red)
-            }
+            .contentShape(.rect)
         }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            if !isActive {
-                onSelect()
-            }
-        }
+        .buttonStyle(.plain)
     }
 }

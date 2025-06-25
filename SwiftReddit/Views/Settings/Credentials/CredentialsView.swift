@@ -17,7 +17,6 @@ struct CredentialsView: View {
     @State private var showingError = false
     @State private var showingDeleteAlert = false
     @State private var showingReplaceWarning = false
-    @State private var isAddingCredential = false
     @State private var credentialToDelete: RedditCredential?
     
     private var isFormValid: Bool {
@@ -30,40 +29,27 @@ struct CredentialsView: View {
     }
     
     private var needsAppCredentials: Bool {
-        !hasAnyCredentials && (appID.isEmpty || appSecret.isEmpty)
+        !hasAnyCredentials
     }
     
     var body: some View {
-        Form {
-            // Show existing accounts
+        List {
             if hasAnyCredentials {
                 Section("Reddit Accounts") {
                     ForEach(credentialsManager.credentials) { credential in
-                        AccountRowView(
-                            credential: credential,
-                            isActive: credentialsManager.activeCredentialId == credential.id,
-                            onSelect: {
-                                credentialsManager.setActiveCredential(credential.id)
-                            },
-                            onDelete: {
-                                credentialToDelete = credential
-                                showingDeleteAlert = true
-                            }
-                        )
+                        AccountRowView(credential: credential)
                     }
-                }
-                
-                // Add new account section
-                Section {
-                    Button("Add Another Account") {
-                        isAddingCredential = true
+                    .onDelete { indexSet in
+                        if let index = indexSet.first {
+                            credentialToDelete = credentialsManager.credentials[index]
+                            showingDeleteAlert = true
+                        }
                     }
-                    .disabled(isLoading || waitingForCallback)
                 }
             }
             
-            // Show credential setup form for first account or when adding new account
-            if !hasAnyCredentials || isAddingCredential {
+            // Show credential setup form for first account only
+            if !hasAnyCredentials {
                 if needsAppCredentials {
                     // Only show app credentials form if we don't have any existing credentials
                     Section("Step 1: Get Your App Credentials") {
@@ -85,31 +71,37 @@ struct CredentialsView: View {
                         TextField("Enter your Reddit app secret", text: $appSecret)
                     }
                 }
-                
-                // Authorization section
-                if !needsAppCredentials {
-                    Section(hasAnyCredentials ? "Authorize New Account" : "Step 3: Authorize") {
-                        AuthorizationButtonView(
-                            isLoading: isLoading,
-                            waitingForCallback: waitingForCallback,
-                            onAuthorize: authorizeCredential
-                        )
+            }
+            
+            Section {
+                if isLoading || waitingForCallback {
+                    HStack {
+                        ProgressView()
+                        Text(isLoading ? "Loading..." : "Waiting for callback...")       
                     }
-                }
-                
-                // Cancel button when adding new account
-                if isAddingCredential {
-                    Section {
-                        Button("Cancel") {
-                            isAddingCredential = false
-                            resetForm()
+                } else {
+                    Button {
+                        authorizeCredential()
+                    } label: {
+                        Label {
+                            Text("Add Account")
+                        } icon: {
+                            Image(systemName: "plus.circle.fill")
                         }
-                        .foregroundStyle(.red)
                     }
                 }
+               
+                
+                if waitingForCallback || isLoading {
+                   Button("Cancel") {
+                        waitingForCallback = false
+                        isLoading = false
+                    }
+                    .foregroundStyle(.red)
+                }
+                
             }
         }
-        .formStyle(.grouped)
         .navigationTitle("Accounts")
         .toolbarTitleDisplayMode(.inline)
         .alert("Error", isPresented: $showingError) {
@@ -128,9 +120,6 @@ struct CredentialsView: View {
                 }
                 showingDeleteAlert = false
                 credentialToDelete = nil
-                if isAddingCredential && !hasAnyCredentials {
-                    isAddingCredential = false
-                }
             }
         } message: {
             Text("Are you sure you want to delete this account? This action cannot be undone.")
@@ -227,7 +216,6 @@ struct CredentialsView: View {
             
             if success {
                 // Reset form state
-                isAddingCredential = false
                 resetForm()
             } else {
                 errorMessage = "Failed to exchange authorization code for access token. Please check your credentials and try again."
