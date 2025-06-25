@@ -115,6 +115,14 @@ struct PostView: View {
       .padding(.vertical, isCompact ? 12 : nil)
       .background(isCompact ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 16))
       .contextMenu {
+          Button {
+              Task {
+                  await RedditAPI.shared.save(!post.saved, id: post.fullname)
+              }
+          } label: {
+              Label(post.saved ? "Unsave" : "Save", systemImage: post.saved ? "bookmark.fill" : "bookmark")
+          }
+          
           if let redditURL = post.redditURL {
               ShareLink(item: redditURL) {
                   Label("Share", systemImage: "square.and.arrow.up")
