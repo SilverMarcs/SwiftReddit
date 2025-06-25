@@ -14,10 +14,21 @@ class CredentialsManager {
     static let shared = CredentialsManager()
     
     private let keychainManager = KeychainManager.shared
-    private let credentialsKey = "reddit_credential" // Changed to singular
+    private let credentialsKey = "reddit_credentials" // Plural for multiple accounts
+    private let activeCredentialKey = "active_reddit_credential_id"
+    private let legacyCredentialKey = "reddit_credential" // For backward compatibility
     
-    // Single credential instead of array
-    var credential: RedditCredential? = nil
+    // Multiple credentials support
+    var credentials: [RedditCredential] = []
+    var activeCredentialId: UUID? = nil
+    
+    // Computed property for backward compatibility
+    var credential: RedditCredential? {
+        guard let activeCredentialId = activeCredentialId else {
+            return credentials.first
+        }
+        return credentials.first { $0.id == activeCredentialId }
+    }
     
     // OAuth state management
     var lastAuthState: String?
@@ -27,40 +38,102 @@ class CredentialsManager {
     }
     
     func saveCredential(_ newCredential: RedditCredential) {
-        // Replace any existing credential with the new one
-        credential = newCredential
+        // Check if updating existing credential
+        if let existingIndex = credentials.firstIndex(where: { $0.id == newCredential.id }) {
+            credentials[existingIndex] = newCredential
+        } else {
+            // Add new credential
+            credentials.append(newCredential)
+        }
+        
+        // Set as active if it's the first credential or no active credential is set
+        if activeCredentialId == nil || credentials.count == 1 {
+            activeCredentialId = newCredential.id
+        }
+        
         saveToKeychain()
     }
     
     func deleteCredential(_ credentialToDelete: RedditCredential) {
-        // Only delete if it matches the current credential
-        if credential?.id == credentialToDelete.id {
-            credential = nil
-            keychainManager.delete(key: credentialsKey)
+        credentials.removeAll { $0.id == credentialToDelete.id }
+        
+        // If we deleted the active credential, set a new active one
+        if activeCredentialId == credentialToDelete.id {
+            activeCredentialId = credentials.first?.id
+        }
+        
+        saveToKeychain()
+    }
+    
+    func setActiveCredential(_ credentialId: UUID) {
+        if credentials.contains(where: { $0.id == credentialId }) {
+            activeCredentialId = credentialId
+            saveActiveCredentialId()
         }
     }
     
     func deleteAllCredentials() {
-        credential = nil
+        credentials.removeAll()
+        activeCredentialId = nil
         keychainManager.delete(key: credentialsKey)
+        keychainManager.delete(key: activeCredentialKey)
+        keychainManager.delete(key: legacyCredentialKey)
+    }
+    
+    // Get app credentials from any existing credential for new account setup
+    var existingAppCredentials: (appID: String, appSecret: String)? {
+        return credentials.first.map { ($0.apiAppID, $0.apiAppSecret) }
     }
     
     private func loadCredentials() {
-        // Load credential directly from keychain
-        if let credentialData = keychainManager.load(key: credentialsKey),
+        // First try to load new format (multiple credentials)
+        if let credentialsData = keychainManager.load(key: credentialsKey),
+           let data = credentialsData.data(using: .utf8),
+           let loadedCredentials = try? JSONDecoder().decode([RedditCredential].self, from: data) {
+            self.credentials = loadedCredentials
+            
+            // Load active credential ID
+            if let activeIdString = keychainManager.load(key: activeCredentialKey),
+               let activeId = UUID(uuidString: activeIdString) {
+                self.activeCredentialId = activeId
+            } else {
+                // If no active credential set, use the first one
+                self.activeCredentialId = loadedCredentials.first?.id
+            }
+            return
+        }
+        
+        // Fallback to legacy format (single credential) for backward compatibility
+        if let credentialData = keychainManager.load(key: legacyCredentialKey),
            let data = credentialData.data(using: .utf8),
            let loadedCredential = try? JSONDecoder().decode(RedditCredential.self, from: data) {
-            self.credential = loadedCredential
+            self.credentials = [loadedCredential]
+            self.activeCredentialId = loadedCredential.id
+            
+            // Migrate to new format
+            saveToKeychain()
+            keychainManager.delete(key: legacyCredentialKey)
         }
     }
     
     private func saveToKeychain() {
-        if let credential = credential,
-           let data = try? JSONEncoder().encode(credential),
+        // Save credentials array
+        if !credentials.isEmpty,
+           let data = try? JSONEncoder().encode(credentials),
            let jsonString = String(data: data, encoding: .utf8) {
             keychainManager.save(key: credentialsKey, data: jsonString)
         } else {
             keychainManager.delete(key: credentialsKey)
+        }
+        
+        saveActiveCredentialId()
+    }
+    
+    private func saveActiveCredentialId() {
+        if let activeCredentialId = activeCredentialId {
+            keychainManager.save(key: activeCredentialKey, data: activeCredentialId.uuidString)
+        } else {
+            keychainManager.delete(key: activeCredentialKey)
         }
     }
     
@@ -154,9 +227,22 @@ class CredentialsManager {
     // MARK: - Token Management
     
     func getValidAccessToken() async -> String? {
-        guard let credential = credential else { return nil }
+        guard let activeCredential = credential else { return nil }
         
-        let result = await credential.getUpToDateToken()
+        let result = await activeCredential.getUpToDateToken()
+        
+        // Handle credential updates from token refresh
+        if let updatedCredential = result.updatedCredential {
+            saveCredential(updatedCredential)
+        }
+        
+        return result.token?.token
+    }
+    
+    func getValidAccessToken(for credentialId: UUID) async -> String? {
+        guard let targetCredential = credentials.first(where: { $0.id == credentialId }) else { return nil }
+        
+        let result = await targetCredential.getUpToDateToken()
         
         // Handle credential updates from token refresh
         if let updatedCredential = result.updatedCredential {
