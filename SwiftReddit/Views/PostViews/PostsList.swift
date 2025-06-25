@@ -18,22 +18,13 @@ struct PostsList: View {
     
     let feedType: PostFeedType
     
-    private var isHomeFeed: Bool {
-        switch feedType {
-        case .home, .saved:
-            return true
-        case .subreddit, .user:
-            return false
-        }
-    }
-    
     var body: some View {
         List {
             ForEach(posts) { post in
                 Button {
                     nav.path.append(post)
                 } label: {
-                    PostView(post: post, isHomeFeed: isHomeFeed)
+                    PostView(post: post)
                         .contentShape(.contextMenuPreview, .rect(cornerRadius: 16))
                         .navigationLinkIndicatorVisibility(.hidden)
                 }

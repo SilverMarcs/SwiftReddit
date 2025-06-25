@@ -10,7 +10,6 @@ import SwiftUI
 struct PostView: View {
     @Environment(Nav.self) var nav
     let post: Post
-    var isHomeFeed: Bool = true
     var isCompact: Bool = true
   
   var body: some View {
@@ -56,23 +55,10 @@ struct PostView: View {
           
           // Post metadata
           HStack {
-              if isHomeFeed {
-                  SubredditButton(subreddit: post.subreddit, type: .icon(iconUrl: post.subreddit.iconURL ?? ""))
-              } else {
-                  Image(systemName: "person.crop.circle")
-                      .resizable()
-                      .frame(width: 32, height: 32)
-                      .foregroundStyle(.secondary)
-              }
+              SubredditButton(subreddit: post.subreddit, type: .icon(iconUrl: post.subreddit.iconURL ?? ""))
               
               VStack(alignment: .leading, spacing: 3) {
-                  if isHomeFeed {
-                      SubredditButton(subreddit: post.subreddit, type: .text)
-                  } else {
-                      Text("u/\(post.author)")
-                          .font(.caption)
-                          .foregroundStyle(.cyan)
-                  }
+                  SubredditButton(subreddit: post.subreddit, type: .text)
                   
                   HStack(spacing: 10) {
                         HStack(spacing: 4) {
@@ -115,6 +101,14 @@ struct PostView: View {
       .padding(.vertical, isCompact ? 12 : nil)
       .background(isCompact ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 16))
       .contextMenu {
+          Section {
+              Button {
+                  nav.path.append(PostFeedType.user(post.author))
+              } label: {
+                  Text("u/\(post.author)")
+              }
+          }
+          
           Button {
               Task {
                   await RedditAPI.shared.save(!post.saved, id: post.fullname)

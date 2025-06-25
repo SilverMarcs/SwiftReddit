@@ -19,7 +19,9 @@ struct SubredditRowView: View {
             HStack {
                 Label {
                     Text(subreddit.displayNamePrefixed)
-                    Text("\(subreddit.subscriberCount.formatted()) subscribers")
+                    if subreddit.subscriberCount > 0 {
+                        Text("\(subreddit.subscriberCount.formatted()) subscribers")
+                    }
                 } icon : {
                     if let iconURL = subreddit.iconURL, let url = URL(string: iconURL) {
                         KFImage(url)
