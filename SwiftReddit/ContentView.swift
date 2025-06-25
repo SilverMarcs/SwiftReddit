@@ -11,6 +11,7 @@ struct ContentView: View {
     @State var selectedTab: Tabs = .posts
     
     @State private var configHome = Nav()
+    @State private var configProfile = Nav()
     @State private var configSearch = Nav()
     @Namespace private var imageZoomNamespace
     
@@ -24,6 +25,8 @@ struct ContentView: View {
             
             Tab("Profile", systemImage: "person.fill", value: .profile) {
                 ProfileView()
+                    .environment(configProfile)
+                    .environment(\.imageZoomNamespace, imageZoomNamespace)
             }
             
             Tab(value: .search, role: .search) {

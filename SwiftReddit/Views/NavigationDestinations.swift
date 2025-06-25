@@ -11,7 +11,7 @@ extension View {
     func navigationDestinations() -> some View {
         return self
             .navigationDestination(for: Subreddit.self) { subreddit in
-                PostsList(subreddit: subreddit)
+                PostsList(feedType: .subreddit(subreddit))
             }
             .navigationDestination(for: Post.self) { post in
                 PostDetail(post: post)

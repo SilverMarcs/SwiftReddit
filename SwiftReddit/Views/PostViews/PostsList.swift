@@ -16,14 +16,20 @@ struct PostsList: View {
     @State private var selectedSort: SubListingSortOption = .best
     @State private var showingSubredditInfo = false
     
-    let subreddit: Subreddit?
+    let feedType: PostFeedType
     
-    private var listingId: String {
-        subreddit?.displayName ?? ""
+    // New initializer using PostFeedType
+    init(feedType: PostFeedType) {
+        self.feedType = feedType
     }
     
     private var isHomeFeed: Bool {
-        subreddit == nil || subreddit?.displayName.isEmpty == true
+        switch feedType {
+        case .home, .saved:
+            return true
+        case .subreddit, .user:
+            return false
+        }
     }
     
     var body: some View {
@@ -60,7 +66,7 @@ struct PostsList: View {
             }
         }
         .listStyle(.plain)
-        .navigationTitle(isHomeFeed ? "Home" : (subreddit?.displayNamePrefixed ?? ""))
+        .navigationTitle(feedType.displayName)
         .toolbarTitleDisplayMode(.inlineLarge)
         .refreshable {
             await refreshPosts()
@@ -70,22 +76,24 @@ struct PostsList: View {
         }
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
-                Menu {
-                    ForEach(SubListingSortOption.allCases) { sort in
-                        Button {
-                            selectedSort = sort
-                        } label: {
-                            Label(sort.displayName, systemImage: sort.icon)
-                                .tag(sort)
+                if feedType.canSort {
+                    Menu {
+                        ForEach(SubListingSortOption.allCases) { sort in
+                            Button {
+                                selectedSort = sort
+                            } label: {
+                                Label(sort.displayName, systemImage: sort.icon)
+                                    .tag(sort)
+                            }
                         }
+                    } label: {
+                        Label(selectedSort.displayName, systemImage: selectedSort.icon)
+                            .labelStyle(.iconOnly)
                     }
-                } label: {
-                    Label(selectedSort.displayName, systemImage: selectedSort.icon)
-                        .labelStyle(.iconOnly)
+                    .tint(.accent)
                 }
-                .tint(.accent)
                 
-                if let subreddit = subreddit, !isHomeFeed {
+                if feedType.showSubredditInfo, let subreddit = feedType.subreddit {
                     Button {
                         showingSubredditInfo = true
                     } label: {
@@ -132,8 +140,9 @@ struct PostsList: View {
     
     private func fetchPosts(isRefresh: Bool) async {
         let afterParam = isRefresh ? nil : after
+        let sortParam = feedType.canSort ? selectedSort : .best
         
-        let result = await RedditAPI.shared.fetchPosts(subredditId: listingId, sort: selectedSort, after: afterParam, limit: 20)
+        let result = await RedditAPI.shared.fetchPosts(for: feedType, sort: sortParam, after: afterParam, limit: 20)
         
         if let (newPosts, newAfter) = result {
             if isRefresh {
@@ -151,5 +160,5 @@ struct PostsList: View {
 }
 
 #Preview {
-    PostsList(subreddit: nil)
+    PostsList(feedType: .home)
 }

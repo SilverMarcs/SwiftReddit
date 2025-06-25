@@ -97,6 +97,18 @@ struct Subreddit: Identifiable, Hashable {
         }
     }
     
+    /// Convenience initializer for creating a simple Subreddit with just a display name
+    init(displayName: String) {
+        self.id = displayName.isEmpty ? "home" : displayName
+        self.displayName = displayName
+        self.displayNamePrefixed = displayName.isEmpty ? "Home" : "r/\(displayName)"
+        self.iconURL = nil
+        self.subscriberCount = 0
+        self.isSubscribed = false
+        self.publicDescription = ""
+        self.color = nil
+    }
+    
     /// Helper method to validate and convert key_color to SwiftUI Color
     private static func validateColor(from keyColor: String?) -> Color? {
         return Color.validatedColor(from: keyColor)

@@ -14,7 +14,7 @@ struct HomeTab: View {
         @Bindable var nav = nav
         
         NavigationStack(path: $nav.path) {
-            PostsList(subreddit: nil)
+            PostsList(feedType: .home)
                 .navigationDestinations()
         }
     }

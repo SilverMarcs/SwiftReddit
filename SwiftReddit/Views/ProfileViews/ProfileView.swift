@@ -12,7 +12,7 @@ struct ProfileView: View {
     
     var body: some View {
         NavigationStack {
-            Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+            PostsList(feedType: .saved)
                 .sheet(isPresented: $showSettings) {
                     SettingsView()
                 }
