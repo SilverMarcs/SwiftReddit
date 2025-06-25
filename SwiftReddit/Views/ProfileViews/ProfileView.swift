@@ -8,11 +8,17 @@
 import SwiftUI
 
 struct ProfileView: View {
+    @Environment(Nav.self) private var nav
     @State var showSettings = false
     
     var body: some View {
-        NavigationStack {
-            PostsList(feedType: .saved)
+        @Bindable var nav = nav
+        
+        NavigationStack(path: $nav.path) {
+            UserSubredditsView()
+                .navigationDestinations()
+                .navigationTitle("Profile")
+                .toolbarTitleDisplayMode(.inlineLarge)
                 .sheet(isPresented: $showSettings) {
                     SettingsView()
                 }

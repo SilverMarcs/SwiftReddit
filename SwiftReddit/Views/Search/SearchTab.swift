@@ -43,7 +43,8 @@ struct SearchTab: View {
                     switch searchScope {
                     case .subreddits:
                         ForEach(searchResults) { subreddit in
-                            SubredditSearchResultView(subreddit: subreddit)
+//                            SubredditSearchResultView(subreddit: subreddit)
+                            SubredditRowView(subreddit: subreddit)
                         }
                     case .users:
                         // Dummy user results for now

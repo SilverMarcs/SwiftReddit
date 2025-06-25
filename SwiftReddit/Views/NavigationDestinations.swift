@@ -10,8 +10,8 @@ import SwiftUI
 extension View {
     func navigationDestinations() -> some View {
         return self
-            .navigationDestination(for: Subreddit.self) { subreddit in
-                PostsList(feedType: .subreddit(subreddit))
+            .navigationDestination(for: PostFeedType.self) { feedType in
+                PostsList(feedType: feedType)
             }
             .navigationDestination(for: Post.self) { post in
                 PostDetail(post: post)

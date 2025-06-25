@@ -18,11 +18,6 @@ struct PostsList: View {
     
     let feedType: PostFeedType
     
-    // New initializer using PostFeedType
-    init(feedType: PostFeedType) {
-        self.feedType = feedType
-    }
-    
     private var isHomeFeed: Bool {
         switch feedType {
         case .home, .saved:
@@ -67,6 +62,7 @@ struct PostsList: View {
         }
         .listStyle(.plain)
         .navigationTitle(feedType.displayName)
+//        .navigationSubtitle(feedType.subreddit?.subscriberCount.formatted() ?? "")
         .toolbarTitleDisplayMode(.inlineLarge)
         .refreshable {
             await refreshPosts()
@@ -100,7 +96,7 @@ struct PostsList: View {
                         if let url = URL(string: subreddit.iconURL ?? "") {
                             KFImage(url)
                                 .downsampling(size: CGSize(width: 30, height: 20))
-                                .processingQueue(.dispatch(.global()))
+//                                .processingQueue(.dispatch(.global()))
                                 .fade(duration: 0.1)
                                 .clipShape(Circle())
                         } else {

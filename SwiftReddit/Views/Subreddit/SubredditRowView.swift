@@ -1,45 +1,44 @@
 //
-//  SubredditSearchResultView.swift
+//  SubredditRowView.swift
 //  SwiftReddit
 //
-//  Created by Zabir Raihan on 18/06/2025.
+//  Created by Zabir Raihan on 25/06/2025.
 //
 
 import SwiftUI
 import Kingfisher
 
-struct SubredditSearchResultView: View {
+struct SubredditRowView: View {
     @Environment(Nav.self) private var nav
     let subreddit: Subreddit
     
     var body: some View {
         Button {
-            nav.path.append(subreddit)
+            nav.path.append(PostFeedType.subreddit(subreddit))
         } label: {
             HStack {
                 Label {
                     Text(subreddit.displayNamePrefixed)
                     Text("\(subreddit.subscriberCount.formatted()) subscribers")
-                } icon: {
-                    if let url = URL(string: subreddit.iconURL ?? "") {
+                } icon : {
+                    if let iconURL = subreddit.iconURL, let url = URL(string: iconURL) {
                         KFImage(url)
-                            .downsampling(size: CGSize(width: 40, height: 40))
-                            .processingQueue(.dispatch(.global()))
+                            .downsampling(size: CGSize(width: 32, height: 32))
+//                            .processingQueue(.dispatch(.global()))
                             .fade(duration: 0.1)
                             .clipShape(Circle())
+                            .frame(width: 32, height: 32)
                     } else {
                         Image(systemName: "r.circle")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .foregroundStyle(.secondary)
-                            .clipShape(Circle())
+                            .foregroundStyle(subreddit.color ?? .secondary)
                     }
                 }
                 
                 Spacer()
                 
                 Image(systemName: "chevron.right")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.tertiary)
+                    .font(.caption)
             }
             .contentShape(.rect)
         }

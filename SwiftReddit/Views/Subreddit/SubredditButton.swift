@@ -15,7 +15,7 @@ struct SubredditButton: View {
     
     var body: some View {
         Button {
-            nav.path.append(subreddit)
+            nav.path.append(PostFeedType.subreddit(subreddit))
         } label: {
             switch type {
             case .text:
@@ -34,7 +34,7 @@ struct SubredditButton: View {
             //                    .aspectRatio(aspectRatio, contentMode: .fit) // Use known aspect ratio
                         }
                         .downsampling(size: CGSize(width: 60, height: 60))
-                        .processingQueue(.dispatch(.global()))
+//                        .processingQueue(.dispatch(.global()))
                         .fade(duration: 0.1)
                         .resizable()
                         .frame(width: 32, height: 32)
