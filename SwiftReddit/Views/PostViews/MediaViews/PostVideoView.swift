@@ -20,7 +20,11 @@ struct PostVideoView: View {
                 contentMode: .fit
             )
             .onTapGesture {
-                showingFullscreen = true
+                var transaction = Transaction()
+               transaction.disablesAnimations = true
+               withTransaction(transaction) {
+                   showingFullscreen = true
+               }
             }
             .sheet(isPresented: $showingFullscreen) {
                 VideoPlayer(player: player)
