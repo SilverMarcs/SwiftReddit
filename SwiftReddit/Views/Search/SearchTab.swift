@@ -10,6 +10,7 @@ import SwiftUI
 struct SearchTab: View {
     @Environment(Nav.self) private var nav
     @State private var searchText = ""
+    @State private var searchScope: SearchScope = .subreddits
     @State private var searchResults: [Subreddit] = []
     @State private var isLoading = false
     @State private var hasSearched = false
@@ -28,10 +29,10 @@ struct SearchTab: View {
                     ContentUnavailableView.search
                 } else if !hasSearched && searchText.isEmpty {
                     VStack(spacing: 8) {
-                        Image(systemName: "magnifyingglass")
+                        Image(systemName: searchScope == .subreddits ? "magnifyingglass" : "person.magnifyingglass")
                             .font(.largeTitle)
                             .foregroundStyle(.secondary)
-                        Text("Search for Subreddits")
+                        Text("Search for \(searchScope.rawValue)")
                             .font(.headline)
                             .foregroundStyle(.secondary)
                     }
@@ -39,12 +40,23 @@ struct SearchTab: View {
                     .padding()
                     .listRowSeparator(.hidden)
                 } else {
-                    ForEach(searchResults) { subreddit in
-                        SubredditSearchResultView(subreddit: subreddit)
+                    switch searchScope {
+                    case .subreddits:
+                        ForEach(searchResults) { subreddit in
+                            SubredditSearchResultView(subreddit: subreddit)
+                        }
+                    case .users:
+                        // Dummy user results for now
+                        Text("To be implemented later")
                     }
                 }
             }
-            .searchable(text: $searchText, prompt: "Search Subreddits")
+            .searchable(text: $searchText, prompt: "Search \(searchScope.rawValue)")
+            .searchScopes($searchScope) {
+                ForEach(SearchScope.allCases, id: \.self) { scope in
+                    Text(scope.rawValue).tag(scope)
+                }
+            }
             .navigationTitle("Search")
             .toolbarTitleDisplayMode(.inlineLarge)
             .navigationDestinations()
@@ -53,6 +65,10 @@ struct SearchTab: View {
                     await performSearch(searchText)
                 }
             }
+            .onChange(of: searchScope) {
+                searchResults = []
+                hasSearched = false
+            }
             .toolbar {
                 ToolbarItem(placement: .destructiveAction) {
                     Button("Clear", role: .destructive) {
@@ -60,6 +76,7 @@ struct SearchTab: View {
                         searchResults = []
                         hasSearched = false
                     }
+                    .disabled(searchText.isEmpty && searchResults.isEmpty)
                 }
             }
         }
@@ -85,6 +102,11 @@ struct SearchTab: View {
             searchResults = []
         }
     }
+}
+
+enum SearchScope: String, CaseIterable {
+    case subreddits = "Subreddits"
+    case users = "Users"
 }
 
 #Preview {
