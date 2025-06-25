@@ -15,6 +15,8 @@ class Config: ObservableObject {
     @AppStorage("autoplay") var autoplay: Bool = true
     @AppStorage("muteOnPlay") var muteOnPlay: Bool = false
     
+    @AppStorage("allowNSFW") var allowNSFW: Bool = false
+    
     @AppStorage("printDebug") var printDebug: Bool = false
     
     private init() { }

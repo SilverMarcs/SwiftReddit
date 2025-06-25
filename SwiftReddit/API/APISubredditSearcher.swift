@@ -34,8 +34,10 @@ extension RedditAPI {
             let listingResponse = try JSONDecoder().decode(SubredditListing.self, from: data)
             let subreddits = listingResponse.data.children.compactMap { child -> Subreddit? in
                 guard child.kind == "t5" else { return nil }
-                // Filter out NSFW subreddits
-                guard child.data.over18 != true else { return nil }
+                
+                if !Config.shared.allowNSFW && child.data.over18 == true {
+                    return nil
+                }
                 return Subreddit(data: child.data)
             }
             

@@ -22,8 +22,8 @@ struct ContentView: View {
                     .environment(\.imageZoomNamespace, imageZoomNamespace)
             }
             
-            Tab("Settings", systemImage: "gearshape.fill", value: .settings) {
-                SettingsView()
+            Tab("Profile", systemImage: "person.fill", value: .profile) {
+                ProfileView()
             }
             
             Tab(value: .search, role: .search) {
@@ -41,7 +41,7 @@ struct ContentView: View {
 
 enum Tabs: Hashable {
     case posts
-    case settings
+    case profile
     case search
 }
 

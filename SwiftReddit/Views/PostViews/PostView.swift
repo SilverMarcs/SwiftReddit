@@ -34,9 +34,10 @@ struct PostView: View {
                     .foregroundStyle(post.flairTextColor)
                     .cornerRadius(4)
             }
+          
+          // ADD NSFW BADGE
 
             if !post.selftext.isEmpty {
-//                Text(LocalizedStringKey(isCompact ? String(post.selftext.prefix(100)) : post.selftext))
                 Text(LocalizedStringKey(post.selftext))
 //                    .font(.subheadline)
                     .font(.callout)

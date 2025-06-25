@@ -22,6 +22,12 @@ struct SettingsView: View {
                     }
                 }
                 
+                Section("Content Preference") {
+                    Toggle(isOn: $config.allowNSFW) {
+                        Label("Allow NSFW Content", systemImage: "eye.slash.fill")
+                    }
+                }
+                
                 Section("Playback Settings") {
                     Toggle(isOn: $config.autoplay) {
                         Label("Autoplay Videos", systemImage: "play.fill")
@@ -68,7 +74,7 @@ struct SettingsView: View {
             }
             .formStyle(.grouped)
             .navigationTitle("Settings")
-            .toolbarTitleDisplayMode(.inlineLarge)
+            .toolbarTitleDisplayMode(.inline)
         }
     }
     
