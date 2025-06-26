@@ -9,16 +9,27 @@ struct PostVideoView: View {
     
     @State private var player: AVPlayer?
     @State private var showingFullscreen = false
-    @Namespace private var videoAnimation
+    @State private var currentTime: Double = 0
+    @State private var duration: Double = 0
+//    @Namespace private var videoAnimation
     
     var body: some View {
         VideoPlayer(player: player)
-            .cornerRadius(12)
-            .clipped()
             .aspectRatio(
                 dimensions != nil ? (dimensions!.width / dimensions!.height) : 16/9,
                 contentMode: .fit
             )
+            .overlay(alignment: .bottom) {
+                if duration > 0 {
+                    ProgressView(value: currentTime, total: duration)
+                        .progressViewStyle(LinearProgressViewStyle(tint: .accentColor))
+//                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .padding(.horizontal, 9j)
+                        .padding(.bottom, 1)
+                }
+            }
+            .cornerRadius(12)
+            .clipped()
             .onTapGesture {
                 var transaction = Transaction()
                transaction.disablesAnimations = true
@@ -48,6 +59,17 @@ struct PostVideoView: View {
                     player = AVPlayer(playerItem: playerItem)
                     player?.isMuted = config.muteOnPlay
                     
+                    // Get video duration
+                    if let duration = try? await playerItem.asset.load(.duration) {
+                        self.duration = CMTimeGetSeconds(duration)
+                    }
+                    
+                    // Add time observer for progress tracking
+                    let timeInterval = CMTime(seconds: 0.1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+                    player?.addPeriodicTimeObserver(forInterval: timeInterval, queue: .main) { time in
+                        currentTime = CMTimeGetSeconds(time)
+                    }
+                    
                     // Add observer for video loop
                     NotificationCenter.default.addObserver(
                         forName: .AVPlayerItemDidPlayToEndTime,
@@ -56,6 +78,7 @@ struct PostVideoView: View {
                     ) { _ in
                         player?.seek(to: .zero)
                         player?.play()
+                        currentTime = 0
                     }
                     
                     if config.autoplay {
