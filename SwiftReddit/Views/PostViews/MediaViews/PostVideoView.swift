@@ -24,7 +24,7 @@ struct PostVideoView: View {
                     ProgressView(value: currentTime, total: duration)
                         .progressViewStyle(LinearProgressViewStyle(tint: .accentColor))
 //                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .padding(.horizontal, 9j)
+                        .padding(.horizontal, 9)
                         .padding(.bottom, 1)
                 }
             }
