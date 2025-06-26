@@ -30,7 +30,7 @@ struct PostsList: View {
                 }
                 .buttonStyle(.plain)
                 .listRowInsets(.vertical, 5)
-                .listRowInsets(.horizontal, 8)
+                .listRowInsets(.horizontal, 6)
             }
             .listRowSeparator(.hidden)
             
