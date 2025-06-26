@@ -112,7 +112,11 @@ struct PostView: View {
               Button {
                   nav.path.append(PostFeedType.user(post.author))
               } label: {
-                  Text("u/\(post.author)")
+                  Label {
+                      Text(post.author)
+                  } icon: {
+                      Image(systemName: "person")
+                  }
               }
           }
           
