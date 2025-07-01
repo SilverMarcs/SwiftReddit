@@ -18,7 +18,7 @@ struct PostImageView: View {
             Button {
                 nav.path.append(ImageModalData(image: image))
             } label: {
-                ImageView(url: url, aspectRatio: image.dimensions.aspectRatio)
+                ImageView(url: url, aspectRatio: image.aspectRatio)
                     .cornerRadius(12)
                     .clipped()
                     .matchedTransitionSource(id: image.url, in: zoomNamespace ?? Namespace().wrappedValue)

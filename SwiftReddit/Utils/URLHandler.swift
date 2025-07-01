@@ -46,7 +46,7 @@ struct URLHandler {
         guard isRedditImage else { return nil }
         
         // Extract dimensions from URL query parameters if available
-        let dimensions = extractDimensionsFromURL(url) ?? CGSize(width: 16, height: 9) // Default 16:9 aspect ratio
+        let dimensions = extractDimensionsFromURL(url)
         
         return GalleryImage(url: urlString, dimensions: dimensions)
     }

@@ -17,7 +17,7 @@ struct PostGalleryView: View {
             Button {
                 nav.path.append(ImageModalData(images: images))
             } label: {
-                ImageView(url: URL(string: images[0].url), aspectRatio: images[0].dimensions.aspectRatio)
+                ImageView(url: URL(string: images[0].url), aspectRatio: images[0].aspectRatio)
                     .cornerRadius(12)
                     .clipped()
                     .frame(maxHeight: 300)
@@ -29,7 +29,7 @@ struct PostGalleryView: View {
                 nav.path.append(ImageModalData(images: images))
             } label: {
                 // TODO: make clickable and show more
-                ImageView(url: URL(string: images[1].url), aspectRatio: images[1].dimensions.aspectRatio)
+                ImageView(url: URL(string: images[1].url), aspectRatio: images[1].aspectRatio)
                     .cornerRadius(12)
                     .clipped()
                     .frame(maxWidth: .infinity, maxHeight: 300)

@@ -30,7 +30,7 @@ struct ImageModal: View {
     var body: some View {
         TabView {
             ForEach(images) { galleryImage in
-                ImageView(url: URL(string: galleryImage.url), aspectRatio: galleryImage.dimensions.width/galleryImage.dimensions.height)
+                ImageView(url: URL(string: galleryImage.url), aspectRatio: galleryImage.aspectRatio)
                     .zoomable()
                     .tag(galleryImage.id)
             }

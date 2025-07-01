@@ -11,11 +11,11 @@ import Kingfisher
 
 struct ImageView: View {
     var url: URL?
-    var aspectRatio: CGFloat? = 16/9 // Sensible default aspect ratio
+    var aspectRatio: CGFloat? = nil // Sensible default aspect ratio
     
     var body: some View {
         KFImage(url)
-            .placeholder { // during loading
+            .placeholder {
                 Rectangle()
                     .fill(.background.secondary)
                     .aspectRatio(aspectRatio, contentMode: .fit)
@@ -25,52 +25,11 @@ struct ImageView: View {
                         ProgressView()
                     )
             }
-            .downsampling(size: CGSize(width: 800, height: 800))
+            .downsampling(size: CGSize(width: 1000, height: 1000))
             .serialize(as: .JPEG)
-//            .processingQueue(.dispatch(.global()))
             .fade(duration: 0.2)
             .resizable()
             .aspectRatio(aspectRatio, contentMode: .fit)
-    }
-    
-    var placeholder: some View {
-        Rectangle()
-            .fill(.background.secondary)
-            .aspectRatio(aspectRatio, contentMode: .fit)
-            .overlay(
-                ProgressView()
-            )
-    }
-    
-    var failurePlaceholder: some View {
-        Rectangle()
-            .fill(.background.secondary)
-            .aspectRatio(aspectRatio, contentMode: .fit)
-            .overlay(
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundStyle(.orange)
-                    .imageScale(.large)
-            )
-    }
-    
-    var largeImagePlaceholder: some View {
-        Button {
-            // open url in safari
-            if let url = url {
-                #if os(macOS)
-                NSWorkspace.shared.open(url)
-                #else
-                UIApplication.shared.open(url)
-                #endif
-            }
-        } label: {
-            Rectangle()
-                .fill(.background.secondary)
-                .aspectRatio(aspectRatio, contentMode: .fit)
-                .overlay(
-                    Text("Click image to load")
-                )
-        }
     }
 }
 

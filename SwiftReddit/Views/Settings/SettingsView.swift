@@ -22,11 +22,11 @@ struct SettingsView: View {
                     }
                 }
                 
-//                Section("Content Preference") {
-//                    Toggle(isOn: $config.allowNSFW) {
-//                        Label("Allow NSFW Content", systemImage: "eye.slash.fill")
-//                    }
-//                }
+                Section("Content Preference") {
+                    Toggle(isOn: $config.allowNSFW) {
+                        Label("Allow NSFW Content", systemImage: "eye.slash.fill")
+                    }
+                }
                 
                 Section("Playback Settings") {
                     Toggle(isOn: $config.autoplay) {

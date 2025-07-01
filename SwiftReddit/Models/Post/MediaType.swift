@@ -9,10 +9,15 @@ import Foundation
 
 struct GalleryImage: Hashable, Identifiable {
     let url: String
-    let dimensions: CGSize
+    let dimensions: CGSize?
     
     var id: String {
         return url
+    }
+    
+    var aspectRatio: CGFloat? {
+        guard let dimensions = dimensions else { return nil }
+        return dimensions.width / dimensions.height
     }
 }
 
