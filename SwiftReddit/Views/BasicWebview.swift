@@ -6,34 +6,26 @@
 //
 
 import SwiftUI
+import Foundation
 import WebKit
-import Observation
 
 struct BasicWebview: View {
 //    @Environment(\.colorScheme) private var colorScheme
     
     let linkMeta: LinkMetadata
-    @State private var page = WebPage()
+//    @State private var page = WebPage()
     @State private var isDarkModeEnabled = false
     
     var body: some View {
         if let url = URL(string: linkMeta.url) {
-            WebView(page)
+            WebView(url: url)
                 .edgesIgnoringSafeArea(.bottom)
-                .navigationTitle(page.title)
+//                .navigationTitle(page.title)
                 .toolbarTitleDisplayMode(.inline)
-                .onAppear {
-                    let request = URLRequest(url: url)
-                    page.load(request)
-//                    Task {
-//                        // wait 1 second for the page to load
-//                        try? await Task.sleep(nanoseconds: 2_000_000_000)
-//                        if colorScheme == .dark {
-//                            isDarkModeEnabled = true
-//                            toggleDarkMode()
-//                        }
-//                    }
-                }
+//                .onAppear {
+//                    let request = URLRequest(url: url)
+//                    page.load(request)
+//                }
                 .toolbar {
                     ToolbarItemGroup(placement: .primaryAction) {
                         Button {
@@ -119,7 +111,7 @@ struct BasicWebview: View {
         
         Task {
             do {
-                try await page.callJavaScript(darkModeCSS)
+//                try await page.callJavaScript(darkModeCSS)
             } catch {
                 print("Error toggling dark mode: \(error)")
             }

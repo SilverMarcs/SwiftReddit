@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import WebKit
 
 struct PostLinkView: View {
   @Environment(Nav.self) private var nav

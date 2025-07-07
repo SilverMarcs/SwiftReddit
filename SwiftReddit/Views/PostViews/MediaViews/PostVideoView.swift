@@ -21,7 +21,7 @@ struct PostVideoView: View {
             )
             .overlay(alignment: .bottom) {
                 if duration > 0 {
-                    ProgressView(value: currentTime, total: duration)
+                    ProgressView(value: max(0, min(currentTime, duration)), total: duration)
                         .progressViewStyle(LinearProgressViewStyle(tint: .accentColor))
 //                        .clipShape(RoundedRectangle(cornerRadius: 12))
                         .padding(.horizontal, 9)
