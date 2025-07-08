@@ -65,13 +65,6 @@ struct PostRepostView: View {
             }
             .padding(12)
             .background(.background.secondary, in: .rect(cornerRadius: 12))
-//            .background(
-//                RoundedRectangle(
-//                    cornerRadius: 12,
-//                )
-//                .fill(.background.secondary)
-////                .stroke(.separator, lineWidth: 1)
-//            )
         }
         .buttonStyle(.plain)
     }

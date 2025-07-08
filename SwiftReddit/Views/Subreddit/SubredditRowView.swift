@@ -26,7 +26,6 @@ struct SubredditRowView: View {
                     if let iconURL = subreddit.iconURL, let url = URL(string: iconURL) {
                         KFImage(url)
                             .downsampling(size: CGSize(width: 32, height: 32))
-//                            .processingQueue(.dispatch(.global()))
                             .fade(duration: 0.1)
                             .clipShape(Circle())
                             .frame(width: 32, height: 32)

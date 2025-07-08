@@ -20,11 +20,9 @@ struct PostGIFView: View {
           )
           nav.path.append(linkMetadata)
       } label: {
-          ZStack(alignment: .bottomTrailing) {
-              PostImageView(image: galleryImage)
-                  .disabled(true)
-              
-              Text("GIF")
+          PostImageView(image: galleryImage)
+              .overlay(alignment: .bottomTrailing) {
+                  Text("GIF")
                   .font(.caption2)
                   .fontWeight(.bold)
                   .foregroundStyle(.white)
@@ -32,7 +30,7 @@ struct PostGIFView: View {
                   .padding(.vertical, 2)
                   .background(.black.secondary, in: .rect(cornerRadius: 5))
                   .padding(10)
-          }
+              }
       }
       .buttonStyle(.plain)
   }

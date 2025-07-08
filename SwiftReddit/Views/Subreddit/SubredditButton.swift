@@ -31,10 +31,8 @@ struct SubredditButton: View {
                                 .frame(width: 32, height: 32)
                                 .foregroundStyle(subreddit.color ?? .secondary)
                                .clipShape(Circle())
-            //                    .aspectRatio(aspectRatio, contentMode: .fit) // Use known aspect ratio
                         }
                         .downsampling(size: CGSize(width: 60, height: 60))
-//                        .processingQueue(.dispatch(.global()))
                         .fade(duration: 0.1)
                         .resizable()
                         .frame(width: 32, height: 32)

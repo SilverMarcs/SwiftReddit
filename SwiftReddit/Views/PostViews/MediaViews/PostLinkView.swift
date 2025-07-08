@@ -38,11 +38,6 @@ struct PostLinkView: View {
           }
           .padding(10)
           .background(.background.secondary, in: .rect(cornerRadius: 12))
-//              RoundedRectangle(
-//                  cornerRadius: 12,
-//              )
-//              .fill(.background.tertiary)
-//          )
       }
       .buttonStyle(.plain)
       .handleURLs()
