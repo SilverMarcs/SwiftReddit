@@ -14,26 +14,44 @@ struct PostDetail: View {
     
     @State private var comments: [Comment] = []
     @State private var isLoading = true
-    @State private var sortOption: CommentSortOption = .confidence
+    @State private var sortOption: CommentSortOption = .confidence {
+        didSet {
+            comments = []
+        }
+    }
 
     var body: some View {
-        // TODO: use list
         ScrollView {
             LazyVStack(alignment: .leading) {
                 PostView(post: post, isCompact: false)
                 
                 if isLoading {
-                    loadingView
-                } else {
-                    commentsList
+                    ProgressView()
+                        .controlSize(.large)
+                        .frame(maxWidth: .infinity, minHeight: 200)
+                } else if !comments.isEmpty {
+                    Text("Comments")
+                        .font(.title3)
+                        .fontWeight(.bold)
+                        .padding(.leading)
+                    
+                    ForEach(comments) { comment in
+                        CommentView(comment: comment, onToggleCollapse: { updatedComment in
+                            updateComment(updatedComment)
+                        }, isTopLevel: true)
+                        .padding(.horizontal, 5)
+                    }
                 }
             }
         }
         .task(id: sortOption) {
             await loadComments()
         }
+        .refreshable {
+            await loadComments()
+        }
         .navigationTitle(post.subreddit.displayNamePrefixed)
-        .navigationSubtitle(post.formattedComments + " comments")
+        .navigationSubtitle(post.numComments.formatted + " comments")
         .toolbarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -55,29 +73,7 @@ struct PostDetail: View {
         }
     }
     
-    private var loadingView: some View {
-        ProgressView()
-            .controlSize(.large)
-            .frame(maxWidth: .infinity, minHeight: 200)
-    }
-    
-    @ViewBuilder
-    private var commentsList: some View {
-        Text("Comments")
-            .font(.title3)
-            .fontWeight(.bold)
-            .padding(.leading)
-        
-        ForEach(comments) { comment in
-            CommentView(comment: comment, onToggleCollapse: { updatedComment in
-                updateComment(updatedComment)
-            }, isTopLevel: true)
-            .padding(.horizontal, 5)
-        }
-    }
-    
     private func loadComments() async {
-        guard comments.isEmpty || isLoading else { return }
         isLoading = true
     
         if let result = await RedditAPI.shared.fetchPostWithComments(
@@ -112,7 +108,3 @@ struct PostDetail: View {
         }
     }
 }
-
-//#Preview {
-//    PostDetail()
-//}

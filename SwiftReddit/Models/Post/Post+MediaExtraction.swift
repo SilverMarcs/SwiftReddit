@@ -10,7 +10,6 @@ import SwiftUI
 
 // MARK: - Media Extraction Extension
 extension Post {
-    
     ///  media extraction that determines media type with high-quality URLs and dimensions
     static func extractMedia(from data: PostData) -> MediaType {
         // Skip self posts

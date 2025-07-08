@@ -13,8 +13,14 @@ struct PostsList: View {
     @State private var posts: [Post] = []
     @State private var isLoading = false
     @State private var after: String?
-    @State private var selectedSort: SubListingSortOption = .best
     @State private var showingSubredditInfo = false
+    
+    @State private var selectedSort: SubListingSortOption = .best {
+        didSet {
+            posts = []
+            after = nil
+        }
+    }
     
     let feedType: PostFeedType
     

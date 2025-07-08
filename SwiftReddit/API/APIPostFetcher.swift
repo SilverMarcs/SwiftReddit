@@ -47,7 +47,7 @@ extension RedditAPI {
             return "/\(sortPath)"
             
         case .subreddit(let subreddit):
-            let subredditPath = subreddit.displayName.withSubredditPrefix
+            let subredditPath = "r/\(subreddit.displayName)"
             return "/\(subredditPath)/\(sortPath)"
             
         case .saved:

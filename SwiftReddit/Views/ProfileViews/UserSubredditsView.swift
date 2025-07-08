@@ -27,14 +27,14 @@ struct UserSubredditsView: View {
     
     var body: some View {
         List {
-            Section {
-               NavigationLink {
-                   PostsList(feedType: .saved)
-               } label: {
-                   Label("Saved Posts", systemImage: "bookmark")
-               }
-           }
-            .listSectionMargins(.top, 5)
+//            Section {
+//               NavigationLink {
+//                   PostsList(feedType: .saved)
+//               } label: {
+//                   Label("Saved Posts", systemImage: "bookmark")
+//               }
+//           }
+//            .listSectionMargins(.top, 5)
             
             if isLoading {
                 ProgressView()

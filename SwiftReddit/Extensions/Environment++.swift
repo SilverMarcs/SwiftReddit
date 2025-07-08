@@ -9,6 +9,5 @@ import Foundation
 import SwiftUI
 
 extension EnvironmentValues {
-    @Entry var isReplying = false
     @Entry var imageZoomNamespace: Namespace.ID?
 }

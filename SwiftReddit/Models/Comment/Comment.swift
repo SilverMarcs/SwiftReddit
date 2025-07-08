@@ -52,16 +52,6 @@ struct Comment: Identifiable, Hashable {
         }
     }
     
-    /// Format time for display
-    var timeAgo: String {
-        return created.timeAgo
-    }
-    
-    /// Format score for display
-    var formattedScore: String {
-        return score.formatted
-    }
-    
     /// Get author flair background color
     var flairBackgroundColor: Color {
         guard let bgColor = authorFlairBackgroundColor, !bgColor.isEmpty else {
@@ -85,5 +75,22 @@ struct Comment: Identifiable, Hashable {
         var newComment = self
         newComment.isCollapsed = collapsed
         return newComment
+    }
+    
+    // Function to get color based on comment depth
+    static func colorForDepth(_ depth: Int) -> Color {
+        let colors: [Color] = [
+            .blue,      // Depth 1
+            .green,     // Depth 2
+            .orange,    // Depth 3
+            .purple,    // Depth 4
+            .red,       // Depth 5
+            .pink,      // Depth 6
+            .teal,      // Depth 7
+            .indigo     // Depth 8
+        ]
+        
+        let index = (depth - 1) % colors.count
+        return colors[index]
     }
 }

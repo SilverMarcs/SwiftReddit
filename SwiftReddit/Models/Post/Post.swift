@@ -66,21 +66,6 @@ struct Post: Identifiable, Hashable, Equatable {
         self.mediaType = Post.extractMedia(from: postData)
     }
     
-    /// Basic relative time string for display
-    var timeAgo: String {
-        return created.timeAgo
-    }
-    
-    /// Format vote count for display
-    var formattedUps: String {
-        return ups.formatted
-    }
-    
-    /// Format comment count for display
-    var formattedComments: String {
-        return numComments.formatted
-    }
-    
     /// Get flair background color from Reddit API
     var flairBackgroundColor: Color {
         guard let bgColor = linkFlairBackgroundColor, !bgColor.isEmpty else {
