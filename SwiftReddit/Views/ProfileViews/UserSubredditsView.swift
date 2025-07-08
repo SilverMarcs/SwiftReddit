@@ -12,15 +12,10 @@ struct UserSubredditsView: View {
     @Environment(Nav.self) private var nav
     @State private var subreddits: [Subreddit] = []
     @State private var isLoading = false
-    @State private var searchText = ""
     
     // Group subreddits alphabetically
     private var groupedSubreddits: [String: [Subreddit]] {
-        let filteredSubreddits = searchText.isEmpty ? subreddits : subreddits.filter { 
-            $0.displayName.localizedCaseInsensitiveContains(searchText)
-        }
-        
-        return Dictionary(grouping: filteredSubreddits) { subreddit in
+        Dictionary(grouping: subreddits) { subreddit in
             String(subreddit.displayName.prefix(1).uppercased())
         }
     }
@@ -39,6 +34,7 @@ struct UserSubredditsView: View {
                    Label("Saved Posts", systemImage: "bookmark")
                }
            }
+            .listSectionMargins(.top, 5)
             
             if isLoading {
                 ProgressView()
@@ -46,18 +42,18 @@ struct UserSubredditsView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .listRowSeparator(.hidden)
             } else {
-                    ForEach(sortedSectionKeys, id: \.self) { letter in
-                        Section(letter) {
-                            if let subredditsInSection = groupedSubreddits[letter] {
-                                ForEach(subredditsInSection.sorted { $0.displayName < $1.displayName }, id: \.id) { subreddit in
-                                    SubredditRowView(subreddit: subreddit)
-                                }
+                ForEach(sortedSectionKeys, id: \.self) { letter in
+                    Section(letter) {
+                        if let subredditsInSection = groupedSubreddits[letter] {
+                            ForEach(subredditsInSection.sorted { $0.displayName < $1.displayName }, id: \.id) { subreddit in
+                                SubredditRowView(subreddit: subreddit)
                             }
                         }
                     }
+                    .sectionIndexLabel(letter)
+                }
             }
         }
-        .searchable(text: $searchText, prompt: "Search subreddits")
         .task {
             guard subreddits.isEmpty else { return }
             await fetchSubreddits()
@@ -75,9 +71,4 @@ struct UserSubredditsView: View {
             subreddits = fetchedSubreddits.filter { $0.isSubscribed }
         }
     }
-}
-
-#Preview {
-    UserSubredditsView()
-        .environment(Nav())
 }

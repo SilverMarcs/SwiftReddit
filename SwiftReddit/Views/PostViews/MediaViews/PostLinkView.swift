@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct PostLinkView: View {
+  @Environment(\.openURL) var openURL
   @Environment(Nav.self) private var nav
   let metadata: LinkMetadata
   
   var body: some View {
       Button {
-          nav.path.append(metadata)
+          openURL(URL(string: metadata.url)!, prefersInApp: true)
       } label: {
           HStack(spacing: 12) {
               Image(systemName: "link")

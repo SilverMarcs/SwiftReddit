@@ -14,7 +14,6 @@ struct PostView: View {
   
   var body: some View {
       VStack(alignment: .leading, spacing: 8) {
-          // Title and flair header
             Text(post.title)
 //              .font(.title3) // title3 is fine
                 .font(.system(size: 19)) // title3 is fine
