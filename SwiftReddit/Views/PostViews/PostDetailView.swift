@@ -20,12 +20,8 @@ struct PostDetailView: View {
         }
     }
     
-    @State private var showingReplySheet = false
-    @State private var replyTarget: ReplySheet.ReplyTarget
-    
     init(post: Post) {
         self.post = post
-        self._replyTarget = State(initialValue: .post(post))
     }
     
     @State var scrollPosition = ScrollPosition(idType: Comment.ID.self)
@@ -50,36 +46,12 @@ struct PostDetailView: View {
                             updateComment(updatedComment)
                         }, isTopLevel: true)
                         .padding(.horizontal, 5)
-                        .environment(\.onReply) { comment in
-                            replyTarget = .comment(comment)
-                            showingReplySheet = true
-                        }
                     }
                 }
             }
             .scrollTargetLayout()
         }
         .scrollPosition($scrollPosition)
-        .overlay(alignment: .bottomTrailing) {
-            Button {
-                replyTarget = .post(post)
-                showingReplySheet = true
-            } label: {
-                Label("Reply", systemImage: "arrowshape.turn.up.backward.fill")
-                    .labelStyle(.iconOnly)
-            }
-            .buttonStyle(.glassProminent)
-            .controlSize(.large)
-            .buttonBorderShape(.circle)
-            .padding()
-        }
-        .sheet(isPresented: $showingReplySheet) {
-            ReplySheet(
-                target: replyTarget,
-                onReply: handleReply
-            )
-            .presentationDetents([.medium])
-        }
         .task(id: sortOption) {
             await loadComments()
         }
@@ -105,30 +77,6 @@ struct PostDetailView: View {
                         .labelStyle(.iconOnly)
                 }
                 .tint(.accent)
-            }
-        }
-    }
-    
-    private func handleReply(_ text: String, _ fullname: String) {
-        // Determine if reply is to a comment or post
-        var parentCommentID: String? = nil
-        switch replyTarget {
-        case .comment(let comment):
-            parentCommentID = comment.id
-        default:
-            break
-        }
-        Task {
-            let success = await RedditAPI.shared.newReply(text, fullname)
-            if success == true {
-                // Remember the parent comment id to scroll to after reload
-                await loadComments(force: true)
-                // After loading, set scrollPosition to the parent comment id if available
-                if let id = parentCommentID {
-                    withAnimation {
-                        scrollPosition = .init(id: id)
-                    }
-                }
             }
         }
     }

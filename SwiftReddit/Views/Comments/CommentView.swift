@@ -9,7 +9,6 @@ import SwiftUI
 
 struct CommentView: View {
     @Environment(Nav.self) var nav
-    @Environment(\.onReply) private var onReply
     @State var comment: Comment
     @State private var isExpanded: Bool
     

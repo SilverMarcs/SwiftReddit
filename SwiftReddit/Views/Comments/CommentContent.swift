@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct CommentContent: View {
-    @Environment(\.onReply) private var onReply
-    
     let comment: Comment
     let isTopLevel: Bool
     let isExpanded: Bool
@@ -44,12 +42,5 @@ struct CommentContent: View {
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
         .opacity(!isExpanded && comment.hasChildren ? 0.5 : 1.0)
-        .contextMenu {
-            Button {
-                onReply(comment)
-            } label: {
-                Label("Reply", systemImage: "arrowshape.turn.up.backward.fill")
-            }
-        }
     }
 }
