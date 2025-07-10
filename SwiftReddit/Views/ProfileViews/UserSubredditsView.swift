@@ -33,6 +33,12 @@ struct UserSubredditsView: View {
                } label: {
                    Label("Saved Posts", systemImage: "bookmark")
                }
+               
+               NavigationLink {
+                   InboxView()
+               } label: {
+                   Label("Inbox", systemImage: "tray")
+               }
            }
             .listSectionMargins(.top, 5)
             
