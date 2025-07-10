@@ -29,6 +29,7 @@ struct Post: Identifiable, Hashable, Equatable {
     let linkFlairBackgroundColor: String?
     let over18: Bool?
     var saved: Bool
+    let likes: Bool? // Vote state: true = upvoted, false = downvoted, nil = no vote
     
     //  media properties
     let mediaType: MediaType
@@ -61,6 +62,7 @@ struct Post: Identifiable, Hashable, Equatable {
         self.linkFlairBackgroundColor = postData.link_flair_background_color
         self.over18 = postData.over_18
         self.saved = postData.saved
+        self.likes = postData.likes
         
         // Extract media information with high-quality image support
         self.mediaType = Post.extractMedia(from: postData)

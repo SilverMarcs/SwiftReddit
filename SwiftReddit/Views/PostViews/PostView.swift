@@ -15,7 +15,6 @@ struct PostView: View {
   var body: some View {
       VStack(alignment: .leading, spacing: 8) {
             Text(post.title)
-//              .font(.title3) // title3 is fine
                 .font(.system(size: 19)) // title3 is fine
                 .fontWeight(.semibold)
                 .lineLimit(isCompact ? 3 : nil)
@@ -37,7 +36,6 @@ struct PostView: View {
 
             if !post.selftext.isEmpty {
                 Text(LocalizedStringKey(post.selftext))
-//                    .font(.subheadline)
                     .font(.callout)
                     .foregroundStyle(isCompact ? .secondary : .primary)
                     .opacity(isCompact ? 1 : 0.9)
@@ -45,14 +43,12 @@ struct PostView: View {
                     .handleURLs()
         }
           
-          // Media component
           if post.mediaType.hasMedia {
               PostMediaView(mediaType: post.mediaType)
           }
           
           Divider()
           
-          // Post metadata
           HStack {
               SubredditButton(subreddit: post.subreddit, type: .icon(iconUrl: post.subreddit.iconURL ?? ""))
               
@@ -79,33 +75,12 @@ struct PostView: View {
               
               Spacer()
               
-              HStack(alignment: .center) {
-                    Image(systemName: "arrow.up")
-                        .font(.title2)
-                        .foregroundStyle(.secondary)
-                    
-                    Text(post.ups.formatted)
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.secondary)
-                    
-                    Image(systemName: "arrow.down")
-                        .font(.title2)
-                        .foregroundStyle(.secondary)
-                }
-                .fontWeight(.semibold)
+              PostActionsView(post: post)
           }
       }
       .padding(.horizontal, isCompact ? 12 : nil)
       .padding(.vertical, isCompact ? 12 : nil)
       .background(isCompact ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 16))
-//      .background(
-//        RoundedRectangle(cornerRadius: 16)
-//          .fill(isCompact ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear))
-//          .stroke(.separator, lineWidth: 1)
-//      )
-      // simpel stoke all round
-//      .background(RoundedRectangle(cornerRadius: 16).stroke(.separator, lineWidth: 1))
       .contextMenu {
           Section {
               Button {
