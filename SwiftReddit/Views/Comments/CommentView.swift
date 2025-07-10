@@ -13,13 +13,15 @@ struct CommentView: View {
     @State private var isExpanded: Bool
     
     let onToggleCollapse: (Comment) -> Void
+    let onReply: (Comment) -> Void
     let isTopLevel: Bool
     
     private let maxDepth = 8 // Limit visual depth to prevent excessive indentation
     
-    init(comment: Comment, onToggleCollapse: @escaping (Comment) -> Void, isTopLevel: Bool) {
+    init(comment: Comment, onToggleCollapse: @escaping (Comment) -> Void, onReply: @escaping (Comment) -> Void, isTopLevel: Bool) {
         self.comment = comment
         self.onToggleCollapse = onToggleCollapse
+        self.onReply = onReply
         self.isTopLevel = isTopLevel
         self._isExpanded = State(initialValue: !comment.isCollapsed)
     }
@@ -29,7 +31,7 @@ struct CommentView: View {
             if comment.hasChildren {
                 DisclosureGroup(isExpanded: $isExpanded) {
                     ForEach(comment.children, id: \.id) { child in
-                        CommentView(comment: child, onToggleCollapse: onToggleCollapse, isTopLevel: false)
+                        CommentView(comment: child, onToggleCollapse: onToggleCollapse, onReply: onReply, isTopLevel: false)
                     }
                 } label: {
                     VStack(alignment: .leading, spacing: 0) {
@@ -53,5 +55,12 @@ struct CommentView: View {
             }
         }
         .background(isTopLevel ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 14))
+        .contextMenu {
+            Button {
+                onReply(comment)
+            } label: {
+                Label("Reply", systemImage: "arrowshape.turn.up.backward.fill")
+            }
+        }
     }
 }

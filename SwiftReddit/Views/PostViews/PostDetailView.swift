@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PostDetail: View {
+struct PostDetailView: View {
     @Environment(Nav.self) var nav
     
     let post: Post
@@ -19,6 +19,15 @@ struct PostDetail: View {
             comments = []
         }
     }
+    
+    @State private var showingReplySheet = false
+    @State private var replyTarget: ReplySheet.ReplyTarget
+    
+    init(post: Post) {
+        self.post = post
+        self._replyTarget = State(initialValue: .post(post))
+    }
+
 
     var body: some View {
         ScrollView {
@@ -38,11 +47,39 @@ struct PostDetail: View {
                     ForEach(comments) { comment in
                         CommentView(comment: comment, onToggleCollapse: { updatedComment in
                             updateComment(updatedComment)
+                        }, onReply: { comment in
+                            replyTarget = .comment(comment)
+                            showingReplySheet = true
                         }, isTopLevel: true)
                         .padding(.horizontal, 5)
                     }
                 }
             }
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            HStack {
+                Spacer()
+                
+                Button {
+                    replyTarget = .post(post)
+                    showingReplySheet = true
+                } label: {
+                    Label("Reply", systemImage: "arrowshape.turn.up.backward.fill")
+                        .labelStyle(.iconOnly)
+                }
+                .buttonStyle(.glassProminent)
+                .controlSize(.large)
+                .buttonBorderShape(.circle)
+            }
+            .padding()
+            .ignoresSafeArea()
+        }
+        .sheet(isPresented: $showingReplySheet) {
+            ReplySheet(
+                target: replyTarget,
+                onReply: handleReply
+            )
+            .presentationDetents([.medium])
         }
         .task(id: sortOption) {
             await loadComments()
@@ -69,6 +106,16 @@ struct PostDetail: View {
                         .labelStyle(.iconOnly)
                 }
                 .tint(.accent)
+            }
+        }
+    }
+    
+    private func handleReply(_ text: String, _ fullname: String) {
+        Task {
+            let success = await RedditAPI.shared.newReply(text, fullname)
+            if success == true {
+                // Refresh comments after successful reply
+                await loadComments(force: true)
             }
         }
     }

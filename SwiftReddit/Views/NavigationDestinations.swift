@@ -14,7 +14,7 @@ extension View {
                 PostsList(feedType: feedType)
             }
             .navigationDestination(for: Post.self) { post in
-                PostDetail(post: post)
+                PostDetailView(post: post)
             }
             .navigationDestination(for: ImageModalData.self) { imageData in
                 ImageModal(images: imageData.images)

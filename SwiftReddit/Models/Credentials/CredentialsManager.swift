@@ -7,10 +7,8 @@
 
 import Foundation
 import SwiftUI
-import Combine
 
-@Observable
-class CredentialsManager {
+@Observable class CredentialsManager {
     static let shared = CredentialsManager()
     
     private let keychainManager = KeychainManager.shared
