@@ -61,4 +61,13 @@ indirect enum MediaType: Hashable {
         default: return true
         }
     }
+    
+    var isVisualMedia: Bool {
+        switch self {
+        case .image, .gallery, .video, .gif:
+            return true
+        default:
+            return false
+        }
+    }
 }

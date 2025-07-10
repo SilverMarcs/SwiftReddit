@@ -30,4 +30,20 @@ extension RedditAPI {
             return nil
         }
     }
+    
+    // MARK: - Subreddits List
+    
+    func fetchUserSubreddits() async -> [Subreddit]? {
+        guard let url = URL(string: "\(RedditAPI.redditApiURLBase)/subreddits/mine/subscriber.json?limit=100") else {
+            return nil
+        }
+        
+        guard let response: Listing<SubredditData> = await performAuthenticatedRequest(url: url, responseType: Listing<SubredditData>.self) else {
+            return nil
+        }
+        
+        return response.data.children.compactMap { child in
+            return Subreddit(data: child.data)
+        }
+    }
 }

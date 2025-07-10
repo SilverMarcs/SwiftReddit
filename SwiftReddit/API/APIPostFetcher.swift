@@ -77,22 +77,22 @@ extension RedditAPI {
         }
         
         // Prefetch images for all posts
-        prefetchImagesForPosts(posts)
+//        prefetchImagesForPosts(posts)
         
         return (posts, listingResponse.data.after)
     }
     
-    private func prefetchImagesForPosts(_ posts: [Post]) {
-        Task.detached {
-            let imageURLs = await self.extractImageURLsFromPosts(posts)
-            let urls = imageURLs.compactMap { URL(string: $0) }
-            
-            if !urls.isEmpty {
-                let prefetcher = ImagePrefetcher(urls: urls)
-                prefetcher.start()
-            }
-        }
-    }
+//    private func prefetchImagesForPosts(_ posts: [Post]) {
+//        Task.detached {
+//            let imageURLs = await self.extractImageURLsFromPosts(posts)
+//            let urls = imageURLs.compactMap { URL(string: $0) }
+//            
+//            if !urls.isEmpty {
+//                let prefetcher = ImagePrefetcher(urls: urls)
+//                prefetcher.start()
+//            }
+//        }
+//    }
     
     private func extractImageURLsFromPosts(_ posts: [Post]) -> [String] {
         var imageURLs: [String] = []

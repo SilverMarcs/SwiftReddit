@@ -29,4 +29,5 @@ typealias PostListing = Listing<PostData>
 typealias PostListingResponse = PostListing
 typealias CommentListing = Listing<CommentData>
 typealias SubredditListing = Listing<SubredditData>
+typealias UserListing = Listing<UserData>
 

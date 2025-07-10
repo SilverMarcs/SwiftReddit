@@ -11,9 +11,18 @@ struct SearchTab: View {
     @Environment(Nav.self) private var nav
     @State private var searchText = ""
     @State private var searchScope: SearchScope = .subreddits
-    @State private var searchResults: [Subreddit] = []
+    @State private var subredditResults: [Subreddit] = []
+    @State private var postResults: [Post] = []
     @State private var isLoading = false
-    @State private var hasSearched = false
+    
+    var searchResults: [Any] {
+        switch searchScope {
+        case .subreddits:
+            return subredditResults
+        case .posts:
+            return postResults
+        }
+    }
     
     var body: some View {
         @Bindable var nav = nav
@@ -22,95 +31,88 @@ struct SearchTab: View {
             List {
                 if isLoading {
                     ProgressView()
+                        .id(UUID())
                         .controlSize(.large)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .listRowSeparator(.hidden)
-                } else if hasSearched && searchResults.isEmpty && !searchText.isEmpty {
-                    ContentUnavailableView.search
-                } else if !hasSearched && searchText.isEmpty {
-                    VStack(spacing: 8) {
-                        Image(systemName: searchScope == .subreddits ? "magnifyingglass" : "person.magnifyingglass")
-                            .font(.largeTitle)
-                            .foregroundStyle(.secondary)
-                        Text("Search for \(searchScope.rawValue)")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding()
-                    .listRowSeparator(.hidden)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .listRowSeparator(.hidden)
                 } else {
                     switch searchScope {
                     case .subreddits:
-                        ForEach(searchResults) { subreddit in
-//                            SubredditSearchResultView(subreddit: subreddit)
+                        ForEach(subredditResults) { subreddit in
                             SubredditRowView(subreddit: subreddit)
                         }
-                    case .users:
-                        // Dummy user results for now
-                        Text("To be implemented later")
+                    case .posts:
+                        ForEach(postResults) { post in
+                            CompactPostView(post: post)
+                        }
                     }
                 }
             }
+            .navigationTitle("Search")
+            .toolbarTitleDisplayMode(.inlineLarge)
             .searchable(text: $searchText, prompt: "Search \(searchScope.rawValue)")
             .searchScopes($searchScope) {
                 ForEach(SearchScope.allCases, id: \.self) { scope in
                     Text(scope.rawValue).tag(scope)
                 }
             }
-            .navigationTitle("Search")
-            .toolbarTitleDisplayMode(.inlineLarge)
-            .navigationDestinations()
             .onSubmit(of: .search) {
                 Task {
-                    await performSearch(searchText)
+                    await performSearch()
                 }
             }
             .onChange(of: searchScope) {
-                searchResults = []
-                hasSearched = false
+                subredditResults = []
+                postResults = []
+                Task {
+                    await performSearch()
+                }
             }
             .toolbar {
                 ToolbarItem(placement: .destructiveAction) {
                     Button("Clear", role: .destructive) {
                         searchText = ""
-                        searchResults = []
-                        hasSearched = false
+                        subredditResults = []
+                        postResults = []
                     }
                     .disabled(searchText.isEmpty && searchResults.isEmpty)
                 }
             }
+            .navigationDestinations()
         }
     }
     
-    private func performSearch(_ query: String) async {
-        guard !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            searchResults = []
-            hasSearched = false
+    private func performSearch() async {
+        guard !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            subredditResults = []
+            postResults = []
             return
         }
         
         isLoading = true
-        hasSearched = true
         
         defer {
             isLoading = false
         }
         
-        if let subreddits: [Subreddit] = await RedditAPI.shared.searchSubreddits(query, limit: 25) {
-            searchResults = subreddits
-        } else {
-            searchResults = []
+        switch searchScope {
+        case .subreddits:
+            if let subreddits = await RedditAPI.shared.searchSubreddits(searchText, limit: 25) {
+                subredditResults = subreddits
+            } else {
+                subredditResults = []
+            }
+        case .posts:
+            if let posts = await RedditAPI.shared.searchPosts(searchText, limit: 25) {
+                postResults = posts
+            } else {
+                postResults = []
+            }
         }
     }
 }
 
 enum SearchScope: String, CaseIterable {
     case subreddits = "Subreddits"
-    case users = "Users"
-}
-
-#Preview {
-    SearchTab()
-        .environment(Nav())
+    case posts = "Posts"
 }
