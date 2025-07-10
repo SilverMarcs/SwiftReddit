@@ -28,17 +28,48 @@ struct UserSubredditsView: View {
     var body: some View {
         List {
             Section {
-               NavigationLink {
-                   PostsList(feedType: .saved)
-               } label: {
-                   Label("Saved Posts", systemImage: "bookmark")
-               }
-               
-               NavigationLink {
-                   InboxView()
-               } label: {
-                   Label("Inbox", systemImage: "tray")
-               }
+                HStack {
+                    NavigationLink {
+                        PostsList(feedType: .saved)
+                    } label: {
+//                        Label("Saved Posts", systemImage: "bookmark")
+                        VStack(alignment: .leading) {
+                            Image(systemName: "bookmark.circle.fill")
+                                .font(.title)
+                                .foregroundStyle(.green)
+                            Text("Saved")
+                                .bold()
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(.background.secondary)
+                        )
+                    
+                    
+                    NavigationLink {
+                        InboxView()
+                    } label: {
+//                        Label("Inbox", systemImage: "tray")
+                        VStack(alignment: .leading) {
+                            Image(systemName: "tray.circle.fill")
+                                .font(.title)
+                                .foregroundStyle(.blue)
+                            Text("Inbox")
+                                .bold()
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(.background.secondary)
+                        )
+                }
+                .listRowBackground(Color.clear)
+                .listRowInsets(.init())
            }
             .listSectionMargins(.top, 5)
             

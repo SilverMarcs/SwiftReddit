@@ -27,6 +27,8 @@ struct PostDetailView: View {
         self.post = post
         self._replyTarget = State(initialValue: .post(post))
     }
+    
+    @State var scrollPosition = ScrollPosition(idType: Comment.ID.self)
 
     var body: some View {
         ScrollView {
@@ -55,7 +57,9 @@ struct PostDetailView: View {
                     }
                 }
             }
+            .scrollTargetLayout()
         }
+        .scrollPosition($scrollPosition)
         .overlay(alignment: .bottomTrailing) {
             Button {
                 replyTarget = .post(post)
@@ -106,11 +110,25 @@ struct PostDetailView: View {
     }
     
     private func handleReply(_ text: String, _ fullname: String) {
+        // Determine if reply is to a comment or post
+        var parentCommentID: String? = nil
+        switch replyTarget {
+        case .comment(let comment):
+            parentCommentID = comment.id
+        default:
+            break
+        }
         Task {
             let success = await RedditAPI.shared.newReply(text, fullname)
             if success == true {
-                // Refresh comments after successful reply
+                // Remember the parent comment id to scroll to after reload
                 await loadComments(force: true)
+                // After loading, set scrollPosition to the parent comment id if available
+                if let id = parentCommentID {
+                    withAnimation {
+                        scrollPosition = .init(id: id)
+                    }
+                }
             }
         }
     }

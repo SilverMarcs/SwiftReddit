@@ -39,6 +39,7 @@ struct CommentContent: View {
             }
             .contentShape(.rect)
         }
+        .id(comment.id)
         .padding(.leading, isTopLevel ? 0 : 0)
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
