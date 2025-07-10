@@ -6,77 +6,39 @@
 //
 
 import SwiftUI
+import Combine
 
 struct PostActionsView: View {
     let post: Post
-    @State private var likes: Bool?
-    @State private var upsCount: Int
+    private var viewModel: VoteActionViewModel
 
     init(post: Post) {
         self.post = post
-        self._likes = State(initialValue: post.likes)
-        self._upsCount = State(initialValue: post.ups)
+        viewModel = VoteActionViewModel(item: post, targetType: .post)
     }
     
     var body: some View {
         HStack(alignment: .center) {
-            Button(action: { vote(action: .up) }) {
+            Button(action: { viewModel.vote(action: .up) }) {
                 Image(systemName: "arrow.up")
                     .font(.title2)
-                    .foregroundStyle(likes == true ? .indigo : .secondary)
+                    .foregroundStyle(viewModel.likes == true ? .indigo : .secondary)
             }
             .buttonStyle(.plain)
 
-            Text(upsCount.formatted())
+            Text(viewModel.upsCount.formatted())
                 .contentTransition(.numericText())
                 .font(.headline)
                 .fontWeight(.semibold)
-                .foregroundStyle(likes == true ? .indigo : likes == false ? .red : .secondary)
+                .foregroundStyle(viewModel.likes == true ? .indigo : viewModel.likes == false ? .red : .secondary)
 
-            Button(action: { vote(action: .down) }) {
+            Button(action: { viewModel.vote(action: .down) }) {
                 Image(systemName: "arrow.down")
                     .font(.title2)
-                    .foregroundStyle(likes == false ? .red : .secondary)
+                    .foregroundStyle(viewModel.likes == false ? .red : .secondary)
             }
             .buttonStyle(.plain)
         }
         .fontWeight(.semibold)
-    }
-    
-    
-    private func hapticFeedback() {
-        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-        impactFeedback.prepare()
-        impactFeedback.impactOccurred()
-    }
-    
-    private func vote(action: RedditAPI.VoteAction) {
-        hapticFeedback()
-
-        Task {
-            let initialLikes = likes
-            let initialUpsCount = upsCount
-
-            // Optimistically update the UI
-            switch action {
-            case .up:
-                likes = (likes == true) ? nil : true // Toggle upvote
-                upsCount += (likes == true) ? (initialLikes == nil ? 1 : -1) : -1
-            case .down:
-                likes = (likes == false) ? nil : false // Toggle downvote
-                upsCount += (likes == false) ? (initialLikes == nil ? -1 : 1) : 1
-            case .none:
-                break
-            }
-
-            // Fire and forget API call
-            let success = await RedditAPI.shared.vote(action, id: post.fullname)
-
-            // Revert on failure
-            if success != true {
-                likes = initialLikes
-                upsCount = initialUpsCount
-            }
-        }
     }
 }

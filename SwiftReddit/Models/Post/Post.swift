@@ -92,3 +92,7 @@ struct Post: Identifiable, Hashable, Equatable {
         return URL(string: "https://reddit.com\(permalink)")
     }
 }
+
+extension Post: Votable {
+    // fullname, likes, and ups already exist
+}

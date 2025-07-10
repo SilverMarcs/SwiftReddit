@@ -101,3 +101,7 @@ struct Comment: Identifiable, Hashable {
         return colors[index]
     }
 }
+
+extension Comment: Votable {
+    // fullname, likes, and ups already exist
+}
