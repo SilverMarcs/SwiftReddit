@@ -23,11 +23,17 @@ struct Comment: Identifiable, Hashable {
     let authorFlairBackgroundColor: String?
     let distinguished: String?
     let stickied: Bool
+    let likes: Bool? // Vote state: true = upvoted, false = downvoted, nil = no vote
     // UI state
     var isCollapsed: Bool = false
     
     // Nested structure
     var children: [Comment] = []
+    
+    /// Get fullname for API calls (t1_ prefix + id)
+    var fullname: String {
+        return "t1_\(id)"
+    }
     
     init(from commentData: CommentData) {
         self.id = commentData.id
@@ -43,6 +49,7 @@ struct Comment: Identifiable, Hashable {
         self.authorFlairBackgroundColor = commentData.author_flair_background_color
         self.distinguished = commentData.distinguished
         self.stickied = commentData.stickied ?? false
+        self.likes = commentData.likes
 
         // Process nested replies
         if case .listing(let listing) = commentData.replies {

@@ -67,22 +67,7 @@ struct CommentHeader: View {
             
             Spacer()
             
-            HStack(alignment: .center) {
-                Image(systemName: "arrow.up")
-                    .font(.subheadline)
-                
-                Text(comment.ups.formatted)
-                    .font(.subheadline)
-                
-                Image(systemName: "arrow.down")
-                    .font(.subheadline)
-            }
-            .id(comment.id)
-            .padding(.horizontal, 6)
-            .padding(.vertical, 4)
-            .background(.background.secondary, in: .rect(cornerRadius: 14))
-            .foregroundStyle(.secondary)
-            .fontWeight(.semibold)
+            CommentActionsView(comment: comment)
         }
     }
 }

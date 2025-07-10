@@ -1,5 +1,5 @@
 //
-//  PostActionsView.swift
+//  CommentActionsView.swift
 //  SwiftReddit
 //
 //  Created by Zabir Raihan on 11/07/2025.
@@ -7,42 +7,46 @@
 
 import SwiftUI
 
-struct PostActionsView: View {
-    let post: Post
+struct CommentActionsView: View {
+    let comment: Comment
     @State private var likes: Bool?
     @State private var upsCount: Int
-
-    init(post: Post) {
-        self.post = post
-        self._likes = State(initialValue: post.likes)
-        self._upsCount = State(initialValue: post.ups)
+    
+    init(comment: Comment) {
+        self.comment = comment
+        self._likes = State(initialValue: comment.likes)
+        self._upsCount = State(initialValue: comment.ups)
     }
     
     var body: some View {
         HStack(alignment: .center) {
             Button(action: { vote(action: .up) }) {
                 Image(systemName: "arrow.up")
-                    .font(.title2)
+                    .font(.subheadline)
                     .foregroundStyle(likes == true ? .indigo : .secondary)
             }
             .buttonStyle(.plain)
-
+            
             Text(upsCount.formatted())
                 .contentTransition(.numericText())
-                .font(.headline)
+                .font(.subheadline)
                 .fontWeight(.semibold)
                 .foregroundStyle(likes == true ? .indigo : likes == false ? .red : .secondary)
-
+            
             Button(action: { vote(action: .down) }) {
                 Image(systemName: "arrow.down")
-                    .font(.title2)
+                    .font(.subheadline)
                     .foregroundStyle(likes == false ? .red : .secondary)
             }
             .buttonStyle(.plain)
         }
+        .id(comment.id)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 4)
+        .background(.background.secondary, in: .rect(cornerRadius: 14))
         .fontWeight(.semibold)
+        
     }
-    
     
     private func hapticFeedback() {
         let impactFeedback = UIImpactFeedbackGenerator(style: .light)
@@ -70,7 +74,7 @@ struct PostActionsView: View {
             }
 
             // Fire and forget API call
-            let success = await RedditAPI.shared.vote(action, id: post.fullname)
+            let success = await RedditAPI.shared.voteComment(action, id: comment.fullname)
 
             // Revert on failure
             if success != true {

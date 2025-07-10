@@ -70,4 +70,37 @@ extension RedditAPI {
         
         return components?.url
     }
+    
+    // MARK: - Comment Actions
+    
+    /// Vote on a comment (upvote, downvote, or remove vote)
+    /// - Parameters:
+    ///   - action: The vote action to perform
+    ///   - id: The fullname of the comment (e.g., t1_commentid)
+    /// - Returns: true if successful, false otherwise
+    @discardableResult
+    func voteComment(_ action: VoteAction, id: String) async -> Bool? {
+        guard let url = URL(string: "\(Self.redditApiURLBase)/api/vote") else {
+            return nil
+        }
+        
+        guard var request = await createAuthenticatedRequest(url: url, method: "POST") else {
+            return nil
+        }
+        
+        let parameters = "dir=\(action.rawValue)&id=\(id)&api_type=json&raw_json=1"
+        request.httpBody = parameters.data(using: .utf8)
+        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            let (_, response) = try await URLSession.shared.data(for: request)
+            if let httpResponse = response as? HTTPURLResponse {
+                return httpResponse.statusCode == 200
+            }
+            return false
+        } catch {
+            AppLogger.critical("Comment vote error: \(error.localizedDescription)")
+            return nil
+        }
+    }
 }
