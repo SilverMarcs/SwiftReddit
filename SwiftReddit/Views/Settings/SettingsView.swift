@@ -9,6 +9,7 @@ import SwiftUI
 import Kingfisher
 
 struct SettingsView: View {
+    @Environment(\.dismiss) var dismiss
     @ObservedObject private var config = Config.shared
     @State private var deleteAlertPresented = false
     @State private var cacheSize: String = "Calculating..."
@@ -75,6 +76,16 @@ struct SettingsView: View {
             .formStyle(.grouped)
             .navigationTitle("Settings")
             .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(action: {
+                        dismiss()
+                    }) {
+                        Image(systemName: "xmark")
+                            
+                    }
+                }
+            }
         }
     }
     

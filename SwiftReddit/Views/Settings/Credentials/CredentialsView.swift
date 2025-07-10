@@ -72,38 +72,22 @@ struct CredentialsView: View {
                     }
                 }
             }
-            
-            Section {
+        }
+        .navigationTitle("Accounts")
+        .toolbarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
                 if isLoading || waitingForCallback {
-                    HStack {
-                        ProgressView()
-                        Text(isLoading ? "Loading..." : "Waiting for callback...")       
-                    }
+                    ProgressView()
                 } else {
                     Button {
                         authorizeCredential()
                     } label: {
-                        Label {
-                            Text("Add Account")
-                        } icon: {
-                            Image(systemName: "plus.circle.fill")
-                        }
+                        Image(systemName: "plus")
                     }
                 }
-               
-                
-                if waitingForCallback || isLoading {
-                   Button("Cancel") {
-                        waitingForCallback = false
-                        isLoading = false
-                    }
-                    .foregroundStyle(.red)
-                }
-                
             }
         }
-        .navigationTitle("Accounts")
-        .toolbarTitleDisplayMode(.inline)
         .alert("Error", isPresented: $showingError) {
             Button("OK") { showingError = false }
         } message: {

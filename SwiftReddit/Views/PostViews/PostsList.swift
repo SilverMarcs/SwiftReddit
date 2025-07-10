@@ -31,8 +31,10 @@ struct PostsList: View {
                     nav.path.append(post)
                 } label: {
                     PostView(post: post)
-                        .contentShape(.contextMenuPreview, .rect(cornerRadius: 16))
                         .navigationLinkIndicatorVisibility(.hidden)
+                    #if !os(macOS)
+                        .contentShape(.contextMenuPreview, .rect(cornerRadius: 16))
+                    #endif
                 }
                 .buttonStyle(.plain)
                 .listRowInsets(.vertical, 5)

@@ -48,7 +48,7 @@ struct PostDetail: View {
             await loadComments()
         }
         .refreshable {
-            await loadComments()
+            await loadComments(force: true)
         }
         .navigationTitle(post.subreddit.displayNamePrefixed)
         .navigationSubtitle(post.numComments.formatted + " comments")
@@ -73,9 +73,14 @@ struct PostDetail: View {
         }
     }
     
-    private func loadComments() async {
+    private func loadComments(force: Bool = false) async {
+        // If not forced and comments already exist, return early
+        if !force && !comments.isEmpty {
+            return
+        }
+        
         isLoading = true
-    
+        
         if let result = await RedditAPI.shared.fetchPostWithComments(
             subreddit: post.subreddit.displayName,
             postID: post.id,
