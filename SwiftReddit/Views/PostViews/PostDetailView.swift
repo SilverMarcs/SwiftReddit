@@ -28,7 +28,6 @@ struct PostDetailView: View {
         self._replyTarget = State(initialValue: .post(post))
     }
 
-
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading) {
@@ -47,11 +46,12 @@ struct PostDetailView: View {
                     ForEach(comments) { comment in
                         CommentView(comment: comment, onToggleCollapse: { updatedComment in
                             updateComment(updatedComment)
-                        }, onReply: { comment in
-                            replyTarget = .comment(comment)
-                            showingReplySheet = true
                         }, isTopLevel: true)
                         .padding(.horizontal, 5)
+                        .environment(\.onReply) { comment in
+                            replyTarget = .comment(comment)
+                            showingReplySheet = true
+                        }
                     }
                 }
             }

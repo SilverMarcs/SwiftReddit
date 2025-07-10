@@ -1,11 +1,12 @@
 import SwiftUI
 
 struct CommentContent: View {
+    @Environment(\.onReply) private var onReply
+    
     let comment: Comment
     let isTopLevel: Bool
     let isExpanded: Bool
-    let onReply: (Comment) -> Void
-    
+
     private let maxDepth = 8
     
     var body: some View {
