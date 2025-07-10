@@ -4,6 +4,7 @@ struct CommentContent: View {
     let comment: Comment
     let isTopLevel: Bool
     let isExpanded: Bool
+    let onReply: (Comment) -> Void
     
     private let maxDepth = 8
     
@@ -41,5 +42,12 @@ struct CommentContent: View {
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
         .opacity(!isExpanded && comment.hasChildren ? 0.5 : 1.0)
+        .contextMenu {
+            Button {
+                onReply(comment)
+            } label: {
+                Label("Reply", systemImage: "arrowshape.turn.up.backward.fill")
+            }
+        }
     }
 }

@@ -56,23 +56,18 @@ struct PostDetailView: View {
                 }
             }
         }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            HStack {
-                Spacer()
-                
-                Button {
-                    replyTarget = .post(post)
-                    showingReplySheet = true
-                } label: {
-                    Label("Reply", systemImage: "arrowshape.turn.up.backward.fill")
-                        .labelStyle(.iconOnly)
-                }
-                .buttonStyle(.glassProminent)
-                .controlSize(.large)
-                .buttonBorderShape(.circle)
+        .overlay(alignment: .bottomTrailing) {
+            Button {
+                replyTarget = .post(post)
+                showingReplySheet = true
+            } label: {
+                Label("Reply", systemImage: "arrowshape.turn.up.backward.fill")
+                    .labelStyle(.iconOnly)
             }
+            .buttonStyle(.glassProminent)
+            .controlSize(.large)
+            .buttonBorderShape(.circle)
             .padding()
-            .ignoresSafeArea()
         }
         .sheet(isPresented: $showingReplySheet) {
             ReplySheet(

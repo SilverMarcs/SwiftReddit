@@ -38,7 +38,6 @@ struct CommentActionsView: View {
             }
             .buttonStyle(.plain)
         }
-        .id(comment.id)
         .padding(.horizontal, 6)
         .padding(.vertical, 4)
         .background(.background.secondary, in: .rect(cornerRadius: 14))

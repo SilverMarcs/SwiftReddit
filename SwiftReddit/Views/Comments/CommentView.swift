@@ -35,8 +35,7 @@ struct CommentView: View {
                     }
                 } label: {
                     VStack(alignment: .leading, spacing: 0) {
-                        CommentContent(comment: comment, isTopLevel: isTopLevel, isExpanded: isExpanded)
-
+                        CommentContent(comment: comment, isTopLevel: isTopLevel, isExpanded: isExpanded, onReply: onReply)
                         if isExpanded {
                             Divider()
                                 .padding(.leading, isTopLevel ? 12 : CGFloat(min(comment.depth, maxDepth) * 12) + 12)
@@ -51,16 +50,9 @@ struct CommentView: View {
                     }
                 }
             } else {
-                CommentContent(comment: comment, isTopLevel: isTopLevel, isExpanded: isExpanded)
+                CommentContent(comment: comment, isTopLevel: isTopLevel, isExpanded: isExpanded, onReply: onReply)
             }
         }
         .background(isTopLevel ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 14))
-        .contextMenu {
-            Button {
-                onReply(comment)
-            } label: {
-                Label("Reply", systemImage: "arrowshape.turn.up.backward.fill")
-            }
-        }
     }
 }
