@@ -19,11 +19,6 @@ struct PostImageView: View {
 //                .transition(.scale(scale: 1))
                 .cornerRadius(12)
                 .clipped()
-//                .frame(
-//                    maxWidth: .infinity,
-//                    maxHeight: 500,
-//                    alignment: .center
-//                )
                 .onTapGesture {
                     ImageOverlayViewModel.shared.present(images: [image])
                 }

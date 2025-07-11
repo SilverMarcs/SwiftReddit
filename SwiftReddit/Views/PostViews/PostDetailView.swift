@@ -66,7 +66,7 @@ struct PostDetailView: View {
                             if comment.depth == 0 && comment.id != flatComments.first?.id {
                                 Rectangle()
                                     .fill(.background.secondary)
-                                    .frame(height: 5)
+                                    .frame(height: 6)
                                     .padding(.horizontal, -15)
                             } else if comment.id != flatComments.first?.id {
                                 Divider()
