@@ -11,24 +11,22 @@ struct PostImageView: View {
     var image: GalleryImage
     
     @Environment(\.imageZoomNamespace) private var zoomNamespace
-    @Environment(Nav.self) private var nav
     
     var body: some View {
         if let url = URL(string: image.url) {
-            Button {
-                nav.path.append(ImageModalData(image: image))
-            } label: {
-                ImageView(url: url, aspectRatio: image.aspectRatio)
-                    .cornerRadius(12)
-                    .clipped()
-                    .matchedTransitionSource(id: image.url, in: zoomNamespace ?? Namespace().wrappedValue)
-                    .frame(
-                        maxWidth: .infinity,
-                        maxHeight: 500,
-                        alignment: .center
-                    )
-            }
-            .buttonStyle(.plain)
+            ImageView(url: url, aspectRatio: image.aspectRatio)
+                .matchedGeometryEffect(id: image.url, in: zoomNamespace)
+//                .transition(.scale(scale: 1))
+                .cornerRadius(12)
+                .clipped()
+//                .frame(
+//                    maxWidth: .infinity,
+//                    maxHeight: 500,
+//                    alignment: .center
+//                )
+                .onTapGesture {
+                    ImageOverlayViewModel.shared.present(images: [image])
+                }
         }
     }
 }

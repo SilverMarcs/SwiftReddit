@@ -8,43 +8,38 @@
 import SwiftUI
 
 struct PostGalleryView: View {
-    @Environment(Nav.self) private var nav
     @Environment(\.imageZoomNamespace) private var zoomNamespace
     let images: [GalleryImage]
     
     var body: some View {
         HStack(spacing: 4) {
-            Button {
-                nav.path.append(ImageModalData(images: images))
-            } label: {
-                ImageView(url: URL(string: images[0].url), aspectRatio: images[0].aspectRatio)
-                    .cornerRadius(12)
-                    .clipped()
-                    .frame(maxHeight: 300)
-                    .matchedTransitionSource(id: images[0].url, in: zoomNamespace ?? Namespace().wrappedValue)
-            }
-            .buttonStyle(.plain)
+            ImageView(url: URL(string: images[0].url), aspectRatio: images[0].aspectRatio)
+                .cornerRadius(12)
+                .clipped()
+                .frame(maxHeight: 300)
+                .matchedGeometryEffect(id: images[0].url, in: zoomNamespace ?? Namespace().wrappedValue)
+                .onTapGesture {
+                    ImageOverlayViewModel.shared.present(images: images)
+                }
             
-            Button {
-                nav.path.append(ImageModalData(images: images))
-            } label: {
-                // TODO: make clickable and show more
-                ImageView(url: URL(string: images[1].url), aspectRatio: images[1].aspectRatio)
-                    .cornerRadius(12)
-                    .clipped()
-                    .frame(maxWidth: .infinity, maxHeight: 300)
-                    .overlay {
-                        if images.count > 2 {
-                            Color.black.opacity(0.5)
-                            
-                            Text("+\(images.count - 2)")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .foregroundColor(.white)
-                        }
+            // TODO: make clickable and show more
+            ImageView(url: URL(string: images[1].url), aspectRatio: images[1].aspectRatio)
+                .cornerRadius(12)
+                .clipped()
+                .frame(maxWidth: .infinity, maxHeight: 300)
+                .overlay {
+                    if images.count > 2 {
+                        Color.black.opacity(0.5)
+                        
+                        Text("+\(images.count - 2)")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundStyle(.white)
                     }
-            }
-            .buttonStyle(.plain)
+                }
+                .onTapGesture {
+                    ImageOverlayViewModel.shared.present(images: images)
+                }
         }
     }
 }
