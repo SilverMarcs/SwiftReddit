@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MessageRowView: View {
+    @Environment(Nav.self) private var nav
     let message: Message
     
     private var iconConfig: (symbol: String, color: Color) {
@@ -22,50 +23,56 @@ struct MessageRowView: View {
     }
     
     var body: some View {
-        HStack(alignment: .top) {
-            Image(systemName: iconConfig.symbol)
-                .font(.title)
-                .fontWeight(.semibold)
-                .foregroundStyle(iconConfig.color)
-            
-            VStack(alignment: .leading, spacing: 8) {
-                // Message content
-                if let body = message.body, !body.isEmpty {
-                    Text(body)
-                        .lineLimit(2)
-                        .font(.subheadline)
-                }
+        Button {
+            if let postNavigation = message.postNavigation {
+                nav.path.append(postNavigation)
+            }
+        } label: {
+            HStack(alignment: .top) {
+                Image(systemName: iconConfig.symbol)
+                    .font(.title)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(iconConfig.color)
                 
-                // Link title if it's a comment reply
-                if let linkTitle = message.linkTitle, !linkTitle.isEmpty {
-                    Text("Re: \(linkTitle)")
-                        .font(.caption)
-                        .lineLimit(2)
-                        .foregroundStyle(.secondary)
-                        .italic()
-                }
-                
-                HStack {
-                    if let subreddit = message.subredditNamePrefixed {
-                        Text(subreddit)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    } else if let author = message.author {
-                        Text("u/\(author)")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 8) {
+                    // Message content
+                    if let body = message.body, !body.isEmpty {
+                        Text(body)
+                            .lineLimit(2)
+                            .font(.subheadline)
                     }
                     
-                    Spacer()
-                    
-                    if let timeAgo = message.created?.timeAgo {
-                        Text(timeAgo)
+                    // Link title if it's a comment reply
+                    if let linkTitle = message.linkTitle, !linkTitle.isEmpty {
+                        Text("Re: \(linkTitle)")
                             .font(.caption)
+                            .lineLimit(2)
                             .foregroundStyle(.secondary)
+                            .italic()
+                    }
+                    
+                    HStack {
+                        if let subreddit = message.subredditNamePrefixed {
+                            Text(subreddit)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        } else if let author = message.author {
+                            Text("u/\(author)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        
+                        Spacer()
+                        
+                        if let timeAgo = message.created?.timeAgo {
+                            Text(timeAgo)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
             }
         }
-        .contentShape(.rect)
+        .buttonStyle(.plain)
     }
 }

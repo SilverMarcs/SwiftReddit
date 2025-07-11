@@ -15,8 +15,8 @@ extension RedditAPI {
         commentID: String? = nil,
         sort: CommentSortOption = .confidence,
         limit: Int = 100, // TODO: implement infinite scrolling
-        depth: Int = 15
-    ) async -> ([Comment], String?)? {
+        depth: Int = 8
+    ) async -> (Post?, [Comment], String?)? {
         guard let url = buildCommentsURL(
             subreddit: subreddit,
             postID: postID,
@@ -32,17 +32,30 @@ extension RedditAPI {
             return nil
         }
         
+        // Extract post data
+        let post: Post?
+        if let postData = response.postListing.data.children.first?.data {
+            // Filter out NSFW posts based on config setting
+            if !Config.shared.allowNSFW && postData.over_18 == true {
+                post = nil
+            } else {
+                post = Post(from: postData)
+            }
+        } else {
+            post = nil
+        }
+        
         let comments = response.commentListing.data.children.compactMap { child -> Comment? in
             guard child.kind == "t1" else { return nil }
             return Comment(from: child.data)
         }
         
-        return (comments, response.after)
+        return (post, comments, response.after)
     }
 
     // MARK: - URL Building
     
-    private func buildCommentsURL(
+    func buildCommentsURL(
         subreddit: String,
         postID: String,
         commentID: String?,

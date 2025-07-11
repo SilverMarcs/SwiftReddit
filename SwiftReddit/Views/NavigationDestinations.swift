@@ -13,11 +13,23 @@ extension View {
             .navigationDestination(for: PostFeedType.self) { feedType in
                 PostsList(feedType: feedType)
             }
+            .navigationDestination(for: PostNavigation.self) { postNavigation in
+                PostDetailView(postNavigation: postNavigation)
+            }
             .navigationDestination(for: Post.self) { post in
                 PostDetailView(post: post)
             }
             .navigationDestination(for: ImageModalData.self) { imageData in
                 ImageModal(images: imageData.images)
             }
+            .navigationDestination(for: Destination.self) { destination in
+                switch destination {
+                case .inbox: InboxView()
+                }
+            }
     }
+}
+
+enum Destination {
+    case inbox
 }

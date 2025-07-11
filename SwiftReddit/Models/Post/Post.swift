@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 /// Contains only essential information needed for basic post display
-struct Post: Identifiable, Hashable, Equatable {
+struct Post: Identifiable, Hashable, Equatable, Votable {
     let id: String
     let title: String
     let author: String
@@ -45,7 +45,16 @@ struct Post: Identifiable, Hashable, Equatable {
         self.title = postData.title
         self.author = postData.author
         
-        self.subreddit = Subreddit(detail: postData.sr_detail!) // TODO: Handle optional safely
+        // Handle sr_detail safely
+        if let srDetail = postData.sr_detail {
+            self.subreddit = Subreddit(detail: srDetail)
+        } else {
+            // Fallback to basic subreddit info
+            self.subreddit = Subreddit(
+                displayName: postData.subreddit,
+                displayNamePrefixed: postData.subreddit_name_prefixed
+            )
+        }
         
         self.ups = postData.ups
         self.numComments = postData.num_comments
@@ -91,8 +100,4 @@ struct Post: Identifiable, Hashable, Equatable {
     var redditURL: URL? {
         return URL(string: "https://reddit.com\(permalink)")
     }
-}
-
-extension Post: Votable {
-    // fullname, likes, and ups already exist
 }

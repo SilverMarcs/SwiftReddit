@@ -10,8 +10,7 @@ import SwiftUI
 struct PostDetailView: View {
     @Environment(Nav.self) var nav
     
-    let post: Post
-    
+    @State private var post: Post?
     @State private var comments: [Comment] = []
     @State private var isLoading = true
     @State private var sortOption: CommentSortOption = .confidence {
@@ -20,8 +19,15 @@ struct PostDetailView: View {
         }
     }
     
+    let postNavigation: PostNavigation
+    
     init(post: Post) {
-        self.post = post
+        self.postNavigation = PostNavigation(from: post)
+        self._post = State(initialValue: post)
+    }
+    
+    init(postNavigation: PostNavigation) {
+        self.postNavigation = postNavigation
     }
     
     @State var scrollPosition = ScrollPosition(idType: Comment.ID.self)
@@ -29,7 +35,9 @@ struct PostDetailView: View {
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading) {
-                PostView(post: post, isCompact: false)
+                if let post = post {
+                    PostView(post: post, isCompact: false)
+                }
                 
                 if isLoading {
                     ProgressView()
@@ -58,8 +66,8 @@ struct PostDetailView: View {
         .refreshable {
             await loadComments(force: true)
         }
-        .navigationTitle(post.subreddit.displayNamePrefixed)
-        .navigationSubtitle(post.numComments.formatted + " comments")
+        .navigationTitle(post?.subreddit.displayNamePrefixed ?? "Post")
+        .navigationSubtitle(post?.numComments.formatted.appending(" comments") ?? "Loading...")
         .toolbarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -80,7 +88,7 @@ struct PostDetailView: View {
             }
         }
     }
-    
+
     private func loadComments(force: Bool = false) async {
         // If not forced and comments already exist, return early
         if !force && !comments.isEmpty {
@@ -89,15 +97,55 @@ struct PostDetailView: View {
         
         isLoading = true
         
+        defer {
+            isLoading = false
+        }
+        
+        // Determine which subreddit and post ID to use
+        let subredditName: String
+        let postId: String
+        
+        if let post = post {
+            // Use existing post data
+            subredditName = post.subreddit.displayName
+            postId = post.id
+        } else if let navSubreddit = postNavigation.subreddit {
+            // Use navigation data
+            subredditName = navSubreddit
+            postId = postNavigation.postId
+        } else {
+            // Can't proceed without subreddit info
+            return
+        }
+        
         if let result = await RedditAPI.shared.fetchPostWithComments(
-            subreddit: post.subreddit.displayName,
-            postID: post.id,
+            subreddit: subredditName,
+            postID: postId,
             sort: sortOption
         ) {
-            comments = result.0
-            isLoading = false
+            // Extract post, comments, and after token
+            let (fetchedPost, fetchedComments, _) = result
+            
+            // Update post if we didn't have it before
+            if force, let fetchedPost = fetchedPost {
+                post = fetchedPost
+            }
+            else if post == nil, let fetchedPost = fetchedPost {
+                post = fetchedPost
+            }
+            
+            comments = fetchedComments
+            
+            // Scroll to specific comment if coming from inbox
+            if let commentId = postNavigation.commentId {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                withAnimation {
+                    scrollPosition = .init(id: commentId, anchor: .bottom)
+                }
+            }
+            
         } else {
-            isLoading = false
+            print("PostDetailView: Failed to fetch post with comments")
         }
     }
     

@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 /// Simplified comment structure for UI display
-struct Comment: Identifiable, Hashable {
+struct Comment: Identifiable, Hashable, Votable {
     let id: String
     let author: String
     let body: String
@@ -100,8 +100,4 @@ struct Comment: Identifiable, Hashable {
         let index = (depth - 1) % colors.count
         return colors[index]
     }
-}
-
-extension Comment: Votable {
-    // fullname, likes, and ups already exist
 }

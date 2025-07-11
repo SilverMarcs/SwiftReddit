@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Message: Codable, Identifiable {
+struct Message: Codable, Identifiable, Hashable {
     let id: String
     let subject: String?
     let author: String?
@@ -26,6 +26,10 @@ struct Message: Codable, Identifiable {
     let createdUtc: Double?
     var isNew: Bool?
     let wasComment: Bool?
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
     
     enum CodingKeys: String, CodingKey {
         case id

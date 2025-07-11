@@ -11,39 +11,35 @@ struct InboxView: View {
     @State private var messages: [Message] = []
     @State private var isLoading = false
     @State private var after: String?
-    @State private var isLoadingMore = false
     
     var body: some View {
         List {
-            if isLoading && messages.isEmpty {
-                ProgressView()
-                    .controlSize(.large)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .listRowSeparator(.hidden)
-            }
-            
-            ForEach(messages, id: \.id) { message in
+            ForEach(messages, id: \.self) { message in
                 MessageRowView(message: message)
             }
             
-            Color.clear
-                .frame(height: 1)
-                .onAppear {
-                    Task {
-                        await loadMoreMessages()
+            if !messages.isEmpty {
+                Color.clear
+                    .frame(height: 1)
+                    .onAppear {
+                        Task {
+                            await loadMoreMessages()
+                        }
                     }
-                }
-                .listRowSeparator(.hidden)
-            
-            if isLoadingMore {
-                ProgressView()
-                    .id(UUID())
-                    .controlSize(.large)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .listRowSeparator(.hidden)
             }
+            
+            if isLoading {
+                Section {
+                    ProgressView()
+                        .id(UUID())
+                        .controlSize(.large)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .listRowSeparator(.hidden)
+                }
+                .listRowBackground(Color.clear)
+            }
         }
-//        .listStyle(.plain)
         .contentMargins(.top, 5)
         .navigationTitle("Inbox")
         .toolbarTitleDisplayMode(.inline)
@@ -57,6 +53,8 @@ struct InboxView: View {
     }
     
     private func fetchMessages() async {
+        guard !isLoading else { return }
+        
         isLoading = true
         defer { isLoading = false }
         
@@ -67,10 +65,12 @@ struct InboxView: View {
     }
     
     private func loadMoreMessages() async {
-        guard !isLoadingMore, let after = after, !after.isEmpty else { return }
+        guard !isLoading,
+              let after = after,
+              !after.isEmpty else { return }
         
-        isLoadingMore = true
-        defer { isLoadingMore = false }
+        isLoading = true
+        defer { isLoading = false }
         
         if let result = await RedditAPI.shared.fetchInbox(after: after) {
             let newMessages = result.0 ?? []

@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct CommentView: View {
-    @Environment(Nav.self) var nav
     @State var comment: Comment
     @State private var isExpanded: Bool
     
@@ -26,31 +25,56 @@ struct CommentView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if comment.hasChildren {
-                DisclosureGroup(isExpanded: $isExpanded) {
-                    ForEach(comment.children, id: \.id) { child in
-                        CommentView(comment: child, onToggleCollapse: onToggleCollapse, isTopLevel: false)
-                    }
-                } label: {
-                    VStack(alignment: .leading, spacing: 0) {
-                        CommentContent(comment: comment, isTopLevel: isTopLevel, isExpanded: isExpanded)
-                        if isExpanded {
-                            Divider()
-                                .padding(.leading, isTopLevel ? 12 : CGFloat(min(comment.depth, maxDepth) * 12) + 12)
-                        }
-                    }
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isExpanded.toggle()
+                    comment = comment.withCollapsedState(!isExpanded)
+                    onToggleCollapse(comment)
                 }
-                .disclosureGroupStyle(CommentDisclosureStyle())
-                .onChange(of: isExpanded) { _, newValue in
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        comment = comment.withCollapsedState(!newValue)
-                        onToggleCollapse(comment)
-                    }
-                }
-            } else {
+            } label: {
                 CommentContent(comment: comment, isTopLevel: isTopLevel, isExpanded: isExpanded)
+            }
+            .buttonStyle(.plain)
+            
+            if isExpanded, comment.hasChildren {
+                Divider()
+                    .padding(.leading, isTopLevel ? 12 : CGFloat(min(comment.depth, maxDepth) * 12) + 12)
+                
+                ForEach(comment.children, id: \.self) { child in
+                    CommentView(comment: child, onToggleCollapse: onToggleCollapse, isTopLevel: false)
+                }
             }
         }
         .background(isTopLevel ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 14))
     }
+    
+//    var body_old: some View {
+//        VStack(alignment: .leading, spacing: 0) {
+//            if comment.hasChildren {
+//                DisclosureGroup(isExpanded: $isExpanded) {
+//                    ForEach(comment.children, id: \.id) { child in
+//                        CommentView(comment: child, onToggleCollapse: onToggleCollapse, isTopLevel: false)
+//                    }
+//                } label: {
+//                    VStack(alignment: .leading, spacing: 0) {
+//                        CommentContent(comment: comment, isTopLevel: isTopLevel, isExpanded: isExpanded)
+//                        if isExpanded {
+//                            Divider()
+//                                .padding(.leading, isTopLevel ? 12 : CGFloat(min(comment.depth, maxDepth) * 12) + 12)
+//                        }
+//                    }
+//                }
+//                .disclosureGroupStyle(CommentDisclosureStyle())
+//                .onChange(of: isExpanded) { _, newValue in
+//                    withAnimation(.easeInOut(duration: 0.2)) {
+//                        comment = comment.withCollapsedState(!newValue)
+//                        onToggleCollapse(comment)
+//                    }
+//                }
+//            } else {
+//                CommentContent(comment: comment, isTopLevel: isTopLevel, isExpanded: isExpanded)
+//            }
+//        }
+//        .background(isTopLevel ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 14))
+//    }
 }

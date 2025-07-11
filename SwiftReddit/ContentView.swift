@@ -10,28 +10,28 @@ import SwiftUI
 struct ContentView: View {
     @State var selectedTab: Tabs = .posts
     
-    @State private var configHome = Nav()
-    @State private var configProfile = Nav()
-    @State private var configSearch = Nav()
+    @State private var navHome = Nav()
+    @State private var navProfile = Nav()
+    @State private var navSearch = Nav()
     @Namespace private var imageZoomNamespace
     
     var body: some View {
         TabView(selection: $selectedTab) {
             Tab("Posts", systemImage: "doc.text.image", value: .posts) {
                 HomeTab()
-                    .environment(configHome)
+                    .environment(navHome)
                     .environment(\.imageZoomNamespace, imageZoomNamespace)
             }
             
             Tab("Profile", systemImage: "person.fill", value: .profile) {
                 ProfileView()
-                    .environment(configProfile)
+                    .environment(navProfile)
                     .environment(\.imageZoomNamespace, imageZoomNamespace)
             }
             
             Tab(value: .search, role: .search) {
                 SearchTab()
-                    .environment(configSearch)
+                    .environment(navSearch)
                     .environment(\.imageZoomNamespace, imageZoomNamespace)
             }
         }

@@ -11,7 +11,6 @@ struct PostVideoView: View {
     @State private var showingFullscreen = false
     @State private var currentTime: Double = 0
     @State private var duration: Double = 0
-//    @Namespace private var videoAnimation
     
     var body: some View {
         VideoPlayer(player: player)

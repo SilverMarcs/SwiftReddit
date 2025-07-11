@@ -109,6 +109,18 @@ struct Subreddit: Identifiable, Hashable {
         self.color = nil
     }
     
+    /// Convenience initializer for basic subreddit info when sr_detail is not available
+    init(displayName: String, displayNamePrefixed: String?) {
+        self.id = displayName
+        self.displayName = displayName
+        self.displayNamePrefixed = displayNamePrefixed ?? "r/\(displayName)"
+        self.iconURL = nil
+        self.subscriberCount = 0
+        self.isSubscribed = false
+        self.publicDescription = ""
+        self.color = nil
+    }
+    
     /// Helper method to validate and convert key_color to SwiftUI Color
     private static func validateColor(from keyColor: String?) -> Color? {
         return Color.validatedColor(from: keyColor)
