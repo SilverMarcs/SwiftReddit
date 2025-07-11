@@ -9,6 +9,7 @@ struct FullscreenVideoOverlay: View {
         if viewModel.isPresented, let player = viewModel.player {
             VideoPlayer(player: player)
                 .matchedGeometryEffect(id: viewModel.currentVideoURL ?? "videoPlayer", in: videoNS)
+//                .transition(.identity)
                 .ignoresSafeArea()
                 .background(.black)
                 .gesture(

@@ -15,6 +15,7 @@ struct PostVideoView: View {
         VideoPlayer(player: player)
             .aspectRatio(dimensions != nil ? (dimensions!.width / dimensions!.height) : 16/9, contentMode: .fit)
             .matchedGeometryEffect(id: videoURL ?? "videoPlayer", in: videoNS)
+//            .transition(.identity)
             .cornerRadius(12)
             .clipped()
             .onTapGesture {
