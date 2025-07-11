@@ -25,7 +25,7 @@ struct PostActionsView: View {
             }
             .buttonStyle(.plain)
 
-            Text(viewModel.upsCount.formatted())
+            Text(viewModel.upsCount.formatted)
                 .contentTransition(.numericText())
                 .font(.headline)
                 .fontWeight(.semibold)
@@ -39,5 +39,7 @@ struct PostActionsView: View {
             .buttonStyle(.plain)
         }
         .fontWeight(.semibold)
+        .padding(8)
+        .glassEffect()
     }
 }

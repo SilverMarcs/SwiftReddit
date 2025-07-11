@@ -81,6 +81,11 @@ struct PostView: View {
       .padding(.horizontal, isCompact ? 12 : 0)
       .padding(.vertical, isCompact ? 12 : 0)
       .background(isCompact ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 16))
+//      .background(
+//          RoundedRectangle(cornerRadius: 16)
+//              .fill(isCompact ? Color(.secondarySystemBackground) : .clear)
+//              .strokeBorder(isCompact ? Color(.tertiarySystemFill) : .clear)
+//      )
       .contextMenu {
           Section {
               Button {

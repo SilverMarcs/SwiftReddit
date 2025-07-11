@@ -36,7 +36,7 @@ struct FlatCommentActionsView: View {
             }
             .buttonStyle(.plain)
             
-            Text(upsCount.formatted())
+            Text(upsCount.formatted)
                 .contentTransition(.numericText())
                 .font(.subheadline)
                 .fontWeight(.semibold)
@@ -58,9 +58,8 @@ struct FlatCommentActionsView: View {
             }
             .buttonStyle(.plain)
         }
-        .padding(.horizontal, 6)
-        .padding(.vertical, 4)
-        .background(.background.secondary, in: .rect(cornerRadius: 14))
         .fontWeight(.semibold)
+        .padding(8)
+        .glassEffect()
     }
 }
