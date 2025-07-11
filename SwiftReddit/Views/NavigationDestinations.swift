@@ -24,12 +24,16 @@ extension View {
             }
             .navigationDestination(for: Destination.self) { destination in
                 switch destination {
-                case .inbox: InboxView()
+                case .inbox:
+                    InboxView()
+                case .message(let mesasage):
+                    MessageDetailView(message: mesasage)
                 }
             }
     }
 }
 
-enum Destination {
+enum Destination: Hashable {
     case inbox
+    case message(Message)
 }

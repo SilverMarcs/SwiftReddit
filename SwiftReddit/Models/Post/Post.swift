@@ -52,7 +52,7 @@ struct Post: Identifiable, Hashable, Equatable, Votable {
             // Fallback to basic subreddit info
             self.subreddit = Subreddit(
                 displayName: postData.subreddit,
-                displayNamePrefixed: postData.subreddit_name_prefixed
+//                displayNamePrefixed: postData.subreddit_name_prefixed
             )
         }
         

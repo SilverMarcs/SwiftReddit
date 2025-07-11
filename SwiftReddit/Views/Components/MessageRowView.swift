@@ -11,28 +11,19 @@ struct MessageRowView: View {
     @Environment(Nav.self) private var nav
     let message: Message
     
-    private var iconConfig: (symbol: String, color: Color) {
-        switch message.type {
-        case "post_reply":
-            return ("message.circle.fill", .blue)
-        case "comment_reply":
-            return ("arrowshape.turn.up.left.circle.fill", .green)
-        case "unknown", _:
-            return ("bell.circle.fill", .accent) // For announcements and unknown types
-        }
-    }
-    
     var body: some View {
         Button {
             if let postNavigation = message.postNavigation {
                 nav.path.append(postNavigation)
+            } else {
+                nav.path.append(Destination.message(message))
             }
         } label: {
             HStack(alignment: .top) {
-                Image(systemName: iconConfig.symbol)
+                Image(systemName: message.iconConfig.symbol)
                     .font(.title)
                     .fontWeight(.semibold)
-                    .foregroundStyle(iconConfig.color)
+                    .foregroundStyle(message.iconConfig.color)
                 
                 VStack(alignment: .leading, spacing: 8) {
                     // Message content

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct Message: Codable, Identifiable, Hashable {
     let id: String
@@ -57,5 +58,17 @@ struct Message: Codable, Identifiable, Hashable {
             return Date(timeIntervalSince1970: created)
         }
         return Date()
+    }
+    
+    
+    var iconConfig: (symbol: String, color: Color) {
+        switch self.type {
+        case "post_reply":
+            return ("message.circle.fill", .blue)
+        case "comment_reply":
+            return ("arrowshape.turn.up.left.circle.fill", .green)
+        case "unknown", _:
+            return ("bell.circle.fill", .accent)
+        }
     }
 }
