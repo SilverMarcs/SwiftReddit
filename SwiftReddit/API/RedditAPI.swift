@@ -48,7 +48,7 @@ class RedditAPI {
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else { return nil }
-            AppLogger.logAPIResponse(data, responseType: responseType, endpoint: endpoint)
+//            AppLogger.logAPIResponse(data, responseType: responseType, endpoint: endpoint)
             return try JSONDecoder().decode(responseType, from: data)
         } catch {
             AppLogger.critical("Network error: \(error.localizedDescription)")

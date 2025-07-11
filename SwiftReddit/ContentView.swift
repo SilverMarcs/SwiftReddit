@@ -8,28 +8,27 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var selectedTab: Tabs = .posts
-    
     @State private var navHome = Nav()
     @State private var navProfile = Nav()
     @State private var navSearch = Nav()
+    
     @Namespace private var imageZoomNamespace
     
     var body: some View {
-        TabView(selection: $selectedTab) {
-            Tab("Posts", systemImage: "doc.text.image", value: .posts) {
+        TabView {
+            Tab("Posts", systemImage: "doc.text.image") {
                 HomeTab()
                     .environment(navHome)
                     .environment(\.imageZoomNamespace, imageZoomNamespace)
             }
             
-            Tab("Profile", systemImage: "person.fill", value: .profile) {
+            Tab("Profile", systemImage: "person.fill") {
                 ProfileView()
                     .environment(navProfile)
                     .environment(\.imageZoomNamespace, imageZoomNamespace)
             }
             
-            Tab(value: .search, role: .search) {
+            Tab(role: .search) {
                 SearchTab()
                     .environment(navSearch)
                     .environment(\.imageZoomNamespace, imageZoomNamespace)
@@ -39,13 +38,10 @@ struct ContentView: View {
         #if !os(macOS)
         .tabBarMinimizeBehavior(.onScrollDown)
         #endif
+        .overlay {
+            FullscreenVideoOverlay()
+        }
     }
-}
-
-enum Tabs: Hashable {
-    case posts
-    case profile
-    case search
 }
 
 #Preview {

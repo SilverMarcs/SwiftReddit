@@ -6,30 +6,17 @@ struct PostVideoView: View {
     let videoURL: String?
     let thumbnailURL: String?
     let dimensions: CGSize?
-    
+
     @State private var player: AVPlayer?
-    @State private var showingFullscreen = false
     @State private var playerLooper: AVPlayerLooper?
 
-    
     var body: some View {
         VideoPlayer(player: player)
             .aspectRatio(dimensions != nil ? (dimensions!.width / dimensions!.height) : 16/9, contentMode: .fit)
             .cornerRadius(12)
             .clipped()
             .onTapGesture {
-                var transaction = Transaction()
-                transaction.disablesAnimations = true
-                withTransaction(transaction) {
-                    showingFullscreen = true
-                }
-            }
-            .sheet(isPresented: $showingFullscreen) {
-                if let player = player {
-                    VideoPlayer(player: player)
-                        .ignoresSafeArea()
-                        .presentationCornerRadius(1)
-                }
+                VideoOverlayViewModel.shared.present(player: player) {}
             }
             .task(id: videoURL) {
                 await setupPlayer()

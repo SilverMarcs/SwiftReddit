@@ -1,0 +1,12 @@
+{
+  "data" : [
+    {
+      "filename" : "post_list_response.jsonc",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
