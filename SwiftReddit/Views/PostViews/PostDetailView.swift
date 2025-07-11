@@ -166,7 +166,7 @@ struct PostDetailView: View {
             
             // Scroll to specific comment if coming from inbox
             if let commentId = postNavigation.commentId {
-                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                try? await Task.sleep(nanoseconds: 250_000_000)
                 withAnimation {
                     scrollPosition = .init(id: commentId, anchor: .bottom)
                 }
