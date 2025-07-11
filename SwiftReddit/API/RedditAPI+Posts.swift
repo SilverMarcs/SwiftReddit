@@ -30,11 +30,16 @@ extension RedditAPI {
             components?.queryItems?.append(URLQueryItem(name: "after", value: after))
         }
         
+        // Add time parameter for top sorting
+        if let timeParam = sort.timeParameter {
+            components?.queryItems?.append(URLQueryItem(name: "t", value: timeParam))
+        }
+        
         return components?.url
     }
     
     private func buildEndpoint(for feedType: PostFeedType, sort: SubListingSortOption) -> String? {
-        let sortPath = sort.rawValue.lowercased()
+        let sortPath = sort.apiPath.lowercased()
         
         switch feedType {
         case .home:

@@ -17,8 +17,10 @@ struct PostsList: View {
     
     @State private var selectedSort: SubListingSortOption = .best {
         didSet {
-            posts = []
-            after = nil
+            if selectedSort != oldValue {
+                posts = []
+                after = nil
+            }
         }
     }
     
@@ -73,13 +75,26 @@ struct PostsList: View {
             ToolbarItemGroup(placement: .primaryAction) {
                 if feedType.canSort {
                     Menu {
-                        ForEach(SubListingSortOption.allCases) { sort in
+                        // Standard sorting options
+                        ForEach(SubListingSortOption.allCases, id: \.id) { sort in
                             Button {
                                 selectedSort = sort
                             } label: {
                                 Label(sort.displayName, systemImage: sort.icon)
-                                    .tag(sort)
                             }
+                        }
+                        
+                        // Top submenu with time periods
+                        Menu {
+                            ForEach(SubListingSortOption.topOptions, id: \.id) { topOption in
+                                Button {
+                                    selectedSort = topOption
+                                } label: {
+                                    Label(topOption.displayName, systemImage: topOption.icon)
+                                }
+                            }
+                        } label: {
+                            Label("Top", systemImage: "arrow.up.circle")
                         }
                     } label: {
                         Label(selectedSort.displayName, systemImage: selectedSort.icon)
