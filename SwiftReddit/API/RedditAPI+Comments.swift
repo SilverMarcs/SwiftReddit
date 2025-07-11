@@ -116,4 +116,35 @@ extension RedditAPI {
             return nil
         }
     }
+    
+    /// Reply to a comment
+    /// - Parameters:
+    ///   - text: The reply text
+    ///   - parentFullname: The fullname of the parent comment (e.g., t1_commentid)
+    /// - Returns: true if successful, false otherwise
+    @discardableResult
+    func replyToComment(text: String, parentFullname: String) async -> Bool? {
+        guard let url = URL(string: "\(Self.redditApiURLBase)/api/comment") else {
+            return nil
+        }
+        
+        guard var request = await createAuthenticatedRequest(url: url, method: "POST") else {
+            return nil
+        }
+        
+        let parameters = "api_type=json&text=\(text.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&thing_id=\(parentFullname)&raw_json=1"
+        request.httpBody = parameters.data(using: .utf8)
+        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            let (_, response) = try await URLSession.shared.data(for: request)
+            if let httpResponse = response as? HTTPURLResponse {
+                return httpResponse.statusCode == 200
+            }
+            return false
+        } catch {
+            AppLogger.critical("Comment reply error: \(error.localizedDescription)")
+            return nil
+        }
+    }
 }

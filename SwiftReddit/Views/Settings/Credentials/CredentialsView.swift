@@ -9,8 +9,8 @@ import SwiftUI
 
 struct CredentialsView: View {
     @State private var credentialsManager = CredentialsManager.shared
-    @State private var appID = ""
-    @State private var appSecret = ""
+    @State private var appID = KeychainManager.shared.loadAppID() ?? ""
+    @State private var appSecret = KeychainManager.shared.loadAppSecret() ?? ""
     @State private var isLoading = false
     @State private var waitingForCallback = false
     @State private var errorMessage = ""
@@ -68,7 +68,13 @@ struct CredentialsView: View {
                     
                     Section("Step 2: Enter Your App Credentials") {
                         TextField("Enter your Reddit app ID", text: $appID)
+                            .onChange(of: appID) { newValue in
+                                KeychainManager.shared.saveAppID(newValue)
+                            }
                         TextField("Enter your Reddit app secret", text: $appSecret)
+                            .onChange(of: appSecret) { newValue in
+                                KeychainManager.shared.saveAppSecret(newValue)
+                            }
                     }
                 }
             }
@@ -116,6 +122,9 @@ struct CredentialsView: View {
             if let existingCreds = credentialsManager.existingAppCredentials {
                 appID = existingCreds.appID
                 appSecret = existingCreds.appSecret
+            } else {
+                appID = KeychainManager.shared.loadAppID() ?? ""
+                appSecret = KeychainManager.shared.loadAppSecret() ?? ""
             }
         }
     }
