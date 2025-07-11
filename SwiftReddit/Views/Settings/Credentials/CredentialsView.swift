@@ -68,12 +68,12 @@ struct CredentialsView: View {
                     
                     Section("Step 2: Enter Your App Credentials") {
                         TextField("Enter your Reddit app ID", text: $appID)
-                            .onChange(of: appID) { newValue in
-                                KeychainManager.shared.saveAppID(newValue)
+                            .onChange(of: appID) {
+                                KeychainManager.shared.saveAppID(appID)
                             }
                         TextField("Enter your Reddit app secret", text: $appSecret)
-                            .onChange(of: appSecret) { newValue in
-                                KeychainManager.shared.saveAppSecret(newValue)
+                            .onChange(of: appSecret) {
+                                KeychainManager.shared.saveAppSecret(appSecret)
                             }
                     }
                 }

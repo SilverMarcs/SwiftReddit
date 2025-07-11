@@ -11,6 +11,8 @@ struct FlatCommentView: View {
     let comment: FlatComment
     let onToggleCollapse: (String) -> Void
     
+    @State private var showReplySheet = false
+    
     private let maxDepth = 8
     
     var body: some View {
@@ -57,10 +59,19 @@ struct FlatCommentView: View {
                 Spacer()
             }
             .id(comment.id)
-//            .padding(.vertical, 8)
-//            .padding(.horizontal, 12)
             .opacity(comment.isCollapsed && comment.hasChildren ? 0.5 : 1.0)
         }
         .buttonStyle(.plain)
+        .contextMenu {
+            Button {
+                showReplySheet = true
+            } label: {
+                Label("Reply", systemImage: "arrowshape.turn.up.left")
+            }
+        }
+        .sheet(isPresented: $showReplySheet) {
+            ReplySheet(parentId: comment.id)
+                .presentationDetents([.medium])
+        }
     }
 }

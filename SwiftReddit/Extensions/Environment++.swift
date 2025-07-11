@@ -10,4 +10,7 @@ import SwiftUI
 
 extension EnvironmentValues {
     @Entry var imageZoomNamespace: Namespace.ID?
+    @Entry var addOptimisticComment: ((String, String) -> Void) = { _, _ in
+        print("No optimistic comment handler passed")
+    }
 }

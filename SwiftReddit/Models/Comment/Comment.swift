@@ -59,6 +59,25 @@ struct Comment: Identifiable, Hashable, Votable {
         }
     }
     
+    /// Initializer for optimistic comments
+    init(id: String, author: String, body: String, created: Double, score: Int, ups: Int, depth: Int, parentID: String?, isSubmitter: Bool, authorFlairText: String?, authorFlairBackgroundColor: String?, distinguished: String?, stickied: Bool, likes: Bool?, children: [Comment] = []) {
+        self.id = id
+        self.author = author
+        self.body = body
+        self.created = created
+        self.score = score
+        self.ups = ups
+        self.depth = depth
+        self.parentID = parentID
+        self.isSubmitter = isSubmitter
+        self.authorFlairText = authorFlairText
+        self.authorFlairBackgroundColor = authorFlairBackgroundColor
+        self.distinguished = distinguished
+        self.stickied = stickied
+        self.likes = likes
+        self.children = children
+    }
+    
     /// Get author flair background color
     var flairBackgroundColor: Color {
         guard let bgColor = authorFlairBackgroundColor, !bgColor.isEmpty else {

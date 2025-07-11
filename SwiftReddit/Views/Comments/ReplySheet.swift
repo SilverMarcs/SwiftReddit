@@ -9,6 +9,9 @@ import SwiftUI
 
 struct ReplySheet: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(\.addOptimisticComment) var addOptimisticComment
+    
+    let parentId: String
     
     @State private var replyText = ""
     @FocusState private var isTextFieldFocused: Bool
@@ -36,9 +39,7 @@ struct ReplySheet: View {
                 
                 ToolbarItem(placement: .confirmationAction) {
                     Button(role: .confirm) {
-                        Task {
-                            await submitReply()
-                        }
+                        submitReply()
                     } label: {
                         Label("Reply", systemImage: "arrow.up")
                     }
@@ -48,9 +49,12 @@ struct ReplySheet: View {
         }
     }
     
-    private func submitReply() async {
-        // submit reply here
-
+    private func submitReply() {
+        guard !replyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        
+        // Add optimistic comment immediately (includes network request)
+        addOptimisticComment(replyText, parentId)
+        
         dismiss()
     }
 }

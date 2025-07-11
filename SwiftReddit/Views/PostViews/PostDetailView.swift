@@ -60,7 +60,7 @@ struct PostDetailView: View {
                             if comment.depth == 0 && comment.id != flatComments.first?.id {
                                 Rectangle()
                                     .fill(.background.secondary)
-                                    .frame(height: 8)
+                                    .frame(height: 6)
                                     .padding(.horizontal, -15)
                             } else if comment.id != flatComments.first?.id {
                                 Divider()
@@ -69,6 +69,7 @@ struct PostDetailView: View {
                             FlatCommentView(comment: comment) { commentId in
                                 toggleCommentCollapse(commentId)
                             }
+                            .environment(\.addOptimisticComment, addOptimisticComment)
                         }
                     }
                 }
@@ -178,5 +179,52 @@ struct PostDetailView: View {
             collapsedCommentIds.insert(commentId)
         }
         updateFlatComments()
+    }
+    
+    private func addOptimisticComment(text: String, parentId: String) {
+        let fakeId = "temp_\(UUID().uuidString)"
+        
+        // Find the parent comment in flatComments to get its depth
+        guard let parentIndex = flatComments.firstIndex(where: { $0.id == parentId }) else {
+            print("Could not find parent comment with id: \(parentId)")
+            return
+        }
+        
+        let parentComment = flatComments[parentIndex]
+        
+        // Create optimistic flat comment
+        let optimisticFlatComment = FlatComment(
+            id: fakeId,
+            author: CredentialsManager.shared.credential?.userName ?? "You", // Current user
+            body: text,
+            created: Date().timeIntervalSince1970,
+            score: 1,
+            ups: 1,
+            depth: parentComment.depth + 1,
+            parentID: "t1_\(parentId)",
+            isSubmitter: false,
+            authorFlairText: nil,
+            authorFlairBackgroundColor: nil,
+            distinguished: nil,
+            stickied: false,
+            likes: true,
+            isVisible: true,
+            hasChildren: false,
+            isCollapsed: false,
+            childCount: 0
+        )
+        
+        // Insert the new comment right after the parent comment
+        flatComments.insert(optimisticFlatComment, at: parentIndex + 1)
+        
+        // Scroll to the new comment
+        withAnimation {
+            scrollPosition = .init(id: fakeId)
+        }
+        
+        // Fire off the network request in the background
+        Task {
+            _ = await RedditAPI.shared.replyToComment(text: text, parentFullname: "t1_\(parentId)")
+        }
     }
 }
