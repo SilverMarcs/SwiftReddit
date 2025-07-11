@@ -9,8 +9,6 @@ import SwiftUI
 
 struct ReplySheet: View {
     @Environment(\.dismiss) var dismiss
-    let target: ReplyTarget
-    let onReply: (String, String) -> Void
     
     @State private var replyText = ""
     @FocusState private var isTextFieldFocused: Bool
@@ -25,7 +23,6 @@ struct ReplySheet: View {
             .padding()
             .textFieldStyle(.plain)
             .focused($isTextFieldFocused)
-            .navigationTitle(target.title)
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 isTextFieldFocused = true
@@ -52,27 +49,8 @@ struct ReplySheet: View {
     }
     
     private func submitReply() async {
-        onReply(replyText.trimmingCharacters(in: .whitespacesAndNewlines), target.fullname)
+        // submit reply here
 
         dismiss()
-    }
-    
-    enum ReplyTarget {
-        case post(Post)
-        case comment(Comment)
-        
-        var fullname: String {
-            switch self {
-            case .post(let post): return "t3_\(post.id)"
-            case .comment(let comment): return "t1_\(comment.id)"
-            }
-        }
-        
-        var title: String {
-            switch self {
-            case .post: return "Reply to Post"
-            case .comment: return "Reply to Comment"
-            }
-        }
     }
 }

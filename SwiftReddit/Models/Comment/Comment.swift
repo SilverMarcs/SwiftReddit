@@ -84,20 +84,50 @@ struct Comment: Identifiable, Hashable, Votable {
         return newComment
     }
     
-    // Function to get color based on comment depth
-    static func colorForDepth(_ depth: Int) -> Color {
-        let colors: [Color] = [
-            .blue,      // Depth 1
-            .green,     // Depth 2
-            .orange,    // Depth 3
-            .purple,    // Depth 4
-            .red,       // Depth 5
-            .pink,      // Depth 6
-            .teal,      // Depth 7
-            .indigo     // Depth 8
-        ]
+    /// Flatten comment tree into a list for display
+    static func flattenComments(_ comments: [Comment], collapsedIds: Set<String> = []) -> [FlatComment] {
+        var result: [FlatComment] = []
         
-        let index = (depth - 1) % colors.count
-        return colors[index]
+        func processComment(_ comment: Comment, parentCollapsed: Bool = false) {
+            let isCollapsed = collapsedIds.contains(comment.id)
+            let isVisible = !parentCollapsed
+            
+            if isVisible {
+                let flatComment = FlatComment(
+                    id: comment.id,
+                    author: comment.author,
+                    body: comment.body,
+                    created: comment.created,
+                    score: comment.score,
+                    ups: comment.ups,
+                    depth: comment.depth,
+                    parentID: comment.parentID,
+                    isSubmitter: comment.isSubmitter,
+                    authorFlairText: comment.authorFlairText,
+                    authorFlairBackgroundColor: comment.authorFlairBackgroundColor,
+                    distinguished: comment.distinguished,
+                    stickied: comment.stickied,
+                    likes: comment.likes,
+                    isVisible: isVisible,
+                    hasChildren: comment.hasChildren,
+                    isCollapsed: isCollapsed,
+                    childCount: comment.totalChildCount
+                )
+                result.append(flatComment)
+            }
+            
+            // Process children if comment is expanded
+            if !isCollapsed {
+                for child in comment.children {
+                    processComment(child, parentCollapsed: !isVisible)
+                }
+            }
+        }
+        
+        for comment in comments {
+            processComment(comment)
+        }
+        
+        return result
     }
 }

@@ -15,7 +15,7 @@ struct CommentContent: View {
                         .frame(width: CGFloat((comment.depth - 1) * 12))
                 }
                 Rectangle()
-                    .fill(Comment.colorForDepth(comment.depth))
+                    .fill(FlatComment.colorForDepth(comment.depth))
                     .frame(width: 2)
                     .padding(.trailing, 9)
             }

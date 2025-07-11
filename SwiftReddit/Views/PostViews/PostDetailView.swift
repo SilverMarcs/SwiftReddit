@@ -12,10 +12,13 @@ struct PostDetailView: View {
     
     @State private var post: Post?
     @State private var comments: [Comment] = []
+    @State private var flatComments: [FlatComment] = []
+    @State private var collapsedCommentIds: Set<String> = []
     @State private var isLoading = true
     @State private var sortOption: CommentSortOption = .confidence {
         didSet {
             comments = []
+            flatComments = []
         }
     }
     
@@ -37,26 +40,32 @@ struct PostDetailView: View {
             LazyVStack(alignment: .leading) {
                 if let post = post {
                     PostView(post: post, isCompact: false)
+                    Divider()
                 }
                 
                 if isLoading {
                     ProgressView()
                         .controlSize(.large)
                         .frame(maxWidth: .infinity, minHeight: 200)
-                } else if !comments.isEmpty {
-                    Text("Comments")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                        .padding(.leading)
                     
-                    ForEach(comments) { comment in
-                        CommentView(comment: comment, onToggleCollapse: { updatedComment in
-                            updateComment(updatedComment)
-                        }, isTopLevel: true)
-                        .padding(.horizontal, 5)
+                } else if !flatComments.isEmpty {
+                    Text("Comments")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .padding(.top, 15)
+
+                    ForEach(flatComments) { comment in
+                        VStack(spacing: 8) {
+                            Divider()
+                            
+                            FlatCommentView(comment: comment) { commentId in
+                                toggleCommentCollapse(commentId)
+                            }
+                        }
                     }
                 }
             }
+            .scenePadding(.horizontal)
             .scrollTargetLayout()
         }
         .scrollPosition($scrollPosition)
@@ -135,6 +144,7 @@ struct PostDetailView: View {
             }
             
             comments = fetchedComments
+            updateFlatComments()
             
             // Scroll to specific comment if coming from inbox
             if let commentId = postNavigation.commentId {
@@ -149,23 +159,16 @@ struct PostDetailView: View {
         }
     }
     
-    private func updateComment(_ updatedComment: Comment) {
-        // Find and update the comment in the array
-        if let index = comments.firstIndex(where: { $0.id == updatedComment.id }) {
-            comments[index] = updatedComment
-        } else {
-            // If not found in top level, recursively search in children
-            updateCommentRecursively(&comments, updatedComment)
-        }
+    private func updateFlatComments() {
+        flatComments = Comment.flattenComments(comments, collapsedIds: collapsedCommentIds)
     }
     
-    private func updateCommentRecursively(_ comments: inout [Comment], _ updatedComment: Comment) {
-        for index in comments.indices {
-            if comments[index].id == updatedComment.id {
-                comments[index] = updatedComment
-                return
-            }
-            updateCommentRecursively(&comments[index].children, updatedComment)
+    private func toggleCommentCollapse(_ commentId: String) {
+        if collapsedCommentIds.contains(commentId) {
+            collapsedCommentIds.remove(commentId)
+        } else {
+            collapsedCommentIds.insert(commentId)
         }
+        updateFlatComments()
     }
 }

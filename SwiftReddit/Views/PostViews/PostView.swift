@@ -78,8 +78,8 @@ struct PostView: View {
               PostActionsView(post: post)
           }
       }
-      .padding(.horizontal, isCompact ? 12 : nil)
-      .padding(.vertical, isCompact ? 12 : nil)
+      .padding(.horizontal, isCompact ? 12 : 0)
+      .padding(.vertical, isCompact ? 12 : 0)
       .background(isCompact ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 16))
       .contextMenu {
           Section {
