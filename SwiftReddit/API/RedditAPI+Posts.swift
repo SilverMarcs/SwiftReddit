@@ -83,66 +83,17 @@ extension RedditAPI {
     
     // MARK: - Post Actions
     
-    /// Vote on a post (upvote, downvote, or remove vote)
-    /// - Parameters:
-    ///   - action: The vote action to perform
-    ///   - id: The fullname of the post (e.g., t3_postid)
-    /// - Returns: true if successful, false otherwise
     @discardableResult
-    func vote(_ action: VoteAction, id: String) async -> Bool? {
-        guard let url = URL(string: "\(Self.redditApiURLBase)/api/vote") else {
-            return nil
-        }
-        
-        guard var request = await createAuthenticatedRequest(url: url, method: "POST") else {
-            return nil
-        }
-        
+    func vote(_ action: VoteAction, id: String) async -> Bool {
+        guard let url = URL(string: "\(Self.redditApiURLBase)/api/vote") else { return false }
         let parameters = "dir=\(action.rawValue)&id=\(id)&api_type=json&raw_json=1"
-        request.httpBody = parameters.data(using: .utf8)
-        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        
-        do {
-            let (_, response) = try await URLSession.shared.data(for: request)
-            if let httpResponse = response as? HTTPURLResponse {
-                return httpResponse.statusCode == 200
-            }
-            return false
-        } catch {
-            AppLogger.critical("Vote error: \(error.localizedDescription)")
-            return nil
-        }
+        return await performPostRequest(url: url, parameters: parameters)
     }
     
-    /// Save or unsave a post
-    /// - Parameters:
-    ///   - save: true to save, false to unsave
-    ///   - id: The fullname of the post (e.g., t3_postid)
-    /// - Returns: true if successful, false otherwise
-    func save(_ save: Bool, id: String) async -> Bool? {
+    func save(_ save: Bool, id: String) async -> Bool {
         let endpoint = save ? "save" : "unsave"
-        guard let url = URL(string: "\(Self.redditApiURLBase)/api/\(endpoint)") else {
-            return nil
-        }
-        
-        guard var request = await createAuthenticatedRequest(url: url, method: "POST") else {
-            return nil
-        }
-        
-        let parameters = "id=\(id)"
-        request.httpBody = parameters.data(using: .utf8)
-        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        
-        do {
-            let (_, response) = try await URLSession.shared.data(for: request)
-            if let httpResponse = response as? HTTPURLResponse {
-                return httpResponse.statusCode == 200
-            }
-            return false
-        } catch {
-            AppLogger.critical("Save/unsave error: \(error.localizedDescription)")
-            return nil
-        }
+        guard let url = URL(string: "\(Self.redditApiURLBase)/api/\(endpoint)") else { return false }
+        return await performPostRequest(url: url, parameters: "id=\(id)")
     }
 }
 

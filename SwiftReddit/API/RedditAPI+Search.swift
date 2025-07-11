@@ -15,36 +15,15 @@ extension RedditAPI {
         query: String,
         endpoint: String,
         queryItems: [URLQueryItem],
-        responseType: T.Type,
-        limit: Int = 30
+        responseType: T.Type
     ) async -> T? {
-        guard !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            return nil
-        }
+        guard !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
 
         var components = URLComponents(string: "\(Self.redditApiURLBase)/\(endpoint)")
         components?.queryItems = queryItems
         
         guard let url = components?.url else { return nil }
-        
-        guard let request = await createAuthenticatedRequest(url: url) else {
-            print("Failed to create authenticated request")
-            return nil
-        }
-        
-        do {
-            let (data, response) = try await URLSession.shared.data(for: request)
-            
-            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
-                print("Reddit API Error: Status \(httpResponse.statusCode)")
-                return nil
-            }
-            
-            return try JSONDecoder().decode(responseType, from: data)
-        } catch {
-            print("Search error for \(endpoint): \(error)")
-            return nil
-        }
+        return await performAuthenticatedRequest(url: url, responseType: responseType)
     }
     
     // MARK: - Subreddit Search
@@ -61,11 +40,8 @@ extension RedditAPI {
             query: query,
             endpoint: "subreddits/search",
             queryItems: queryItems,
-            responseType: SubredditListing.self,
-            limit: limit
-        ) else {
-            return query.isEmpty ? [] : nil
-        }
+            responseType: SubredditListing.self
+        ) else { return query.isEmpty ? [] : nil }
         
         return listingResponse.data.children.compactMap { child -> Subreddit? in
             guard child.kind == "t5" else { return nil }
@@ -99,11 +75,8 @@ extension RedditAPI {
             query: query,
             endpoint: endpoint,
             queryItems: queryItems,
-            responseType: PostListing.self,
-            limit: limit
-        ) else {
-            return query.isEmpty ? [] : nil
-        }
+            responseType: PostListing.self
+        ) else { return query.isEmpty ? [] : nil }
         
         return listingResponse.data.children.compactMap { child -> Post? in
             guard child.kind == "t3" else { return nil }

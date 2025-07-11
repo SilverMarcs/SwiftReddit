@@ -86,65 +86,18 @@ extension RedditAPI {
     
     // MARK: - Comment Actions
     
-    /// Vote on a comment (upvote, downvote, or remove vote)
-    /// - Parameters:
-    ///   - action: The vote action to perform
-    ///   - id: The fullname of the comment (e.g., t1_commentid)
-    /// - Returns: true if successful, false otherwise
     @discardableResult
-    func voteComment(_ action: VoteAction, id: String) async -> Bool? {
-        guard let url = URL(string: "\(Self.redditApiURLBase)/api/vote") else {
-            return nil
-        }
-        
-        guard var request = await createAuthenticatedRequest(url: url, method: "POST") else {
-            return nil
-        }
-        
+    func voteComment(_ action: VoteAction, id: String) async -> Bool {
+        guard let url = URL(string: "\(Self.redditApiURLBase)/api/vote") else { return false }
         let parameters = "dir=\(action.rawValue)&id=\(id)&api_type=json&raw_json=1"
-        request.httpBody = parameters.data(using: .utf8)
-        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        
-        do {
-            let (_, response) = try await URLSession.shared.data(for: request)
-            if let httpResponse = response as? HTTPURLResponse {
-                return httpResponse.statusCode == 200
-            }
-            return false
-        } catch {
-            AppLogger.critical("Comment vote error: \(error.localizedDescription)")
-            return nil
-        }
+        return await performPostRequest(url: url, parameters: parameters)
     }
     
-    /// Reply to a comment
-    /// - Parameters:
-    ///   - text: The reply text
-    ///   - parentFullname: The fullname of the parent comment (e.g., t1_commentid)
-    /// - Returns: true if successful, false otherwise
     @discardableResult
-    func replyToComment(text: String, parentFullname: String) async -> Bool? {
-        guard let url = URL(string: "\(Self.redditApiURLBase)/api/comment") else {
-            return nil
-        }
-        
-        guard var request = await createAuthenticatedRequest(url: url, method: "POST") else {
-            return nil
-        }
-        
-        let parameters = "api_type=json&text=\(text.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&thing_id=\(parentFullname)&raw_json=1"
-        request.httpBody = parameters.data(using: .utf8)
-        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        
-        do {
-            let (_, response) = try await URLSession.shared.data(for: request)
-            if let httpResponse = response as? HTTPURLResponse {
-                return httpResponse.statusCode == 200
-            }
-            return false
-        } catch {
-            AppLogger.critical("Comment reply error: \(error.localizedDescription)")
-            return nil
-        }
+    func replyToComment(text: String, parentFullname: String) async -> Bool {
+        guard let url = URL(string: "\(Self.redditApiURLBase)/api/comment") else { return false }
+        let encodedText = text.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let parameters = "api_type=json&text=\(encodedText)&thing_id=\(parentFullname)&raw_json=1"
+        return await performPostRequest(url: url, parameters: parameters)
     }
 }

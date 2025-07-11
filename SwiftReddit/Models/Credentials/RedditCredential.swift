@@ -149,14 +149,14 @@ struct RedditCredential: Identifiable, Equatable, Hashable, Codable {
     }
 }
 
-struct RefreshAccessTokenResponse: Decodable {
+struct RefreshAccessTokenResponse: Codable {
     let access_token: String
     let token_type: String
     let expires_in: Int
     let scope: String
 }
 
-struct GetAccessTokenResponse: Decodable {
+struct GetAccessTokenResponse: Codable {
     let access_token: String
     let token_type: String
     let refresh_token: String

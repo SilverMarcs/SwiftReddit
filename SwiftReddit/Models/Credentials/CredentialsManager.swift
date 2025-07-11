@@ -208,10 +208,7 @@ import SwiftUI
         updatedCredential.accessToken = newAccessToken
         
         // Fetch user info
-        if let userData = await RedditAPI.shared.fetchMe(
-            with: tokenResponse.access_token,
-            userAgent: "ios:lo.cafe.winston:v0.1.0 (by /u/UnknownUser)"
-        ) {
+        if let userData = await RedditAPI.shared.fetchMe(with: tokenResponse.access_token) {
             updatedCredential.userName = userData.name
             if let iconImg = userData.icon_img, !iconImg.isEmpty {
                 updatedCredential.profilePicture = iconImg
