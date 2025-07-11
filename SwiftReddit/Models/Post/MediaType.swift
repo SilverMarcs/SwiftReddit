@@ -64,7 +64,7 @@ indirect enum MediaType: Hashable {
     
     var isVisualMedia: Bool {
         switch self {
-        case .image, .gallery, .video, .gif:
+        case .image, .gallery, .video, .gif, .youtube:
             return true
         default:
             return false

@@ -94,7 +94,7 @@ struct PostView: View {
         .padding(.horizontal, isCompact ? 12 : 0)
         .padding(.vertical, isCompact ? 12 : 0)
         .background(isCompact ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 16))
-        .contextMenu { 
+        .contextMenu {
           Section {
               Button {
                   nav.path.append(PostFeedType.user(post.author))
@@ -120,6 +120,10 @@ struct PostView: View {
                   Label("Share", systemImage: "square.and.arrow.up")
               }
           }
-      }
+        } preview: {
+            CompactPostView(post: post)
+                .padding(15)
+                .environment(nav)
+        }
     }
 }
