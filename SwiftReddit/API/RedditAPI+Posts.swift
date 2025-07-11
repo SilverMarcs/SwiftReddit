@@ -75,9 +75,6 @@ extension RedditAPI {
             return Post(from: child.data)
         }
         
-        // Prefetch images for all posts
-//        MyImagePrefetcher.prefetchImagesForPosts(posts)
-        
         return (posts, listingResponse.data.after)
     }
     

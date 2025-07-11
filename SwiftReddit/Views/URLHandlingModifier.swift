@@ -8,13 +8,37 @@
 import SwiftUI
 
 struct URLHandlingModifier: ViewModifier {
-    @Environment(Nav.self) private var nav
-    
     func body(content: Content) -> some View {
         content
             .environment(\.openURL, OpenURLAction { url in
-                URLHandler.handleURL(url, nav: nav)
+                if let galleryImage = detectRedditImage(from: url) {
+                    ImageOverlayViewModel.shared.present(images: [galleryImage])
+                    return .handled
+                }
+                
+                return .systemAction(prefersInApp: true)
             })
+    }
+    
+    
+    /// Detects if URL is a Reddit image and extracts dimensions if available
+    private func detectRedditImage(from url: URL) -> GalleryImage? {
+        let urlString = url.absoluteString
+        
+        // Check if URL matches Reddit image patterns
+        let redditImagePatterns = [
+            "preview.redd.it",
+            "i.redd.it",
+            "i.imgur.com"
+        ]
+        
+        let isRedditImage = redditImagePatterns.contains { pattern in
+            urlString.contains(pattern)
+        }
+        
+        guard isRedditImage else { return nil }
+        
+        return GalleryImage(url: urlString, dimensions: nil)
     }
 }
 

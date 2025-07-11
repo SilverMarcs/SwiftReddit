@@ -34,7 +34,7 @@ struct PostMediaView: View {
           PostRepostView(originalPost: originalPost)
         
       case .link(let metadata):
-        PostLinkView(metadata: metadata)
+          PostLinkView(metadata: metadata)
       }
     }
 }

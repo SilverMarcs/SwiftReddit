@@ -9,6 +9,7 @@ import SwiftUI
 
 struct FlatCommentView: View {
     let comment: FlatComment
+    let isCollapsed: Bool
     let onToggleCollapse: (String) -> Void
     
     @Environment(\.addOptimisticComment) var addOptimisticComment
@@ -40,15 +41,15 @@ struct FlatCommentView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     FlatCommentHeader(comment: comment)
                     
-                    if !comment.isCollapsed {
+                    if !isCollapsed {
                         Text(LocalizedStringKey(comment.body))
-                            .font(.callout)
+//                            .font(.default)
                             .opacity(0.85)
                             .fixedSize(horizontal: false, vertical: true)
                             .handleURLs()
                     }
                     
-                    if comment.hasChildren && comment.isCollapsed {
+                    if comment.hasChildren && isCollapsed {
                         Text("[\(comment.childCount) \(comment.childCount == 1 ? "reply" : "replies")]")
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -60,7 +61,7 @@ struct FlatCommentView: View {
                 Spacer()
             }
             .id(comment.id)
-            .opacity(comment.isCollapsed && comment.hasChildren ? 0.5 : 1.0)
+            .opacity(isCollapsed && comment.hasChildren ? 0.5 : 1.0)
         }
         .buttonStyle(.plain)
         .contextMenu {

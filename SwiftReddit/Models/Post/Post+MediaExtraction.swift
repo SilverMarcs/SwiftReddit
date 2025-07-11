@@ -19,7 +19,12 @@ extension Post {
         if let crosspostParentList = data.crosspost_parent_list,
            let originalPostData = crosspostParentList.first {
             let originalPost = Post(from: originalPostData)
-            return .repost(originalPost: originalPost)
+            let mediaType = MediaType.repost(originalPost: originalPost)
+            
+            // Prefetch images from the repost immediately
+            MediaURLExtractor.extractAndPrefetchURLs(from: mediaType)
+            
+            return mediaType
         }
         
         let url = data.url
@@ -33,7 +38,12 @@ extension Post {
             let galleryImages = extractAllGalleryImages(from: galleryData, metadata: metadata)
             
             if !galleryImages.isEmpty {
-                return .gallery(images: galleryImages)
+                let mediaType = MediaType.gallery(images: galleryImages)
+                
+                // Prefetch all gallery images immediately
+                MediaURLExtractor.extractAndPrefetchURLs(from: mediaType)
+                
+                return mediaType
             }
         }
         
@@ -44,11 +54,16 @@ extension Post {
            let height = videoPreview.height {
             
             let thumbnailURL = videoPreview.scrubber_media_url ?? extractImageURL(from: data)
-            return .video(
+            let mediaType = MediaType.video(
                 videoURL: hlsURL,
                 thumbnailURL: thumbnailURL,
                 dimensions: CGSize(width: width, height: height)
             )
+            
+            // Prefetch video thumbnail immediately
+            MediaURLExtractor.extractAndPrefetchURLs(from: mediaType)
+            
+            return mediaType
         }
         
         if let redditVideo = data.media?.reddit_video,
@@ -57,11 +72,16 @@ extension Post {
            let height = redditVideo.height {
             
             let thumbnailURL = redditVideo.scrubber_media_url ?? extractImageURL(from: data)
-            return .video(
+            let mediaType = MediaType.video(
                 videoURL: hlsURL,
                 thumbnailURL: thumbnailURL,
                 dimensions: CGSize(width: width, height: height)
             )
+            
+            // Prefetch video thumbnail immediately
+            MediaURLExtractor.extractAndPrefetchURLs(from: mediaType)
+            
+            return mediaType
         }
         
         // PRIORITY 3: YouTube Videos
@@ -77,7 +97,12 @@ extension Post {
                     url: thumbnailURL,
                     dimensions: CGSize(width: width, height: height)
                 ) {
-                    return .youtube(videoID: videoID, galleryImage: galleryImage)
+                    let mediaType = MediaType.youtube(videoID: videoID, galleryImage: galleryImage)
+                    
+                    // Prefetch YouTube thumbnail immediately
+                    MediaURLExtractor.extractAndPrefetchURLs(from: mediaType)
+                    
+                    return mediaType
                 }
             }
             
@@ -88,7 +113,12 @@ extension Post {
                     url: thumbnailURL,
                     dimensions: nil
                 ) {
-                    return .youtube(videoID: videoID, galleryImage: galleryImage)
+                    let mediaType = MediaType.youtube(videoID: videoID, galleryImage: galleryImage)
+                    
+                    // Prefetch YouTube thumbnail immediately
+                    MediaURLExtractor.extractAndPrefetchURLs(from: mediaType)
+                    
+                    return mediaType
                 }
             }
         }
@@ -97,11 +127,16 @@ extension Post {
         let videoFormats = [".mov", ".mp4", ".avi", ".mkv", ".flv", ".wmv", ".mpg", ".mpeg", ".webm"]
         if videoFormats.contains(where: { url.hasSuffix($0) }) {
             let thumbnailURL = extractImageURL(from: data)
-            return .video(
+            let mediaType = MediaType.video(
                 videoURL: url,
                 thumbnailURL: thumbnailURL,
                 dimensions: nil
             )
+            
+            // Prefetch video thumbnail immediately
+            MediaURLExtractor.extractAndPrefetchURLs(from: mediaType)
+            
+            return mediaType
         }
         
         // PRIORITY 5: GIF detection (including animated) - improved detection
@@ -112,7 +147,12 @@ extension Post {
            (domain.contains("imgur") && (url.contains("gif") || url.contains("gifv"))) {
             let (imageURL, dimensions) = extractHighQualityImageWithDimensions(from: data)
             if let galleryImage = createGalleryImage(url: imageURL, dimensions: dimensions) {
-                return .gif(galleryImage: galleryImage)
+                let mediaType = MediaType.gif(galleryImage: galleryImage)
+                
+                // Prefetch GIF image immediately
+                MediaURLExtractor.extractAndPrefetchURLs(from: mediaType)
+                
+                return mediaType
             }
         }
         
@@ -122,7 +162,12 @@ extension Post {
            domain.contains("i.redd.it") || domain.contains("i.imgur.com") {
             let (imageURL, dimensions) = extractHighQualityImageWithDimensions(from: data)
             if let galleryImage = createGalleryImage(url: imageURL, dimensions: dimensions) {
-                return .image(galleryImage: galleryImage)
+                let mediaType = MediaType.image(galleryImage: galleryImage)
+                
+                // Prefetch image immediately
+                MediaURLExtractor.extractAndPrefetchURLs(from: mediaType)
+                
+                return mediaType
             }
         }
         
@@ -138,7 +183,12 @@ extension Post {
                                   url.contains("i.redd.it") || url.contains("i.imgur.com")
                 
                 if isDirectImage, let galleryImage = createGalleryImage(url: imageURL, dimensions: dimensions) {
-                    return .image(galleryImage: galleryImage)
+                    let mediaType = MediaType.image(galleryImage: galleryImage)
+                    
+                    // Prefetch preview image immediately
+                    MediaURLExtractor.extractAndPrefetchURLs(from: mediaType)
+                    
+                    return mediaType
                 }
             }
         }
@@ -146,9 +196,12 @@ extension Post {
         // PRIORITY 8: External links with rich metadata - extract from any domain
         if !url.isEmpty && url != data.permalink && !data.is_self {
             let linkMetadata = extractLinkMetadata(from: data)
+            let mediaType = MediaType.link(metadata: linkMetadata)
             
-            // Create link for any external URL - no domain restrictions
-            return .link(metadata: linkMetadata)
+            // Prefetch link thumbnail if available immediately
+            MediaURLExtractor.extractAndPrefetchURLs(from: mediaType)
+            
+            return mediaType
         }
         
         return .none
