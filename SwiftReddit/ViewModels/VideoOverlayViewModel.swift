@@ -1,21 +1,27 @@
 import SwiftUI
 import AVKit
-import Combine
 
-class VideoOverlayViewModel: ObservableObject {
+@Observable class VideoOverlayViewModel {
     static let shared = VideoOverlayViewModel()
-    @Published var isPresented: Bool = false
-    @Published var player: AVPlayer? = nil
-    var onDismiss: (() -> Void)?
+    var isPresented: Bool = false
+    var player: AVPlayer? = nil
+    var currentVideoURL: String? = nil
 
-    func present(player: AVPlayer?, onDismiss: (() -> Void)? = nil) {
+    func present(player: AVPlayer?, videoURL: String?) {
         self.player = player
-        self.onDismiss = onDismiss
-        isPresented = true
+        self.currentVideoURL = videoURL
+
+        withAnimation(.easeInOut(duration: 0.2)) {
+            isPresented = true
+        }
     }
+    
     func dismiss() {
-        isPresented = false
-        onDismiss?()
-        onDismiss = nil
+        withAnimation(.easeInOut(duration: 0.2)) {
+            isPresented = false
+        }
+        
+        self.player = nil
+        self.currentVideoURL = nil
     }
 }

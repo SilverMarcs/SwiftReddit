@@ -2,6 +2,7 @@ import SwiftUI
 import AVKit
 
 struct PostVideoView: View {
+    @Environment(\.videoNS) private var videoNS
     @ObservedObject private var config = Config.shared
     let videoURL: String?
     let thumbnailURL: String?
@@ -13,12 +14,13 @@ struct PostVideoView: View {
     var body: some View {
         VideoPlayer(player: player)
             .aspectRatio(dimensions != nil ? (dimensions!.width / dimensions!.height) : 16/9, contentMode: .fit)
+            .matchedGeometryEffect(id: videoURL ?? "videoPlayer", in: videoNS)
             .cornerRadius(12)
             .clipped()
             .onTapGesture {
-                VideoOverlayViewModel.shared.present(player: player) {}
+                VideoOverlayViewModel.shared.present(player: player, videoURL: videoURL)
             }
-            .task(id: videoURL) {
+            .task {
                 await setupPlayer()
             }
             .onDisappear {

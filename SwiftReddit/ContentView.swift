@@ -13,6 +13,7 @@ struct ContentView: View {
     @State private var navSearch = Nav()
     
     @Namespace private var imageZoomNamespace
+    @Namespace private var videoNS
     
     var body: some View {
         TabView {
@@ -20,18 +21,21 @@ struct ContentView: View {
                 HomeTab()
                     .environment(navHome)
                     .environment(\.imageZoomNamespace, imageZoomNamespace)
+                    .environment(\.videoNS, videoNS)
             }
             
             Tab("Profile", systemImage: "person.fill") {
                 ProfileView()
                     .environment(navProfile)
                     .environment(\.imageZoomNamespace, imageZoomNamespace)
+                    .environment(\.videoNS, videoNS)
             }
             
             Tab(role: .search) {
                 SearchTab()
                     .environment(navSearch)
                     .environment(\.imageZoomNamespace, imageZoomNamespace)
+                    .environment(\.videoNS, videoNS)
             }
         }
         .tabViewStyle(.sidebarAdaptable)
@@ -40,6 +44,7 @@ struct ContentView: View {
         #endif
         .overlay {
             FullscreenVideoOverlay()
+                .environment(\.videoNS, videoNS)
         }
     }
 }
