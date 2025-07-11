@@ -12,6 +12,14 @@ struct PostView: View {
     let post: Post
     var isCompact: Bool = true
     var onReplyTap: (() -> Void)? = nil
+    @State private var isSaved: Bool
+    
+    init(post: Post, isCompact: Bool = true, onReplyTap: (() -> Void)? = nil) {
+        self.post = post
+        self.isCompact = isCompact
+        self.onReplyTap = onReplyTap
+        self._isSaved = State(initialValue: post.saved)
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -109,10 +117,10 @@ struct PostView: View {
           
           Button {
               Task {
-                  await RedditAPI.shared.save(!post.saved, id: post.fullname)
+                await toggleSave()
               }
           } label: {
-              Label(post.saved ? "Unsave" : "Save", systemImage: post.saved ? "bookmark.fill" : "bookmark")
+              Label(isSaved ? "Unsave" : "Save", systemImage: isSaved ? "bookmark.fill" : "bookmark")
           }
           
           if let redditURL = post.redditURL {
@@ -124,6 +132,13 @@ struct PostView: View {
             CompactPostView(post: post)
                 .padding(15)
                 .environment(nav)
+        }
+    }
+    
+    func toggleSave() async {
+        let success = await RedditAPI.shared.save(!isSaved, id: post.fullname)
+        if success {
+            isSaved.toggle()
         }
     }
 }

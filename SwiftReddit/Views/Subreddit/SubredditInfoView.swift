@@ -9,6 +9,12 @@ import SwiftUI
 
 struct SubredditInfoView: View {
     let subreddit: Subreddit
+    @State private var isSubscribed: Bool
+    
+    init(subreddit: Subreddit) {
+        self.subreddit = subreddit
+        self._isSubscribed = State(initialValue: subreddit.isSubscribed)
+    }
     
     var body: some View {
         Form {
@@ -16,13 +22,22 @@ struct SubredditInfoView: View {
             
             Section("Statistics") {
                 LabeledContent("Subscribers", value: "\(subreddit.subscriberCount.formatted())")
-                LabeledContent {
-                    Image(systemName: subreddit.isSubscribed ? "checkmark.circle.fill" : "cross.circle.fill")
-                        .foregroundStyle(subreddit.isSubscribed ? .green : .red)
-                } label: {
+                
+                HStack {
                     Text("Subscribed")
-                }
                     
+                    Spacer()
+                    
+                    Button {
+                        Task {
+                            await toggleSubscribe()
+                        }
+                    } label: {
+                        Text(isSubscribed ? "Unsubscribe" : "Subscribe")
+                            .foregroundStyle(isSubscribed ? .red : .blue)
+                    }
+                    .buttonStyle(.borderless)
+                }
             }
             
             Section("Description") {
@@ -32,17 +47,17 @@ struct SubredditInfoView: View {
         }
         .presentationDetents([.medium, .large])
     }
-}
-
-#Preview {
-    SubredditInfoView(subreddit: Subreddit(
-        id: "test",
-        displayName: "SwiftUI",
-        displayNamePrefixed: "r/SwiftUI",
-        iconURL: nil,
-        subscriberCount: 50000,
-        isSubscribed: false,
-        publicDescription: "A community for learning and developing iOS apps using SwiftUI",
-        color: .blue
-    ))
+    
+    func toggleSubscribe() async {
+        let success: Bool
+        if isSubscribed {
+            success = await RedditAPI.shared.unsubscribeFromSubreddit(subreddit.displayName)
+        } else {
+            success = await RedditAPI.shared.subscribeToSubreddit(subreddit.displayName)
+        }
+        
+        if success {
+            isSubscribed.toggle()
+        }
+    }
 }
