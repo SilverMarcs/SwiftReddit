@@ -14,10 +14,10 @@ struct PostGalleryView: View {
     var body: some View {
         HStack(spacing: 4) {
             ImageView(url: URL(string: images[0].url), aspectRatio: images[0].aspectRatio)
+                .matchedGeometryEffect(id: images[0].url, in: zoomNamespace)
                 .cornerRadius(12)
                 .clipped()
                 .frame(maxHeight: 300)
-                .matchedGeometryEffect(id: images[0].url, in: zoomNamespace ?? Namespace().wrappedValue)
                 .onTapGesture {
                     ImageOverlayViewModel.shared.present(images: images)
                 }

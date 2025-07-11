@@ -1,6 +1,26 @@
 import SwiftUI
 import AVKit
 
+//struct FullscreenVideoOverlay: View {
+//    var viewModel: VideoOverlayViewModel = .shared
+//    
+//    var body: some View {
+//        if viewModel.isPresented, let player = viewModel.player {
+//            VideoPlayer(player: player)
+//                .ignoresSafeArea()
+//                .gesture(
+//                    DragGesture(minimumDistance: 30)
+//                        .onEnded { value in
+//                            if value.translation.height > 70 {
+//                                viewModel.dismiss()
+//                            }
+//                        }
+//                )
+//        }
+//    }
+//}
+
+
 struct FullscreenVideoOverlay: View {
     @Environment(\.videoNS) private var videoNS
     var viewModel: VideoOverlayViewModel = .shared
