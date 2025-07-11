@@ -19,6 +19,11 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Views/Comments/OldCommentViews/CommentActionsView.swift,
+				Views/Comments/OldCommentViews/CommentContent.swift,
+				Views/Comments/OldCommentViews/CommentDisclosureStyle.swift,
+				Views/Comments/OldCommentViews/CommentHeader.swift,
+				Views/Comments/OldCommentViews/CommentView.swift,
 			);
 			target = 08846F632DFF0E1B009F6F77 /* SwiftReddit */;
 		};

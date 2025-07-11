@@ -52,11 +52,19 @@ struct PostDetailView: View {
                     Text("Comments")
                         .font(.title2)
                         .fontWeight(.bold)
-                        .padding(.top, 15)
+                        .padding(.vertical, 10)
 
                     ForEach(flatComments) { comment in
                         VStack(spacing: 8) {
-                            Divider()
+                            // Add background distinction for top-level comments (except first one)
+                            if comment.depth == 0 && comment.id != flatComments.first?.id {
+                                Rectangle()
+                                    .fill(.background.secondary)
+                                    .frame(height: 8)
+                                    .padding(.horizontal, -15)
+                            } else if comment.id != flatComments.first?.id {
+                                Divider()
+                            }
                             
                             FlatCommentView(comment: comment) { commentId in
                                 toggleCommentCollapse(commentId)
