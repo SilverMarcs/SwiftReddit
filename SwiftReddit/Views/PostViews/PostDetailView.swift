@@ -25,6 +25,7 @@ struct PostDetailView: View {
     }
     
     @State var scrollPosition = ScrollPosition(idType: Comment.ID.self)
+    @State private var showCommentSheet = false
     
     init(post: Post) {
         self.postNavigation = PostNavigation(from: post)
@@ -40,7 +41,12 @@ struct PostDetailView: View {
         ScrollView {
             LazyVStack(alignment: .leading) {
                 if let post = post {
-                    PostView(post: post, isCompact: false)
+                    PostView(
+                        post: post,
+                        isCompact: false,
+                        onReplyTap: { showCommentSheet = true }
+                    )
+                    
                     Divider()
                 }
                 
@@ -75,6 +81,7 @@ struct PostDetailView: View {
                 }
             }
             .scenePadding(.horizontal)
+            .scenePadding(.bottom)
             .scrollTargetLayout()
         }
         .scrollPosition($scrollPosition)
@@ -106,6 +113,13 @@ struct PostDetailView: View {
                         .labelStyle(.iconOnly)
                 }
                 .tint(.accent)
+            }
+        }
+        .sheet(isPresented: $showCommentSheet) {
+            if let post = post {
+                ReplySheet(parentId: post.id, isTopLevel: true) { text, postId in
+                    addOptimisticTopLevelComment(text: text, postId: postId)
+                }
             }
         }
     }
@@ -220,6 +234,45 @@ struct PostDetailView: View {
         // Fire off the network request in the background
         Task {
             _ = await RedditAPI.shared.replyToComment(text: text, parentFullname: "t1_\(parentId)")
+        }
+    }
+    
+    private func addOptimisticTopLevelComment(text: String, postId: String) {
+        let fakeId = "temp_\(UUID().uuidString)"
+        
+        // Create optimistic top-level comment
+        let optimisticFlatComment = FlatComment(
+            id: fakeId,
+            author: CredentialsManager.shared.credential?.userName ?? "You",
+            body: text,
+            created: Date().timeIntervalSince1970,
+            score: 1,
+            ups: 1,
+            depth: 0,
+            parentID: "t3_\(postId)",
+            isSubmitter: false,
+            authorFlairText: nil,
+            authorFlairBackgroundColor: nil,
+            distinguished: nil,
+            stickied: false,
+            likes: true,
+            isVisible: true,
+            hasChildren: false,
+            isCollapsed: false,
+            childCount: 0
+        )
+        
+        // Insert the new comment at the top of the list
+        flatComments.insert(optimisticFlatComment, at: 0)
+        
+        // Scroll to the new comment with animation
+        withAnimation {
+            scrollPosition = .init(id: fakeId)
+        }
+        
+        // Fire off the network request in the background
+        Task {
+            _ = await RedditAPI.shared.replyToComment(text: text, parentFullname: "t3_\(postId)")
         }
     }
 }

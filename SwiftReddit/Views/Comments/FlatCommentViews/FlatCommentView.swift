@@ -11,6 +11,7 @@ struct FlatCommentView: View {
     let comment: FlatComment
     let onToggleCollapse: (String) -> Void
     
+    @Environment(\.addOptimisticComment) var addOptimisticComment
     @State private var showReplySheet = false
     
     private let maxDepth = 8
@@ -70,8 +71,9 @@ struct FlatCommentView: View {
             }
         }
         .sheet(isPresented: $showReplySheet) {
-            ReplySheet(parentId: comment.id)
-                .presentationDetents([.medium])
+            ReplySheet(parentId: comment.id, isTopLevel: false) { text, parentId in
+                addOptimisticComment(text, parentId)
+            }
         }
     }
 }

@@ -9,9 +9,10 @@ import SwiftUI
 
 struct ReplySheet: View {
     @Environment(\.dismiss) var dismiss
-    @Environment(\.addOptimisticComment) var addOptimisticComment
     
     let parentId: String
+    let isTopLevel: Bool
+    let onSubmit: (String, String) -> Void
     
     @State private var replyText = ""
     @FocusState private var isTextFieldFocused: Bool
@@ -19,14 +20,15 @@ struct ReplySheet: View {
     var body: some View {
         NavigationStack {
             VStack {
-                TextField("Write your reply...", text: $replyText, axis: .vertical)
+                TextField(isTopLevel ? "Write a comment..." : "Write your reply...", text: $replyText, axis: .vertical)
                 
                 Spacer()
             }
             .padding()
             .textFieldStyle(.plain)
             .focused($isTextFieldFocused)
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Reply to \(isTopLevel ? "post" : "comment")")
+            .toolbarTitleDisplayMode(.inline)
             .onAppear {
                 isTextFieldFocused = true
             }
@@ -41,7 +43,7 @@ struct ReplySheet: View {
                     Button(role: .confirm) {
                         submitReply()
                     } label: {
-                        Label("Reply", systemImage: "arrow.up")
+                        Label(isTopLevel ? "Comment" : "Reply", systemImage: "arrow.up")
                     }
                     .disabled(replyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
@@ -52,9 +54,7 @@ struct ReplySheet: View {
     private func submitReply() {
         guard !replyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         
-        // Add optimistic comment immediately (includes network request)
-        addOptimisticComment(replyText, parentId)
-        
+        onSubmit(replyText, parentId)
         dismiss()
     }
 }

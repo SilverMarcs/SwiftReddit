@@ -11,9 +11,10 @@ struct PostView: View {
     @Environment(Nav.self) var nav
     let post: Post
     var isCompact: Bool = true
-  
-  var body: some View {
-      VStack(alignment: .leading, spacing: 8) {
+    var onReplyTap: (() -> Void)? = nil
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
             Text(post.title)
                 .font(.system(size: 19)) // title3 is fine
                 .fontWeight(.semibold)
@@ -75,18 +76,25 @@ struct PostView: View {
               
               Spacer()
               
+              if let onReplyTap = onReplyTap {
+                  Button {
+                      onReplyTap()
+                  } label: {
+                      Image(systemName: "arrowshape.turn.up.backward.fill")
+                          .font(.headline)
+                          .padding(3)
+                  }
+                  .buttonStyle(.glass)
+                  .buttonBorderShape(.circle)
+              }
+              
               PostActionsView(post: post)
-          }
-      }
-      .padding(.horizontal, isCompact ? 12 : 0)
-      .padding(.vertical, isCompact ? 12 : 0)
-      .background(isCompact ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 16))
-//      .background(
-//          RoundedRectangle(cornerRadius: 16)
-//              .fill(isCompact ? Color(.secondarySystemBackground) : .clear)
-//              .strokeBorder(isCompact ? Color(.tertiarySystemFill) : .clear)
-//      )
-      .contextMenu {
+            }
+        }
+        .padding(.horizontal, isCompact ? 12 : 0)
+        .padding(.vertical, isCompact ? 12 : 0)
+        .background(isCompact ? AnyShapeStyle(.background.secondary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 16))
+        .contextMenu { 
           Section {
               Button {
                   nav.path.append(PostFeedType.user(post.author))
@@ -113,5 +121,5 @@ struct PostView: View {
               }
           }
       }
-  }
+    }
 }
