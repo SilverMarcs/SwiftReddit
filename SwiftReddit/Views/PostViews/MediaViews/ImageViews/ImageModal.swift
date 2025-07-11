@@ -9,15 +9,12 @@ import SwiftUI
 
 struct ImageModal: View {
     let images: [GalleryImage]
-    @Environment(\.imageZoomNamespace) private var zoomNamespace
+    @Environment(\.imageZoomNamespace) private var imageZoomNamespace
     
     private var sourceID: String {
         images.first?.url ?? ""
     }
-    
-    private var namespace: Namespace.ID {
-        zoomNamespace ?? Namespace().wrappedValue
-    }
+
     
     init(images: [GalleryImage]) {
         self.images = images
@@ -38,7 +35,7 @@ struct ImageModal: View {
         .ignoresSafeArea()
         #if !os(macOS)
         .tabViewStyle(.page)
-        .navigationTransition(.zoom(sourceID: sourceID, in: namespace))
+        .navigationTransition(.zoom(sourceID: sourceID, in: imageZoomNamespace))
         #endif
     }
 }

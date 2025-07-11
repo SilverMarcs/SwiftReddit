@@ -40,6 +40,6 @@ struct FlatCommentActionsView: View {
         }
         .fontWeight(.semibold)
         .padding(8)
-        .glassEffect()
+        .glassEffect(.regular.interactive())
     }
 }
