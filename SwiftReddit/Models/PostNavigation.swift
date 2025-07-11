@@ -27,30 +27,28 @@ struct PostNavigation: Hashable, Codable {
 
 extension Message {
     var postNavigation: PostNavigation? {
-        // Skip non-navigable message types (like announcements)
-        guard type != "unknown", wasComment == true else { return nil }
+        // Only navigate for post and comment replies
+        guard type == "post_reply" || type == "comment_reply" else { return nil }
         
-        // Use subreddit field directly from API response
-        let subredditName = subreddit
+        // Extract post ID from parent_id or context
+        let postId: String
         
-        // Extract only the post ID from context since it's not directly available
-        guard let context = context else { return nil }
-        
-        let cleanContext = context.components(separatedBy: "?").first ?? context
-        let components = cleanContext.components(separatedBy: "/")
-        
-        guard components.count >= 5,
-              components[1] == "r",
-              components[3] == "comments" else { return nil }
-        
-        let postId = components[4]
-        // Use the message ID directly as comment ID (it's the same)
-        let commentId = id
+        if type == "post_reply", let parentId = parentId {
+            // For post replies, parent_id is the post (format: "t3_postid")
+            postId = String(parentId.dropFirst(3)) // Remove "t3_" prefix
+        } else if let context = context {
+            // For comment replies, extract from context URL
+            let components = context.components(separatedBy: "/")
+            guard components.count >= 5, components[4] != "" else { return nil }
+            postId = components[4]
+        } else {
+            return nil
+        }
         
         return PostNavigation(
             postId: postId,
-            subreddit: subredditName,
-            commentId: commentId
+            subreddit: subreddit,
+            commentId: id
         )
     }
 }

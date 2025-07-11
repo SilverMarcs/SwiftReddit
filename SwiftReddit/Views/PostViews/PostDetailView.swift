@@ -10,6 +10,8 @@ import SwiftUI
 struct PostDetailView: View {
     @Environment(Nav.self) var nav
     
+    let postNavigation: PostNavigation
+    
     @State private var post: Post?
     @State private var comments: [Comment] = []
     @State private var flatComments: [FlatComment] = []
@@ -22,7 +24,7 @@ struct PostDetailView: View {
         }
     }
     
-    let postNavigation: PostNavigation
+    @State var scrollPosition = ScrollPosition(idType: Comment.ID.self)
     
     init(post: Post) {
         self.postNavigation = PostNavigation(from: post)
@@ -32,8 +34,7 @@ struct PostDetailView: View {
     init(postNavigation: PostNavigation) {
         self.postNavigation = postNavigation
     }
-    
-    @State var scrollPosition = ScrollPosition(idType: Comment.ID.self)
+
 
     var body: some View {
         ScrollView {
@@ -56,11 +57,10 @@ struct PostDetailView: View {
 
                     ForEach(flatComments) { comment in
                         VStack(spacing: 8) {
-                            // Add background distinction for top-level comments (except first one)
                             if comment.depth == 0 && comment.id != flatComments.first?.id {
                                 Rectangle()
                                     .fill(.background.secondary)
-                                    .frame(height: 6)
+                                    .frame(height: 5)
                                     .padding(.horizontal, -15)
                             } else if comment.id != flatComments.first?.id {
                                 Divider()
@@ -79,10 +79,13 @@ struct PostDetailView: View {
         }
         .scrollPosition($scrollPosition)
         .task(id: sortOption) {
-            await loadComments()
+            // Load if we don't have a post or if comments are empty
+            if post == nil || comments.isEmpty {
+                await loadComments()
+            }
         }
         .refreshable {
-            await loadComments(force: true)
+            await loadComments()
         }
         .navigationTitle(post?.subreddit.displayNamePrefixed ?? "Post")
         .navigationSubtitle(post?.numComments.formatted.appending(" comments") ?? "Loading...")
@@ -107,12 +110,7 @@ struct PostDetailView: View {
         }
     }
 
-    private func loadComments(force: Bool = false) async {
-        // If not forced and comments already exist, return early
-        if !force && !comments.isEmpty {
-            return
-        }
-        
+    private func loadComments() async {
         isLoading = true
         
         defer {
@@ -145,10 +143,7 @@ struct PostDetailView: View {
             let (fetchedPost, fetchedComments, _) = result
             
             // Update post if we didn't have it before
-            if force, let fetchedPost = fetchedPost {
-                post = fetchedPost
-            }
-            else if post == nil, let fetchedPost = fetchedPost {
+            if let fetchedPost = fetchedPost {
                 post = fetchedPost
             }
             
@@ -195,7 +190,7 @@ struct PostDetailView: View {
         // Create optimistic flat comment
         let optimisticFlatComment = FlatComment(
             id: fakeId,
-            author: CredentialsManager.shared.credential?.userName ?? "You", // Current user
+            author: CredentialsManager.shared.credential?.userName ?? "You",
             body: text,
             created: Date().timeIntervalSince1970,
             score: 1,
