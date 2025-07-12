@@ -34,7 +34,7 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section("Debug") {
+                Section("Images") {
                     Button {
                         deleteAlertPresented = true
                     } label: {
