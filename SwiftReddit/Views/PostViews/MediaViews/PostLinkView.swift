@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PostLinkView: View {
   @Environment(\.openURL) var openURL
-  @Environment(Nav.self) private var nav
+  @Environment(\.appendToPath) var appendToPath
   let metadata: LinkMetadata
   
   var body: some View {

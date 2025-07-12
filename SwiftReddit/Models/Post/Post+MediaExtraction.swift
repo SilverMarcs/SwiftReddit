@@ -38,7 +38,7 @@ extension Post {
             let galleryImages = extractAllGalleryImages(from: galleryData, metadata: metadata)
             
             if !galleryImages.isEmpty {
-                let mediaType = MediaType.gallery(images: galleryImages)
+                let mediaType = MediaType.gallery(galleryImages: galleryImages)
                 
                 // Prefetch all gallery images immediately
                 MediaURLExtractor.extractAndPrefetchURLs(from: mediaType)

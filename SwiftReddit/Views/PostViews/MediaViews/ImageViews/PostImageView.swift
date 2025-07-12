@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PostImageView: View {
-    @Environment(Nav.self) private var nav
+    @Environment(\.appendToPath) var appendToPath
 
     var image: GalleryImage
     
@@ -18,7 +18,7 @@ struct PostImageView: View {
     var body: some View {
         if let url = URL(string: image.url) {
             Button {
-                nav.path.append(ImageModalData(image: image))
+                appendToPath(ImageModalData(image: image))
 //                ImageOverlayViewModel.shared.present(images: [image])
             } label: {
                 ImageView(url: url, aspectRatio: image.aspectRatio)

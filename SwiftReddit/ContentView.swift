@@ -8,10 +8,6 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var navHome = Nav()
-    @State private var navProfile = Nav()
-    @State private var navSearch = Nav()
-    
     @Namespace private var imageNS
     @Namespace private var videoNS
     
@@ -19,21 +15,18 @@ struct ContentView: View {
         TabView {
             Tab("Posts", systemImage: "doc.text.image") {
                 HomeTab()
-                    .environment(navHome)
                     .environment(\.imageNS, imageNS)
                     .environment(\.videoNS, videoNS)
             }
             
             Tab("Profile", systemImage: "person.fill") {
-                ProfileView()
-                    .environment(navProfile)
+                ProfileTab()
                     .environment(\.imageNS, imageNS)
                     .environment(\.videoNS, videoNS)
             }
             
             Tab(role: .search) {
                 SearchTab()
-                    .environment(navSearch)
                     .environment(\.imageNS, imageNS)
                     .environment(\.videoNS, videoNS)
             }

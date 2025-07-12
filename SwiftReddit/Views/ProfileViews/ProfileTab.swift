@@ -1,26 +1,23 @@
 //
-//  HomeTab.swift
+//  ProfileView.swift
 //  SwiftReddit
 //
-//  Created by Winston Team on 18/06/25.
+//  Created by Zabir Raihan on 25/06/2025.
 //
 
 import SwiftUI
 
-struct HomeTab: View {
+struct ProfileTab: View {
     @State var path: NavigationPath = NavigationPath()
     
     var body: some View {
         NavigationStack(path: $path) {
-            PostsList(feedType: .home)
+            UserSubredditsView()
                 .environment(\.appendToPath, { value in
                      path.append(value)
                  })
                 .navigationDestinations()
+
         }
     }
-}
-
-#Preview {
-    HomeTab()
 }

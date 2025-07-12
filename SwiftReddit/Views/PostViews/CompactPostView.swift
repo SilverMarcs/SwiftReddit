@@ -6,14 +6,15 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct CompactPostView: View {
-    @Environment(Nav.self) var nav
+    @Environment(\.appendToPath) var appendToPath
     let post: Post
     
     var body: some View {
         Button {
-            nav.path.append(post)
+            appendToPath(post)
         } label: {
             HStack {
                 VStack(alignment: .leading, spacing: 8) {
@@ -54,10 +55,25 @@ struct CompactPostView: View {
                 Spacer()
                 
                 if let url = post.mediaType.firstMediaURL, let mediaURL = URL(string: url) {
-                    ImageView(url: mediaURL)
-                        .aspectRatio(contentMode: .fill)
+                    KFImage(mediaURL)
+                        .placeholder {
+                            Rectangle()
+                                .fill(.background.secondary)
+                                .frame(width: 70, height: 70)
+                                .aspectRatio(1, contentMode: .fill)
+                                .cornerRadius(12)
+                                .clipped()
+                                .overlay(
+                                    ProgressView()
+                                )
+                        }
+                        .downsampling(size: CGSize(width: 1000, height: 1000))
+                        .serialize(as: .JPEG)
+                        .fade(duration: 0.1)
+                        .resizable()
                         .frame(width: 70, height: 70)
-                        .cornerRadius(10)
+                        .aspectRatio(1, contentMode: .fill)
+                        .cornerRadius(12)
                         .clipped()
                 }
             }

@@ -9,9 +9,10 @@ import SwiftUI
 import Kingfisher
 
 struct UserSubredditsView: View {
-    @Environment(Nav.self) private var nav
+    @Environment(\.appendToPath) var appendToPath
     @State private var subreddits: [Subreddit] = []
     @State private var isLoading = false
+    @State private var showSettings = false
     
     // Group subreddits alphabetically
     private var groupedSubreddits: [String: [Subreddit]] {
@@ -51,6 +52,20 @@ struct UserSubredditsView: View {
         }
         .refreshable {
             await fetchSubreddits()
+        }
+        .navigationTitle("Profile")
+        .toolbarTitleDisplayMode(.inlineLarge)
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
+        }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    showSettings.toggle()
+                } label: {
+                    Image(systemName: "gear")
+                }
+            }
         }
     }
     

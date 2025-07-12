@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct URLHandlingModifier: ViewModifier {
-    @Environment(Nav.self) var nav
+    @Environment(\.appendToPath) var appendToPath
     
     func body(content: Content) -> some View {
         content
@@ -19,7 +19,7 @@ struct URLHandlingModifier: ViewModifier {
                 }
 
                 if let navPayload = parseRedditURL(url) {
-                    nav.path.append(navPayload)
+                    appendToPath(navPayload)
                     return .handled
                 }
 

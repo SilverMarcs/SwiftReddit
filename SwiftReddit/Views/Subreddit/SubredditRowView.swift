@@ -9,12 +9,12 @@ import SwiftUI
 import Kingfisher
 
 struct SubredditRowView: View {
-    @Environment(Nav.self) private var nav
+    @Environment(\.appendToPath) var appendToPath
     let subreddit: Subreddit
     
     var body: some View {
         Button {
-            nav.path.append(PostFeedType.subreddit(subreddit))
+            appendToPath(PostFeedType.subreddit(subreddit))
         } label: {
             HStack {
                 Label {

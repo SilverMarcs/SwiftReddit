@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PostDetailView: View {
-    @Environment(Nav.self) var nav
+    @Environment(\.appendToPath) var appendToPath
     
     @State private var dataSource: PostDetailDataSource
     @State private var showCommentSheet = false

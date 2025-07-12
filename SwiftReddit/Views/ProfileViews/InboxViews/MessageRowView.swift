@@ -8,15 +8,15 @@
 import SwiftUI
 
 struct MessageRowView: View {
-    @Environment(Nav.self) private var nav
+    @Environment(\.appendToPath) var appendToPath
     let message: Message
     
     var body: some View {
         Button {
             if let postNavigation = message.postNavigation {
-                nav.path.append(postNavigation)
+                appendToPath(postNavigation)
             } else {
-                nav.path.append(Destination.message(message))
+                appendToPath(Destination.message(message))
             }
         } label: {
             HStack(alignment: .top) {

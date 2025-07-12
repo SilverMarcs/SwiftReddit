@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PostView: View {
-    @Environment(Nav.self) var nav
+    @Environment(\.appendToPath) var appendToPath
     let post: Post
     var isCompact: Bool = true
     var onReplyTap: (() -> Void)? = nil
@@ -106,7 +106,7 @@ struct PostView: View {
         .contextMenu {
           Section {
               Button {
-                  nav.path.append(PostFeedType.user(post.author))
+                  appendToPath(PostFeedType.user(post.author))
               } label: {
                   Label {
                       Text(post.author)
@@ -132,7 +132,6 @@ struct PostView: View {
         } preview: {
             CompactPostView(post: post)
                 .padding(15)
-                .environment(nav)
         }
     }
     

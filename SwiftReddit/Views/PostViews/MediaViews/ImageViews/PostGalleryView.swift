@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PostGalleryView: View {
     @Environment(\.imageNS) private var imageNS
-    @Environment(Nav.self) private var nav
+    @Environment(\.appendToPath) var appendToPath
     @Namespace private var fallbackNS
     
     let images: [GalleryImage]
@@ -24,7 +24,7 @@ struct PostGalleryView: View {
             // Main image display (always first image)
             if let firstImage = images.first, let url = URL(string: firstImage.url) {
                 Button {
-                    nav.path.append(ImageModalData(images: images, startIndex: 0))
+                    appendToPath(ImageModalData(images: images, startIndex: 0))
                 } label: {
                     ImageView(url: url, aspectRatio: firstImage.aspectRatio)
                         .matchedTransitionSource(id: firstImage.url, in: imageNS ?? fallbackNS)
@@ -43,7 +43,7 @@ struct PostGalleryView: View {
                 HStack(spacing: 4) {
                     ForEach(Array(displayImages.enumerated()), id: \.offset) { index, image in
                         Button {
-                            nav.path.append(ImageModalData(images: images, startIndex: index + 1))
+                            appendToPath(ImageModalData(images: images, startIndex: index + 1))
                         } label: {
                             if let url = URL(string: image.url) {
                                 ImageView(url: url)

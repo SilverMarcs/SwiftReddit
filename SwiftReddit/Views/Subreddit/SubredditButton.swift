@@ -9,13 +9,13 @@ import SwiftUI
 import Kingfisher
 
 struct SubredditButton: View {
-    @Environment(Nav.self) private var nav
+    @Environment(\.appendToPath) var appendToPath
     let subreddit: Subreddit
     let type: SubRedditButtonType
     
     var body: some View {
         Button {
-            nav.path.append(PostFeedType.subreddit(subreddit))
+            appendToPath(PostFeedType.subreddit(subreddit))
         } label: {
             switch type {
             case .text:

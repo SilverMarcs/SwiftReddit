@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PostsList: View {
-    @Environment(Nav.self) private var nav
+    @Environment(\.appendToPath) var appendToPath
     @State private var dataSource: PostListDataSource
     
     private let feedType: PostFeedType
@@ -22,7 +22,7 @@ struct PostsList: View {
         List {
             ForEach(dataSource.posts) { post in
                 Button {
-                    nav.path.append(post)
+                    appendToPath(post)
                 } label: {
                     PostView(post: post)
                         .navigationLinkIndicatorVisibility(.hidden)

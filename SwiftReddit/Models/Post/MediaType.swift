@@ -51,7 +51,7 @@ struct LinkMetadata: Hashable {
 indirect enum MediaType: Hashable {
     case none
     case image(galleryImage: GalleryImage)
-    case gallery(images: [GalleryImage])
+    case gallery(galleryImages: [GalleryImage])
     case video(videoURL: String?, thumbnailURL: String?, dimensions: CGSize?)
     case youtube(videoID: String, galleryImage: GalleryImage)
     case link(metadata: LinkMetadata)
