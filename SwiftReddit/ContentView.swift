@@ -13,7 +13,7 @@ struct ContentView: View {
     
     var body: some View {
         TabView {
-            Tab("Posts", systemImage: "doc.text.image") {
+            Tab("Home", systemImage: "doc.text.image") {
                 HomeTab()
                     .environment(\.imageNS, imageNS)
                     .environment(\.videoNS, videoNS)
@@ -24,6 +24,12 @@ struct ContentView: View {
                     .environment(\.imageNS, imageNS)
                     .environment(\.videoNS, videoNS)
             }
+            
+            #if os(macOS)
+            Tab("Settings", systemImage: "gear") {
+                SettingsView()
+            }
+            #endif
             
             Tab(role: .search) {
                 SearchTab()

@@ -77,6 +77,7 @@ struct CompactPostView: View {
                         .clipped()
                 }
             }
+            .contentShape(.rect)
         }
         .buttonStyle(.plain)
     }

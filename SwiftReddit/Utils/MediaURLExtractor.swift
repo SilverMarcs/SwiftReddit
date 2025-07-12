@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import UIKit
 import Kingfisher
 
 /// Utility for extracting and prefetching image URLs during media processing

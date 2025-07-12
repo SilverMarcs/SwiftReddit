@@ -69,6 +69,19 @@ struct FullscreenVideoOverlay: View {
                     dragOffset = .zero
                 }
             }
+            #if os(macOS)
+            .toolbarVisibility(.hidden, for: .windowToolbar)
+            .overlay(alignment: .topTrailing) {
+                Button(role: .close) {
+                    dismissVideo()
+                }
+                .keyboardShortcut(.cancelAction)
+                .controlSize(.extraLarge)
+                .labelStyle(.iconOnly)
+                .padding(20)
+            }
+            #endif
+
         }
     }
     

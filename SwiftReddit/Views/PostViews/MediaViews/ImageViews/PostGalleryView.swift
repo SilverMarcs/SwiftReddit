@@ -49,7 +49,7 @@ struct PostGalleryView: View {
                                 ImageView(url: url)
                                     .aspectRatio(contentMode: .fill)
                                     .frame(width: 80, height: 80)
-                                    .cornerRadius(10)
+                                    .cornerRadius(8)
                                     .clipped()
                                     .matchedTransitionSource(id: image.url, in: imageNS ?? fallbackNS)
                                     .overlay {
@@ -57,7 +57,7 @@ struct PostGalleryView: View {
                                         if index == displayImages.count - 1 && remainingCount > 0 {
                                             Rectangle()
                                                 .fill(.black.opacity(0.6))
-                                                .cornerRadius(10)
+                                                .cornerRadius(8)
                                                 .overlay {
                                                     Text("+\(remainingCount)")
                                                         .font(.headline)

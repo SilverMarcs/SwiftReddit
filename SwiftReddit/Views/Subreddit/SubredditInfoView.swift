@@ -45,6 +45,7 @@ struct SubredditInfoView: View {
                     .font(.body)
             }
         }
+        .formStyle(.grouped)
         .presentationDetents([.medium, .large])
     }
     

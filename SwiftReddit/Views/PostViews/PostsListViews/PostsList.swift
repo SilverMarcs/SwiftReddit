@@ -52,6 +52,10 @@ struct PostsList: View {
                     .id(UUID())
             }
         }
+        #if os(macOS)
+        .frame(maxWidth: 600)
+        .scrollIndicators(.hidden)
+        #endif
         .listStyle(.plain)
         .navigationTitle(feedType.displayName)
         .toolbarTitleDisplayMode(.inlineLarge)

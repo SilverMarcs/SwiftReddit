@@ -52,9 +52,11 @@ import SwiftUI
     }
 
     private func hapticFeedback() {
+        #if os(iOS)
         let impactFeedback = UIImpactFeedbackGenerator(style: .light)
         impactFeedback.prepare()
         impactFeedback.impactOccurred()
+        #endif
     }
 }
 

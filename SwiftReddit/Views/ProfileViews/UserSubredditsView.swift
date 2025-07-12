@@ -58,6 +58,7 @@ struct UserSubredditsView: View {
         .sheet(isPresented: $showSettings) {
             SettingsView()
         }
+        #if !os(macOS)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {
@@ -67,6 +68,7 @@ struct UserSubredditsView: View {
                 }
             }
         }
+        #endif
     }
     
     private func fetchSubreddits() async {

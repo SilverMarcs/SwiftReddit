@@ -63,6 +63,6 @@ struct MessageDetailView: View {
             .padding()
         }
         .navigationTitle("Message")
-        .navigationBarTitleDisplayMode(.inline)
+        .toolbarTitleDisplayMode(.inline)
     }
 }

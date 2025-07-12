@@ -21,8 +21,10 @@ extension View {
             }
             .navigationDestination(for: ImageModalData.self) { imageData in
                 ImageModal(imageData: imageData)
+                    #if !os(macOS)
                     .toolbarVisibility(.hidden, for: .tabBar)
                     .toolbarVisibility(.hidden, for: .navigationBar)
+                    #endif
             }
             .navigationDestination(for: Destination.self) { destination in
                 switch destination {

@@ -24,6 +24,36 @@ struct ImageModal: View {
     }
     
     var body: some View {
+        #if os(macOS)
+        ZStack {
+            // Current Image
+            if let currentImage = images[safe: currentIndex] {
+                ImageView(url: URL(string: currentImage.url), aspectRatio: currentImage.aspectRatio)
+                    .zoomable()
+            }
+            
+            HStack {
+
+                Button(action: previousImage) {
+                    Image(systemName: "chevron.left")
+                }
+                .controlSize(.extraLarge)
+                .buttonStyle(.glass)
+                .disabled(currentIndex == 0)
+                
+                Spacer()
+                
+                Button(action: nextImage) {
+                    Image(systemName: "chevron.right")
+                }
+                .controlSize(.extraLarge)
+                .buttonStyle(.glass)
+                .disabled(currentIndex == images.count - 1)
+            }
+            .padding(.horizontal)
+        }
+        .frame(maxWidth: .infinity)
+        #else
         TabView(selection: $currentIndex) {
             ForEach(Array(images.enumerated()), id: \.offset) { index, galleryImage in
                 ImageView(url: URL(string: galleryImage.url), aspectRatio: galleryImage.aspectRatio)
@@ -32,9 +62,25 @@ struct ImageModal: View {
             }
         }
         .ignoresSafeArea()
-        #if !os(macOS)
         .tabViewStyle(.page)
         .navigationTransition(.zoom(sourceID: sourceID, in: imageNS ?? fallbackNS))
         #endif
+    }
+    
+    private func nextImage() {
+        guard currentIndex < images.count - 1 else { return }
+        currentIndex += 1
+    }
+    
+    private func previousImage() {
+        guard currentIndex > 0 else { return }
+        currentIndex -= 1
+    }
+}
+
+// Safe array access extension
+extension Collection {
+    subscript(safe index: Index) -> Element? {
+        return indices.contains(index) ? self[index] : nil
     }
 }

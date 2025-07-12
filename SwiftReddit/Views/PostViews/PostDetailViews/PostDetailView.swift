@@ -66,6 +66,10 @@ struct PostDetailView: View {
                     }
                 }
             }
+            #if os(macOS)
+            .frame(maxWidth: 600, alignment: .center)
+            .scenePadding(.vertical)
+            #endif
             .scenePadding(.horizontal)
             .scenePadding(.bottom)
             .scrollTargetLayout()

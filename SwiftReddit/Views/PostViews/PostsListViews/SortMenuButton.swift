@@ -35,6 +35,7 @@ struct SortMenuButton: View {
             Label(selectedSort.displayName, systemImage: selectedSort.icon)
                 .labelStyle(.iconOnly)
         }
+        .menuIndicator(.hidden)
         .tint(.accent)
     }
 }

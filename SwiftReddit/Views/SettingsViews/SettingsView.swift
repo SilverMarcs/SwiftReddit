@@ -50,7 +50,11 @@ struct SettingsView: View {
                             
                             Text("\(cacheSize)")
                         }
+                        .contentShape(.rect)
                     }
+                    #if os(macOS)
+                    .buttonStyle(.plain)
+                    #endif
                     .alert("Clear Image Cache", isPresented: $deleteAlertPresented) {
                         Button("Clear", role: .destructive) {
                             ImageCache.default.clearCache()
@@ -68,6 +72,7 @@ struct SettingsView: View {
             .formStyle(.grouped)
             .navigationTitle("Settings")
             .toolbarTitleDisplayMode(.inline)
+            #if !os(macOS)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button(action: {
@@ -78,6 +83,7 @@ struct SettingsView: View {
                     }
                 }
             }
+            #endif
         }
     }
     
