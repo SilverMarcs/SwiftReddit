@@ -71,7 +71,7 @@ struct FullscreenVideoOverlay: View {
             }
             #if os(macOS)
             .toolbarVisibility(.hidden, for: .windowToolbar)
-            .overlay(alignment: .topTrailing) {
+            .overlay(alignment: .topLeading) {
                 Button(role: .close) {
                     dismissVideo()
                 }
