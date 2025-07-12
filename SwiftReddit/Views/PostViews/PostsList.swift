@@ -103,7 +103,7 @@ struct PostsList: View {
                     .tint(.accent)
                 }
                 
-                if feedType.showSubredditInfo, let subreddit = feedType.subreddit {
+                if let subreddit = feedType.subreddit, subreddit.isDetailed {
                     Button {
                         showingSubredditInfo = true
                     } label: {

@@ -48,15 +48,15 @@ enum PostFeedType: Identifiable, Hashable {
         }
     }
     
-    var showSubredditInfo: Bool {
-        switch self {
-        case .subreddit:
-            return true
-        case .home, .saved, .user:
-            return false
-        }
-    }
-    
+//    var showSubredditInfo: Bool {
+//        switch self {
+//        case .subreddit:
+//            return true
+//        case .home, .saved, .user:
+//            return false
+//        }
+//    }
+//    
     var subreddit: Subreddit? {
         switch self {
         case .subreddit(let subreddit):

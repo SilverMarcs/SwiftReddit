@@ -18,6 +18,7 @@ struct Subreddit: Identifiable, Hashable {
     let isSubscribed: Bool
     let publicDescription: String
     let color: Color?
+    var isDetailed: Bool = true
     
     /// Special instance for home feed
     static let home = Subreddit(
@@ -107,6 +108,7 @@ struct Subreddit: Identifiable, Hashable {
         self.isSubscribed = false
         self.publicDescription = ""
         self.color = nil
+        self.isDetailed = false
     }
     
     /// Convenience initializer for basic subreddit info when sr_detail is not available
