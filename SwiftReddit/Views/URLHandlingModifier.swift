@@ -14,7 +14,8 @@ struct URLHandlingModifier: ViewModifier {
         content
             .environment(\.openURL, OpenURLAction { url in
                 if let galleryImage = detectRedditImage(from: url) {
-                    ImageOverlayViewModel.shared.present(images: [galleryImage])
+//                    ImageOverlayViewModel.shared.present(images: [galleryImage])
+                    appendToPath(ImageModalData(image: galleryImage))
                     return .handled
                 }
 

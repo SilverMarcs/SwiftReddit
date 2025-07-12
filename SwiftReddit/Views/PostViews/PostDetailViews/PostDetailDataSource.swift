@@ -18,8 +18,8 @@ import SwiftUI
     var sortOption: CommentSortOption = .confidence
     var scrollPosition = ScrollPosition(idType: Comment.ID.self)
     
-    private let postNavigation: PostNavigation
-    var onCommentsLoaded: ((String?) -> Void)?
+    @ObservationIgnored private let postNavigation: PostNavigation
+    @ObservationIgnored var onCommentsLoaded: ((String?) -> Void)?
     
     init(post: Post) {
         self.postNavigation = PostNavigation(from: post)

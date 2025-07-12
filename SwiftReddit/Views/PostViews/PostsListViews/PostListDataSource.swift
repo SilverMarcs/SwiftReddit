@@ -11,10 +11,10 @@ import Foundation
 @Observable class PostListDataSource {
     private(set) var posts: [Post] = []
     private(set) var isLoading = false
-    private(set) var after: String?
+    @ObservationIgnored private(set) var after: String?
     var currentSort: SubListingSortOption = .best
     
-    private let feedType: PostFeedType
+    @ObservationIgnored private let feedType: PostFeedType
     
     init(feedType: PostFeedType) {
         self.feedType = feedType

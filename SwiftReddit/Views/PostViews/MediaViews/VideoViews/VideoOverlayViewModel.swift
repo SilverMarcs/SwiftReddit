@@ -2,10 +2,10 @@ import SwiftUI
 import AVKit
 
 @Observable class VideoOverlayViewModel {
-    static let shared = VideoOverlayViewModel()
+    @ObservationIgnored static let shared = VideoOverlayViewModel()
     var isPresented: Bool = false
-    var player: AVPlayer? = nil
-    var currentVideoURL: String? = nil
+    @ObservationIgnored var player: AVPlayer? = nil
+    @ObservationIgnored var currentVideoURL: String? = nil
 
     func present(player: AVPlayer?, videoURL: String?) {
         self.player = player

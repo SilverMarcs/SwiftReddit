@@ -29,7 +29,7 @@ import SwiftUI
     }
     
     // OAuth state management
-    var lastAuthState: String?
+    @ObservationIgnored var lastAuthState: String?
     
     private init() {
         loadCredentials()

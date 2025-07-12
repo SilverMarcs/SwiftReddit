@@ -19,10 +19,8 @@ struct PostImageView: View {
         if let url = URL(string: image.url) {
             Button {
                 appendToPath(ImageModalData(image: image))
-//                ImageOverlayViewModel.shared.present(images: [image])
             } label: {
                 ImageView(url: url, aspectRatio: image.aspectRatio)
-//                    .matchedGeometryEffect(id: image.url, in: imageNS ?? fallbackNS)
                     .matchedTransitionSource(id: image.url, in: imageNS ?? fallbackNS)
                     .cornerRadius(12)
                     .clipped()

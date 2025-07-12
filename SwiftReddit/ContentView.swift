@@ -39,10 +39,6 @@ struct ContentView: View {
             FullscreenVideoOverlay()
                 .environment(\.videoNS, videoNS)
         }
-        .overlay {
-            FullscreenImageOverlay()
-                .environment(\.imageNS, imageNS)
-        }
     }
 }
 
