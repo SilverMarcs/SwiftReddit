@@ -14,51 +14,65 @@ struct PostGalleryView: View {
     
     let images: [GalleryImage]
     
+    // Define grid layout
+    private let columns = [
+        GridItem(.adaptive(minimum: 80, maximum: 80), spacing: 4)
+    ]
+    
     var body: some View {
-        HStack(spacing: 4) {
-            Button {
-                nav.path.append(ImageModalData(images: images))
-            } label: {
-                ImageView(url: URL(string: images[0].url), aspectRatio: images[0].aspectRatio)
-//                    .matchedGeometryEffect(id: images[0].url, in: imageNS ?? fallbackNS)
-                    .matchedTransitionSource(id: images[0].url, in: imageNS ?? fallbackNS)
-                    .cornerRadius(12)
-                    .clipped()
+        VStack(alignment: .leading, spacing: 8) {
+            // Main image display (always first image)
+            if let firstImage = images.first, let url = URL(string: firstImage.url) {
+                Button {
+                    nav.path.append(ImageModalData(images: images, startIndex: 0))
+                } label: {
+                    ImageView(url: url, aspectRatio: firstImage.aspectRatio)
+                        .matchedTransitionSource(id: firstImage.url, in: imageNS ?? fallbackNS)
+                        .cornerRadius(12)
+                        .clipped()
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
             
-            // TODO: make clickable and show more
-            Button {
-                nav.path.append(ImageModalData(images: images))
-            } label: {
-                ImageView(url: URL(string: images[1].url), aspectRatio: images[1].aspectRatio)
-                    .cornerRadius(12)
-                    .clipped()
-                    .overlay {
-                        if images.count > 2 {
-                            Color.black.opacity(0.5)
-                            
-                            Text("+\(images.count - 2)")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .foregroundStyle(.white)
+            // Thumbnails (next 3 images)
+            if images.count > 1 {
+                let remainingImages = Array(images.dropFirst())
+                let displayImages = Array(remainingImages.prefix(3))
+                let remainingCount = remainingImages.count - displayImages.count
+                
+                HStack(alignment: .top, spacing: 4) {
+                    ForEach(Array(displayImages.enumerated()), id: \.offset) { index, image in
+                        Button {
+                            nav.path.append(ImageModalData(images: images, startIndex: index + 1))
+                        } label: {
+                            if let url = URL(string: image.url) {
+                                ImageView(url: url)
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 80, height: 80)
+                                    .cornerRadius(10)
+                                    .clipped()
+                                    .matchedTransitionSource(id: image.url, in: imageNS ?? fallbackNS)
+                                    .overlay {
+                                        // Show overlay on last thumbnail if there are more images
+                                        if index == displayImages.count - 1 && remainingCount > 0 {
+                                            Rectangle()
+                                                .fill(.black.opacity(0.6))
+                                                .cornerRadius(10)
+                                                .overlay {
+                                                    Text("+\(remainingCount)")
+                                                        .font(.headline)
+                                                        .fontWeight(.semibold)
+                                                        .foregroundStyle(.white)
+                                                }
+                                        }
+                                    }
+                            }
                         }
+                        .buttonStyle(.plain)
                     }
+                    Spacer()
+                }
             }
-            .buttonStyle(.plain)
         }
-        .frame(height: 300)
     }
-}
-
-#Preview {
-    PostGalleryView(
-        images: [
-            GalleryImage(url: "https://picsum.photos/800/600", dimensions: CGSize(width: 800, height: 600)),
-            GalleryImage(url: "https://picsum.photos/600/800", dimensions: CGSize(width: 600, height: 800)),
-            GalleryImage(url: "https://picsum.photos/700/500", dimensions: CGSize(width: 700, height: 500)),
-            GalleryImage(url: "https://picsum.photos/900/700", dimensions: CGSize(width: 900, height: 700))
-        ]
-    )
-    .padding()
 }

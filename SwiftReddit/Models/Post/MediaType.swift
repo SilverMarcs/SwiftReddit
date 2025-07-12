@@ -23,13 +23,16 @@ struct GalleryImage: Hashable, Identifiable {
 
 struct ImageModalData: Hashable {
     let images: [GalleryImage]
+    let startIndex: Int
     
-    init(images: [GalleryImage]) {
+    init(images: [GalleryImage], startIndex: Int) {
         self.images = images
+        self.startIndex = startIndex
     }
     
     init(image: GalleryImage) {
         self.images = [image]
+        self.startIndex = 0
     }
 }
 
@@ -62,12 +65,22 @@ indirect enum MediaType: Hashable {
         }
     }
     
-    var isVisualMedia: Bool {
+    var firstMediaURL: String? {
         switch self {
-        case .image, .gallery, .video, .gif, .youtube:
-            return true
-        default:
-            return false
+        case .image(let galleryImage):
+            return galleryImage.url
+        case .gallery(let images):
+            return images.first?.url
+        case .video(_, let thumbnailURL, _):
+            return thumbnailURL
+        case .youtube(_, let galleryImage):
+            return galleryImage.url
+        case .gif(let galleryImage):
+            return galleryImage.url
+        case .link(let metadata):
+            return metadata.thumbnailURL
+        case .none, .repost:
+            return nil
         }
     }
 }

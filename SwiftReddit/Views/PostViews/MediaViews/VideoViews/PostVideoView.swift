@@ -6,7 +6,7 @@ struct PostVideoView: View {
     @Namespace private var fallbackNS
     
     @AppStorage("autoplay") var autoplay: Bool = true
-    @AppStorage("muteOnPlay") var muteOnPlay: Bool = false
+    @AppStorage("muteOnPlay") var muteOnPlay: Bool = true
     
     let videoURL: String?
     let thumbnailURL: String?

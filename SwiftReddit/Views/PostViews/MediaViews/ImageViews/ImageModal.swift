@@ -11,26 +11,24 @@ struct ImageModal: View {
     let images: [GalleryImage]
     @Environment(\.imageNS) private var imageNS
     @Namespace private var fallbackNS
+    @State private var currentIndex: Int = 0
     
     private var sourceID: String {
-        images.first?.url ?? ""
-    }
-
-    
-    init(images: [GalleryImage]) {
-        self.images = images
+        guard currentIndex < images.count else { return images.first?.url ?? "" }
+        return images[currentIndex].url
     }
     
-    init(image: GalleryImage) {
-        self.images = [image]
+    init(imageData: ImageModalData) {
+        self.images = imageData.images
+        self._currentIndex = State(initialValue: imageData.startIndex)
     }
     
     var body: some View {
-        TabView {
-            ForEach(images) { galleryImage in
+        TabView(selection: $currentIndex) {
+            ForEach(Array(images.enumerated()), id: \.offset) { index, galleryImage in
                 ImageView(url: URL(string: galleryImage.url), aspectRatio: galleryImage.aspectRatio)
                     .zoomable()
-                    .tag(galleryImage.id)
+                    .tag(index)
             }
         }
         .ignoresSafeArea()

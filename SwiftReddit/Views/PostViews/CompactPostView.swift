@@ -53,10 +53,12 @@ struct CompactPostView: View {
                 
                 Spacer()
                 
-                if post.mediaType.isVisualMedia {
-                    PostMediaView(mediaType: post.mediaType)
-                        .frame(width: 60, height: 60)
-                        .allowsHitTesting(false)
+                if let url = post.mediaType.firstMediaURL, let mediaURL = URL(string: url) {
+                    ImageView(url: mediaURL)
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 70, height: 70)
+                        .cornerRadius(10)
+                        .clipped()
                 }
             }
         }

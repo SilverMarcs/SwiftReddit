@@ -20,7 +20,9 @@ extension View {
                 PostDetailView(post: post)
             }
             .navigationDestination(for: ImageModalData.self) { imageData in
-                ImageModal(images: imageData.images)
+                ImageModal(imageData: imageData)
+                    .toolbarVisibility(.hidden, for: .tabBar)
+                    .toolbarVisibility(.hidden, for: .navigationBar)
             }
             .navigationDestination(for: Destination.self) { destination in
                 switch destination {
