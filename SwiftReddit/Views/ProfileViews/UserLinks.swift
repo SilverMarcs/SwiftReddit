@@ -14,19 +14,19 @@ struct UserLinks: View {
         Section {
             HStack {
                 LinkButton(
-                    icon: "bookmark.circle.fill",
-                    title: "Saved",
-                    iconColor: .green
-                ) {
-                    nav.path.append(PostFeedType.saved)
-                }
-                
-                LinkButton(
                     icon: "tray.circle.fill",
                     title: "Inbox",
                     iconColor: .blue
                 ) {
                     nav.path.append(Destination.inbox)
+                }
+                
+                LinkButton(
+                    icon: "bookmark.circle.fill",
+                    title: "Saved",
+                    iconColor: .green
+                ) {
+                    nav.path.append(PostFeedType.saved)
                 }
             }
             .listRowBackground(Color.clear)

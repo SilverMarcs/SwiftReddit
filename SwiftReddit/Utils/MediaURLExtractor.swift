@@ -30,14 +30,15 @@ struct MediaURLExtractor {
     /// - Returns: Array of URLs that were extracted and queued for prefetching
     @discardableResult
     static func extractAndPrefetchURLs(from mediaType: MediaType) -> [URL] {
-        let urls = extractImageURLs(from: mediaType)
-        
-        if !urls.isEmpty {
-            // Prefetch immediately for individual posts
-            prefetchImages(urls: urls)
-        }
-        
-        return urls
+        return [] // TODO: come back to this
+//        let urls = extractImageURLs(from: mediaType)
+//        
+//        if !urls.isEmpty {
+//            // Prefetch immediately for individual posts
+//            prefetchImages(urls: urls)
+//        }
+//        
+//        return urls
     }
     
     /// Extract all image URLs from a MediaType

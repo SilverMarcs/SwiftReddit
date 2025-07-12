@@ -48,15 +48,36 @@ enum PostFeedType: Identifiable, Hashable {
         }
     }
     
-//    var showSubredditInfo: Bool {
-//        switch self {
-//        case .subreddit:
-//            return true
-//        case .home, .saved, .user:
-//            return false
-//        }
-//    }
-//    
+    /// Whether this feed type supports search functionality
+    var supportsSearch: Bool {
+        switch self {
+        case .subreddit:
+            return true
+        case .home, .saved, .user:
+            return false
+        }
+    }
+    
+    /// Whether this feed shows subreddit-specific content
+    var isSubredditSpecific: Bool {
+        switch self {
+        case .subreddit:
+            return true
+        case .home, .saved, .user:
+            return false
+        }
+    }
+    
+    /// Whether this feed shows user-specific content
+    var isUserSpecific: Bool {
+        switch self {
+        case .saved, .user:
+            return true
+        case .home, .subreddit:
+            return false
+        }
+    }
+    
     var subreddit: Subreddit? {
         switch self {
         case .subreddit(let subreddit):

@@ -20,30 +20,6 @@ struct Subreddit: Identifiable, Hashable {
     let color: Color?
     var isDetailed: Bool = true
     
-    /// Special instance for home feed
-    static let home = Subreddit(
-        id: "home",
-        displayName: "",
-        displayNamePrefixed: "Home",
-        iconURL: nil,
-        subscriberCount: 0,
-        isSubscribed: false,
-        publicDescription: "Your personalized home feed",
-        color: nil
-    )
-    
-    /// Direct initializer for creating Subreddit instances
-    init(id: String, displayName: String, displayNamePrefixed: String, iconURL: String?, subscriberCount: Int, isSubscribed: Bool, publicDescription: String, color: Color?) {
-        self.id = id
-        self.displayName = displayName
-        self.displayNamePrefixed = displayNamePrefixed
-        self.iconURL = iconURL
-        self.subscriberCount = subscriberCount
-        self.isSubscribed = isSubscribed
-        self.publicDescription = publicDescription
-        self.color = color
-    }
-    
     /// Convenience initializer that extracts necessary properties from SubredditData
     init(data: SubredditData) {
         self.id = data.id
@@ -110,18 +86,6 @@ struct Subreddit: Identifiable, Hashable {
         self.color = nil
         self.isDetailed = false
     }
-    
-    /// Convenience initializer for basic subreddit info when sr_detail is not available
-//    init(displayName: String, displayNamePrefixed: String?) {
-//        self.id = displayName
-//        self.displayName = displayName
-//        self.displayNamePrefixed = displayNamePrefixed ?? "r/\(displayName)"
-//        self.iconURL = nil
-//        self.subscriberCount = 0
-//        self.isSubscribed = false
-//        self.publicDescription = ""
-//        self.color = nil
-//    }
     
     /// Helper method to validate and convert key_color to SwiftUI Color
     private static func validateColor(from keyColor: String?) -> Color? {
