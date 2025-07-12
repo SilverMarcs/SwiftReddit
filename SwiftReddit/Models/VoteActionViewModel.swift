@@ -23,14 +23,19 @@ import SwiftUI
         // Optimistically update the UI
         switch action {
         case .up:
-            likes = (likes == true) ? nil : true
-            upsCount += (likes == true) ? (initialLikes == nil ? 1 : -1) : -1
+            withAnimation {
+                likes = (likes == true) ? nil : true
+                upsCount += (likes == true) ? (initialLikes == nil ? 1 : -1) : -1
+            }
         case .down:
-            likes = (likes == false) ? nil : false
-            upsCount += (likes == false) ? (initialLikes == nil ? -1 : 1) : 1
+            withAnimation {
+                likes = (likes == false) ? nil : false
+                upsCount += (likes == false) ? (initialLikes == nil ? -1 : 1) : 1
+            }
         case .none:
             break
         }
+        
         Task {
             let success: Bool?
             switch targetType {

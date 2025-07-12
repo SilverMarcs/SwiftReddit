@@ -40,7 +40,7 @@ struct PostGalleryView: View {
                 let displayImages = Array(remainingImages.prefix(3))
                 let remainingCount = remainingImages.count - displayImages.count
                 
-                HStack(alignment: .top, spacing: 4) {
+                HStack(spacing: 4) {
                     ForEach(Array(displayImages.enumerated()), id: \.offset) { index, image in
                         Button {
                             nav.path.append(ImageModalData(images: images, startIndex: index + 1))
@@ -70,7 +70,6 @@ struct PostGalleryView: View {
                         }
                         .buttonStyle(.plain)
                     }
-                    Spacer()
                 }
             }
         }

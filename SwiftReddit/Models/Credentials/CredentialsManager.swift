@@ -9,12 +9,12 @@ import Foundation
 import SwiftUI
 
 @Observable class CredentialsManager {
-    static let shared = CredentialsManager()
+    @ObservationIgnored static let shared = CredentialsManager()
     
-    private let keychainManager = KeychainManager.shared
-    private let credentialsKey = "reddit_credentials" // Plural for multiple accounts
-    private let activeCredentialKey = "active_reddit_credential_id"
-    private let legacyCredentialKey = "reddit_credential" // For backward compatibility
+    @ObservationIgnored private let keychainManager = KeychainManager.shared
+    @ObservationIgnored private let credentialsKey = "reddit_credentials" // Plural for multiple accounts
+    @ObservationIgnored private let activeCredentialKey = "active_reddit_credential_id"
+    @ObservationIgnored private let legacyCredentialKey = "reddit_credential" // For backward compatibility
     
     // Multiple credentials support
     var credentials: [RedditCredential] = []
