@@ -32,6 +32,7 @@ struct UserSubredditsView: View {
             
             if isLoading {
                 LoadingIndicator()
+                    .id(UUID())
             } else {
                 ForEach(sortedSectionKeys, id: \.self) { letter in
                     Section(letter) {
@@ -69,6 +70,18 @@ struct UserSubredditsView: View {
             }
         }
         #endif
+    }
+    
+    // Group subreddits alphabetically
+    private var groupedSubreddits: [String: [Subreddit]] {
+        Dictionary(grouping: subreddits) { subreddit in
+            String(subreddit.displayName.prefix(1).uppercased())
+        }
+    }
+    
+    // Get sorted section keys
+    private var sortedSectionKeys: [String] {
+        groupedSubreddits.keys.sorted()
     }
     
     private func fetchSubreddits() async {

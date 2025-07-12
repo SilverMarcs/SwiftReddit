@@ -27,16 +27,16 @@ struct SearchView: View {
         List {
             if isLoading {
                 LoadingIndicator()
-            } else {
-                switch searchScope {
-                case .subreddits:
-                    ForEach(subredditResults) { subreddit in
-                        SubredditRowView(subreddit: subreddit)
-                    }
-                case .posts:
-                    ForEach(postResults) { post in
-                        CompactPostView(post: post)
-                    }
+            }
+
+            switch searchScope {
+            case .subreddits:
+                ForEach(subredditResults) { subreddit in
+                    SubredditRowView(subreddit: subreddit)
+                }
+            case .posts:
+                ForEach(postResults) { post in
+                    CompactPostView(post: post)
                 }
             }
         }

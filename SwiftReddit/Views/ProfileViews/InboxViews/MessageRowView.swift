@@ -63,6 +63,7 @@ struct MessageRowView: View {
                     }
                 }
             }
+            .contentShape(.rect)
         }
         .buttonStyle(.plain)
     }
