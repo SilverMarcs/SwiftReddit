@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 /// Manages data loading for post detail and comments
 @Observable class PostDetailDataSource {
@@ -14,9 +15,10 @@ import Foundation
     private(set) var visibleComments: [Comment] = []
     private(set) var collapsedCommentIds: Set<String> = []
     private(set) var isLoading = true
+    var sortOption: CommentSortOption = .confidence
+    var scrollPosition = ScrollPosition(idType: Comment.ID.self)
     
     private let postNavigation: PostNavigation
-    private var sortOption: CommentSortOption = .confidence
     var onCommentsLoaded: ((String?) -> Void)?
     
     init(post: Post) {
@@ -28,12 +30,9 @@ import Foundation
         self.postNavigation = postNavigation
     }
     
-    func updateSort(_ sort: CommentSortOption) async {
-        if sortOption != sort {
-            sortOption = sort
-            allComments = []
-            visibleComments = []
-        }
+    func updateSort() async {
+        allComments = []
+        visibleComments = []
         
         // Load if we don't have a post or if comments are empty
         if post == nil || allComments.isEmpty {
@@ -83,6 +82,14 @@ import Foundation
             
             // Notify that comments are loaded for scroll handling
             onCommentsLoaded?(postNavigation.commentId)
+            
+            // Handle scroll positioning if we have a specific comment to scroll to
+            if let commentId = postNavigation.commentId {
+                try? await Task.sleep(nanoseconds: 250_000_000)
+                withAnimation {
+                    scrollPosition = .init(id: commentId, anchor: .bottom)
+                }
+            }
         } else {
             print("PostDetailDataSource: Failed to fetch post with comments")
         }

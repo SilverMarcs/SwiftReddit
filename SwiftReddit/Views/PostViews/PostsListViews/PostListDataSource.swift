@@ -12,28 +12,16 @@ import Foundation
     private(set) var posts: [Post] = []
     private(set) var isLoading = false
     private(set) var after: String?
+    var currentSort: SubListingSortOption = .best
     
     private let feedType: PostFeedType
-    private var currentSort: SubListingSortOption = .best
     
     init(feedType: PostFeedType) {
         self.feedType = feedType
     }
     
-    func updateSort(_ sort: SubListingSortOption) async {
-        guard feedType.canSort else { return }
-        
-        if currentSort != sort {
-            currentSort = sort
-            posts = []
-            after = nil
-        }
-        
-        await loadInitialPosts()
-    }
-    
     func loadInitialPosts() async {
-        guard !isLoading && posts.isEmpty else { return }
+        guard !isLoading else { return }
         
         isLoading = true
         await fetchPosts(isRefresh: true)

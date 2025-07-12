@@ -10,7 +10,6 @@ import SwiftUI
 struct PostsList: View {
     @Environment(Nav.self) private var nav
     @State private var dataSource: PostListDataSource
-    @State private var selectedSort: SubListingSortOption = .best
     
     private let feedType: PostFeedType
     
@@ -59,11 +58,18 @@ struct PostsList: View {
         .refreshable {
             await dataSource.refreshPosts()
         }
-        .task(id: selectedSort) {
-            await dataSource.updateSort(selectedSort)
+        .task {
+            if dataSource.posts.isEmpty {
+                await dataSource.loadInitialPosts()
+            }
+        }
+        .onChange(of: dataSource.currentSort) {
+            Task {
+                await dataSource.loadInitialPosts()
+            }
         }
         .toolbar {
-            PostListToolbar(feedType: feedType, selectedSort: $selectedSort)
+            PostListToolbar(feedType: feedType, selectedSort: $dataSource.currentSort)
         }
     }
 }

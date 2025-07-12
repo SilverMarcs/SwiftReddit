@@ -11,8 +11,6 @@ struct PostDetailView: View {
     @Environment(Nav.self) var nav
     
     @State private var dataSource: PostDetailDataSource
-    @State private var sortOption: CommentSortOption = .confidence
-    @State var scrollPosition = ScrollPosition(idType: Comment.ID.self)
     @State private var showCommentSheet = false
     
     init(post: Post) {
@@ -72,9 +70,16 @@ struct PostDetailView: View {
             .scenePadding(.bottom)
             .scrollTargetLayout()
         }
-        .scrollPosition($scrollPosition)
-        .task(id: sortOption) {
-            await dataSource.updateSort(sortOption)
+        .scrollPosition($dataSource.scrollPosition)
+        .task {
+            if dataSource.allComments.isEmpty {
+                await dataSource.loadComments()
+            }
+        }
+        .onChange(of: dataSource.sortOption) {
+            Task {
+                await dataSource.loadComments()
+            }
         }
         .refreshable {
             await dataSource.loadComments()
@@ -87,14 +92,14 @@ struct PostDetailView: View {
                 Menu {
                     ForEach(CommentSortOption.allCases, id: \.self) { option in
                         Button {
-                            sortOption = option
+                            dataSource.sortOption = option
                         } label: {
                             Label(option.displayName, systemImage: option.iconName)
                                 .tag(option)
                         }
                     }
                 } label: {
-                    Label("Sort by", systemImage: sortOption.iconName)
+                    Label("Sort by", systemImage: dataSource.sortOption.iconName)
                         .labelStyle(.iconOnly)
                 }
                 .tint(.accent)
@@ -104,19 +109,6 @@ struct PostDetailView: View {
             if let post = dataSource.post {
                 ReplySheet(parentId: post.id, isTopLevel: true) { text, postId in
                     dataSource.addOptimisticTopLevelComment(text: text, postId: postId)
-                }
-            }
-        }
-        .onAppear {
-            // Set up callback for handling scroll after comments load
-            dataSource.onCommentsLoaded = { commentId in
-                if let commentId = commentId {
-                    Task {
-                        try? await Task.sleep(nanoseconds: 250_000_000)
-                        withAnimation {
-                            scrollPosition = .init(id: commentId, anchor: .bottom)
-                        }
-                    }
                 }
             }
         }
