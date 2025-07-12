@@ -19,7 +19,6 @@ import SwiftUI
     var scrollPosition = ScrollPosition(idType: Comment.ID.self)
     
     @ObservationIgnored private let postNavigation: PostNavigation
-    @ObservationIgnored var onCommentsLoaded: ((String?) -> Void)?
     
     init(post: Post) {
         self.postNavigation = PostNavigation(from: post)
@@ -80,14 +79,12 @@ import SwiftUI
             allComments = fetchedComments
             updateVisibleComments()
             
-            // Notify that comments are loaded for scroll handling
-            onCommentsLoaded?(postNavigation.commentId)
-            
-            // Handle scroll positioning if we have a specific comment to scroll to
             if let commentId = postNavigation.commentId {
-                try? await Task.sleep(nanoseconds: 250_000_000)
-                withAnimation {
-                    scrollPosition = .init(id: commentId, anchor: .bottom)
+                Task {
+                    try? await Task.sleep(nanoseconds: 250_000_000)
+                    withAnimation {
+                        scrollPosition.scrollTo(id: commentId, anchor: .bottom)
+                    }
                 }
             }
         } else {
