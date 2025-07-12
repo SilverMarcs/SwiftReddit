@@ -14,47 +14,47 @@ enum AppLogger {
     private static let baseLogger = Logger(subsystem: subsystem, category: "api")
     
     static func info(_ message: String) {
-        guard Config.shared.printDebug else { return }
+        
         baseLogger.info("\(message)")
     }
     
     static func notice(_ message: String) {
-        guard Config.shared.printDebug else { return }
+        
         baseLogger.notice("\(message)")
     }
     
     static func trace(_ message: String) {
-        guard Config.shared.printDebug else { return }
+        
         baseLogger.trace("\(message)")
     }
     
     static func debug(_ message: String) {
-        guard Config.shared.printDebug else { return }
+        
         baseLogger.debug("\(message)")
     }
     
     static func error(_ message: String) {
-//        guard Config.shared.printDebug else { return }
+//        
         baseLogger.error("\(message)")
     }
     
     static func warning(_ message: String) {
-//        guard Config.shared.printDebug else { return }
+//        
         baseLogger.warning("\(message)")
     }
     
     static func critical(_ message: String) {
-//        guard Config.shared.printDebug else { return }
+//        
         baseLogger.critical("\(message)")
     }
     
     static func fault(_ message: String) {
-//        guard Config.shared.printDebug else { return }
+//        
         baseLogger.fault("\(message)")
     }
     
     static func log(level: OSLogType, _ message: String) {
-        guard Config.shared.printDebug else { return }
+        
         baseLogger.log(level: level, "\(message)")
     }
     
@@ -77,7 +77,7 @@ enum AppLogger {
             AppLogger.critical("Decoding error: \(error.localizedDescription)")
         }
         
-        guard Config.shared.printDebug else { return }
+        
         
         guard let json = try? JSONSerialization.jsonObject(with: data),
               let prettyPrintedData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted),

@@ -45,10 +45,6 @@ extension RedditAPI {
         
         return listingResponse.data.children.compactMap { child -> Subreddit? in
             guard child.kind == "t5" else { return nil }
-            
-            if !Config.shared.allowNSFW && child.data.over18 == true {
-                return nil
-            }
             return Subreddit(data: child.data)
         }
     }
@@ -80,10 +76,6 @@ extension RedditAPI {
         
         return listingResponse.data.children.compactMap { child -> Post? in
             guard child.kind == "t3" else { return nil }
-            
-            if !Config.shared.allowNSFW && child.data.over_18 == true {
-                return nil
-            }
             return Post(from: child.data)
         }
     }

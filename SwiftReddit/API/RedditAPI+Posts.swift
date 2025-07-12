@@ -68,10 +68,6 @@ extension RedditAPI {
         
         let posts = listingResponse.data.children.compactMap { child -> Post? in
             guard child.kind == "t3" else { return nil }
-            // Filter out NSFW posts based on config setting
-            if !Config.shared.allowNSFW && child.data.over_18 == true {
-                return nil
-            }
             return Post(from: child.data)
         }
         

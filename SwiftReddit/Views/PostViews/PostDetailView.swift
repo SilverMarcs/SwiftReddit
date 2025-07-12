@@ -219,8 +219,10 @@ struct PostDetailView: View {
         allFlatComments.insert(optimisticFlatComment, at: allFlatComments.firstIndex(where: { $0.id == parentId })! + 1)
         
         // Scroll to the new comment
-        withAnimation {
-            scrollPosition = .init(id: fakeId)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            withAnimation {
+                scrollPosition = .init(id: fakeId)
+            }
         }
         
         // Fire off the network request in the background
@@ -246,8 +248,10 @@ struct PostDetailView: View {
         allFlatComments.insert(optimisticFlatComment, at: 0)
         
         // Scroll to the new comment with animation
-        withAnimation {
-            scrollPosition = .init(id: fakeId)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            withAnimation {
+                scrollPosition = .init(id: fakeId)
+            }
         }
         
         // Fire off the network request in the background

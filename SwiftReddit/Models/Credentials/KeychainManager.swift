@@ -34,7 +34,7 @@ final class KeychainManager {
         ]
         
         var dataTypeRef: AnyObject?
-        let status = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
+        let status = unsafe SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
         
         if status == noErr {
             if let data = dataTypeRef as? Data {

@@ -5,7 +5,9 @@ struct PostVideoView: View {
     @Environment(\.videoNS) private var videoNS
     @Namespace private var fallbackNS
     
-    @ObservedObject private var config = Config.shared
+    @AppStorage("autoplay") var autoplay: Bool = true
+    @AppStorage("muteOnPlay") var muteOnPlay: Bool = false
+    
     let videoURL: String?
     let thumbnailURL: String?
     let dimensions: CGSize?
@@ -47,13 +49,13 @@ struct PostVideoView: View {
             playerItem.preferredPeakBitRate = 2_000_000
             
             let queuePlayer = AVQueuePlayer(playerItem: playerItem)
-            queuePlayer.isMuted = config.muteOnPlay
+            queuePlayer.isMuted = muteOnPlay
             
             // Use AVPlayerLooper instead of notification
             playerLooper = AVPlayerLooper(player: queuePlayer, templateItem: playerItem)
             player = queuePlayer
             
-            if config.autoplay {
+            if autoplay {
                 queuePlayer.play()
             }
         } catch {

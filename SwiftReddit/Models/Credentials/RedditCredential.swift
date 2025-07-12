@@ -9,10 +9,6 @@ import Foundation
 import SwiftUI
 
 struct RedditCredential: Identifiable, Equatable, Hashable, Codable {
-    enum CodingKeys: String, CodingKey { 
-        case id, apiAppID, apiAppSecret, accessToken, refreshToken, userName, profilePicture 
-    }
-    
     var id: UUID
     var apiAppID: String { 
         willSet { 

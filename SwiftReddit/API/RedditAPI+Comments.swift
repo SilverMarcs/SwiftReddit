@@ -35,12 +35,7 @@ extension RedditAPI {
         // Extract post data
         let post: Post?
         if let postData = response.postListing.data.children.first?.data {
-            // Filter out NSFW posts based on config setting
-            if !Config.shared.allowNSFW && postData.over_18 == true {
-                post = nil
-            } else {
-                post = Post(from: postData)
-            }
+            post = Post(from: postData)
         } else {
             post = nil
         }

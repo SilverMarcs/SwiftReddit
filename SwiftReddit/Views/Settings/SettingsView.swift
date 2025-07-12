@@ -10,9 +10,11 @@ import Kingfisher
 
 struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
-    @ObservedObject private var config = Config.shared
     @State private var deleteAlertPresented = false
     @State private var cacheSize: String = "Calculating..."
+    
+    @AppStorage("autoplay") var autoplay: Bool = true
+    @AppStorage("muteOnPlay") var muteOnPlay: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -23,26 +25,16 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section("Content Preference") {
-                    Toggle(isOn: $config.allowNSFW) {
-                        Label("Allow NSFW Content", systemImage: "eye.slash.fill")
-                    }
-                }
-                
                 Section("Playback Settings") {
-                    Toggle(isOn: $config.autoplay) {
+                    Toggle(isOn: $autoplay) {
                         Label("Autoplay Videos", systemImage: "play.fill")
                     }
-                    Toggle(isOn: $config.muteOnPlay) {
+                    Toggle(isOn: $muteOnPlay) {
                         Label("Mute on Play", systemImage: "speaker.slash.fill")
                     }
                 }
                 
                 Section("Debug") {
-                    Toggle(isOn: $config.printDebug) {
-                        Label("Print Debug Info", systemImage: "terminal.fill")
-                    }
-                    
                     Button {
                         deleteAlertPresented = true
                     } label: {
@@ -94,7 +86,7 @@ struct SettingsView: View {
             Task { @MainActor in
                 switch result {
                 case .success(let size):
-                    self.cacheSize = String(format: "%.2f MB", Double(size) / 1024 / 1024)
+                    self.cacheSize = unsafe String(format: "%.2f MB", Double(size) / 1024 / 1024)
                 case .failure:
                     self.cacheSize = "Unknown"
                 }
