@@ -14,20 +14,22 @@ import Foundation
     private(set) var after: String?
     
     private let feedType: PostFeedType
-    private var selectedSort: SubListingSortOption = .best
+    private var currentSort: SubListingSortOption = .best
     
     init(feedType: PostFeedType) {
         self.feedType = feedType
     }
     
-    func updateSort(_ sort: SubListingSortOption) {
+    func updateSort(_ sort: SubListingSortOption) async {
         guard feedType.canSort else { return }
         
-        if selectedSort != sort {
-            selectedSort = sort
+        if currentSort != sort {
+            currentSort = sort
             posts = []
             after = nil
         }
+        
+        await loadInitialPosts()
     }
     
     func loadInitialPosts() async {
@@ -52,7 +54,7 @@ import Foundation
     
     private func fetchPosts(isRefresh: Bool) async {
         let afterParam = isRefresh ? nil : after
-        let sortParam = feedType.canSort ? selectedSort : .best
+        let sortParam = feedType.canSort ? currentSort : .best
         
         let result = await RedditAPI.shared.fetchPosts(
             for: feedType,

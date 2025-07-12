@@ -37,7 +37,6 @@ struct PostsList: View {
             }
             .listRowSeparator(.hidden)
             
-            // Inline load more trigger
             Color.clear
                 .frame(height: 1)
                 .onAppear {
@@ -51,6 +50,7 @@ struct PostsList: View {
             
             if dataSource.isLoading {
                 LoadingIndicator()
+                    .id(UUID())
             }
         }
         .listStyle(.plain)
@@ -60,8 +60,7 @@ struct PostsList: View {
             await dataSource.refreshPosts()
         }
         .task(id: selectedSort) {
-            dataSource.updateSort(selectedSort)
-            await dataSource.loadInitialPosts()
+            await dataSource.updateSort(selectedSort)
         }
         .toolbar {
             PostListToolbar(feedType: feedType, selectedSort: $selectedSort)
