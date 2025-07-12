@@ -13,14 +13,12 @@ struct HomeTab: View {
     var body: some View {
         NavigationStack(path: $path) {
             PostsList(feedType: .home)
-                .environment(\.appendToPath, { value in
-                     path.append(value)
-                 })
-                .navigationDestinations()
+                .navigationDestinations(append: { value in
+                    path.append(value)
+                })
         }
     }
 }
-
 #Preview {
     HomeTab()
 }

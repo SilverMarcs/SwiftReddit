@@ -13,10 +13,9 @@ struct SearchTab: View {
     var body: some View {
         NavigationStack(path: $path) {
             SearchView()
-                .environment(\.appendToPath, { value in
-                     path.append(value)
-                 })
-                .navigationDestinations()
+                .navigationDestinations(append: { value in
+                    path.append(value)
+                })
         }
     }
 }

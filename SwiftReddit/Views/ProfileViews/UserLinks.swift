@@ -18,7 +18,7 @@ struct UserLinks: View {
                     title: "Inbox",
                     iconColor: .blue
                 ) {
-                    appendToPath(Destination.inbox)
+                    appendToPath(InboxDestination())
                 }
                 
                 LinkButton(

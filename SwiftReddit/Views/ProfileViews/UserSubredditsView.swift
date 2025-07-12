@@ -14,18 +14,6 @@ struct UserSubredditsView: View {
     @State private var isLoading = false
     @State private var showSettings = false
     
-    // Group subreddits alphabetically
-    private var groupedSubreddits: [String: [Subreddit]] {
-        Dictionary(grouping: subreddits) { subreddit in
-            String(subreddit.displayName.prefix(1).uppercased())
-        }
-    }
-    
-    // Get sorted section keys
-    private var sortedSectionKeys: [String] {
-        groupedSubreddits.keys.sorted()
-    }
-    
     var body: some View {
         List {
             UserLinks()

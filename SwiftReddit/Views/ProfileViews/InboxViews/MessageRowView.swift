@@ -16,7 +16,7 @@ struct MessageRowView: View {
             if let postNavigation = message.postNavigation {
                 appendToPath(postNavigation)
             } else {
-                appendToPath(Destination.message(message))
+                appendToPath(message)
             }
         } label: {
             HStack(alignment: .top) {

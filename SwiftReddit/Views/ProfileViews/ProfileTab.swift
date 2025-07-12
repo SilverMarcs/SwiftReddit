@@ -13,11 +13,9 @@ struct ProfileTab: View {
     var body: some View {
         NavigationStack(path: $path) {
             UserSubredditsView()
-                .environment(\.appendToPath, { value in
-                     path.append(value)
-                 })
-                .navigationDestinations()
-
+                .navigationDestinations(append: { value in
+                    path.append(value)
+                })
         }
     }
 }
