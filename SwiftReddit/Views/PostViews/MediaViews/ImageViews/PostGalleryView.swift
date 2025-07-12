@@ -9,40 +9,45 @@ import SwiftUI
 
 struct PostGalleryView: View {
     @Environment(\.imageNS) private var imageNS
+    @Environment(Nav.self) private var nav
     @Namespace private var fallbackNS
     
     let images: [GalleryImage]
     
     var body: some View {
         HStack(spacing: 4) {
-            ImageView(url: URL(string: images[0].url), aspectRatio: images[0].aspectRatio)
-                .matchedGeometryEffect(id: images[0].url, in: imageNS ?? fallbackNS)
-                .cornerRadius(12)
-                .clipped()
-                .frame(maxHeight: 300)
-                .onTapGesture {
-                    ImageOverlayViewModel.shared.present(images: images)
-                }
+            Button {
+                nav.path.append(ImageModalData(images: images))
+            } label: {
+                ImageView(url: URL(string: images[0].url), aspectRatio: images[0].aspectRatio)
+//                    .matchedGeometryEffect(id: images[0].url, in: imageNS ?? fallbackNS)
+                    .matchedTransitionSource(id: images[0].url, in: imageNS ?? fallbackNS)
+                    .cornerRadius(12)
+                    .clipped()
+            }
+            .buttonStyle(.plain)
             
             // TODO: make clickable and show more
-            ImageView(url: URL(string: images[1].url), aspectRatio: images[1].aspectRatio)
-                .cornerRadius(12)
-                .clipped()
-                .frame(maxWidth: .infinity, maxHeight: 300)
-                .overlay {
-                    if images.count > 2 {
-                        Color.black.opacity(0.5)
-                        
-                        Text("+\(images.count - 2)")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .foregroundStyle(.white)
+            Button {
+                nav.path.append(ImageModalData(images: images))
+            } label: {
+                ImageView(url: URL(string: images[1].url), aspectRatio: images[1].aspectRatio)
+                    .cornerRadius(12)
+                    .clipped()
+                    .overlay {
+                        if images.count > 2 {
+                            Color.black.opacity(0.5)
+                            
+                            Text("+\(images.count - 2)")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .foregroundStyle(.white)
+                        }
                     }
-                }
-                .onTapGesture {
-                    ImageOverlayViewModel.shared.present(images: images)
-                }
+            }
+            .buttonStyle(.plain)
         }
+        .frame(height: 300)
     }
 }
 
