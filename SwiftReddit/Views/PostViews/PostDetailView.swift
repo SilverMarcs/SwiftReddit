@@ -13,18 +13,18 @@ struct PostDetailView: View {
     let postNavigation: PostNavigation
     
     @State private var post: Post?
-    @State private var allFlatComments: [FlatComment] = [] // Store all comments
-    @State private var visibleFlatComments: [FlatComment] = [] // Filtered comments for display
+    @State private var allComments: [Comment] = [] // Store all comments
+    @State private var visibleComments: [Comment] = [] // Filtered comments for display
     @State private var collapsedCommentIds: Set<String> = []
     @State private var isLoading = true
     @State private var sortOption: CommentSortOption = .confidence {
         didSet {
-            allFlatComments = []
-            visibleFlatComments = []
+            allComments = []
+            visibleComments = []
         }
     }
     
-    @State var scrollPosition = ScrollPosition(idType: FlatComment.ID.self)
+    @State var scrollPosition = ScrollPosition(idType: Comment.ID.self)
     @State private var showCommentSheet = false
     
     init(post: Post) {
@@ -51,28 +51,26 @@ struct PostDetailView: View {
                 }
                 
                 if isLoading {
-                    ProgressView()
-                        .controlSize(.large)
-                        .frame(maxWidth: .infinity, minHeight: 200)
+                    LoadingIndicator()
                     
-                } else if !visibleFlatComments.isEmpty {
+                } else if !visibleComments.isEmpty {
                     Text("Comments")
                         .font(.title2)
                         .fontWeight(.bold)
                         .padding(.vertical, 10)
 
-                    ForEach(visibleFlatComments) { comment in
+                    ForEach(visibleComments) { comment in
                         VStack(spacing: 8) {
-                            if comment.depth == 0 && comment.id != visibleFlatComments.first?.id {
+                            if comment.depth == 0 && comment.id != visibleComments.first?.id {
                                 Rectangle()
                                     .fill(.background.secondary)
                                     .frame(height: 6)
                                     .padding(.horizontal, -15)
-                            } else if comment.id != visibleFlatComments.first?.id {
+                            } else if comment.id != visibleComments.first?.id {
                                 Divider()
                             }
                             
-                            FlatCommentView(
+                            CommentView(
                                 comment: comment,
                                 isCollapsed: collapsedCommentIds.contains(comment.id)
                             ) { commentId in
@@ -90,7 +88,7 @@ struct PostDetailView: View {
         .scrollPosition($scrollPosition)
         .task(id: sortOption) {
             // Load if we don't have a post or if comments are empty
-            if post == nil || allFlatComments.isEmpty {
+            if post == nil || allComments.isEmpty {
                 await loadComments()
             }
         }
@@ -157,14 +155,14 @@ struct PostDetailView: View {
             sort: sortOption
         ) {
             // Extract post, flat comments, and after token
-            let (fetchedPost, fetchedFlatComments, _) = result
+            let (fetchedPost, fetchedComments, _) = result
             
             // Update post if we didn't have it before
             if let fetchedPost = fetchedPost {
                 post = fetchedPost
             }
             
-            allFlatComments = fetchedFlatComments
+            allComments = fetchedComments
             updateVisibleComments()
             
             // Scroll to specific comment if coming from inbox
@@ -181,7 +179,7 @@ struct PostDetailView: View {
     }
     
     private func updateVisibleComments() {
-        visibleFlatComments = FlatComment.applyCollapseState(to: allFlatComments, collapsedIds: collapsedCommentIds)
+        visibleComments = Comment.applyCollapseState(to: allComments, collapsedIds: collapsedCommentIds)
     }
     
     private func toggleCommentCollapse(_ commentId: String) {
@@ -197,16 +195,16 @@ struct PostDetailView: View {
     private func addOptimisticComment(text: String, parentId: String) {
         let fakeId = "temp_\(UUID().uuidString)"
         
-        // Find the parent comment in visibleFlatComments to get its depth
-        guard let parentIndex = visibleFlatComments.firstIndex(where: { $0.id == parentId }) else {
+        // Find the parent comment in visibleComments to get its depth
+        guard let parentIndex = visibleComments.firstIndex(where: { $0.id == parentId }) else {
             print("Could not find parent comment with id: \(parentId)")
             return
         }
         
-        let parentComment = visibleFlatComments[parentIndex]
+        let parentComment = visibleComments[parentIndex]
         
         // Create optimistic flat comment
-        let optimisticFlatComment = FlatComment(
+        let optimisticComment = Comment(
             id: fakeId,
             author: CredentialsManager.shared.credential?.userName ?? "You",
             body: text,
@@ -215,8 +213,8 @@ struct PostDetailView: View {
         )
         
         // Insert the new comment right after the parent comment
-        visibleFlatComments.insert(optimisticFlatComment, at: parentIndex + 1)
-        allFlatComments.insert(optimisticFlatComment, at: allFlatComments.firstIndex(where: { $0.id == parentId })! + 1)
+        visibleComments.insert(optimisticComment, at: parentIndex + 1)
+        allComments.insert(optimisticComment, at: allComments.firstIndex(where: { $0.id == parentId })! + 1)
         
         // Scroll to the new comment
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -235,7 +233,7 @@ struct PostDetailView: View {
         let fakeId = "temp_\(UUID().uuidString)"
         
         // Create optimistic top-level comment
-        let optimisticFlatComment = FlatComment(
+        let optimisticComment = Comment(
             id: fakeId,
             author: CredentialsManager.shared.credential?.userName ?? "You",
             body: text,
@@ -244,8 +242,8 @@ struct PostDetailView: View {
         )
         
         // Insert the new comment at the top of the list
-        visibleFlatComments.insert(optimisticFlatComment, at: 0)
-        allFlatComments.insert(optimisticFlatComment, at: 0)
+        visibleComments.insert(optimisticComment, at: 0)
+        allComments.insert(optimisticComment, at: 0)
         
         // Scroll to the new comment with animation
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {

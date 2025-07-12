@@ -1,5 +1,5 @@
 //
-//  FlatCommentActionsView.swift
+//  CommentActionsView.swift
 //  SwiftReddit
 //
 //  Created by Zabir Raihan on 11/07/2025.
@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-struct FlatCommentActionsView: View {
-    let comment: FlatComment
+struct CommentActionsView: View {
+    let comment: Comment
     private var viewModel: VoteActionViewModel
     
-    init(comment: FlatComment) {
+    init(comment: Comment) {
         self.comment = comment
         viewModel = VoteActionViewModel(item: comment, targetType: .comment)
     }

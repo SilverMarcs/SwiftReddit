@@ -1,5 +1,5 @@
 //
-//  FlatCommentView.swift
+//  CommentView.swift
 //  SwiftReddit
 //
 //  Created by Zabir Raihan on 11/07/2025.
@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct FlatCommentView: View {
-    let comment: FlatComment
+struct CommentView: View {
+    let comment: Comment
     let isCollapsed: Bool
     let onToggleCollapse: (String) -> Void
     
@@ -33,13 +33,13 @@ struct FlatCommentView: View {
                             .frame(width: CGFloat((comment.depth - 1) * 12))
                     }
                     Rectangle()
-                        .fill(FlatComment.colorForDepth(comment.depth))
+                        .fill(Comment.colorForDepth(comment.depth))
                         .frame(width: 2)
                         .padding(.trailing, 9)
                 }
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    FlatCommentHeader(comment: comment)
+                    CommentHeader(comment: comment)
                     
                     if !isCollapsed {
                         Text(LocalizedStringKey(comment.body))

@@ -30,10 +30,7 @@ struct UserSubredditsView: View {
             UserLinks()
             
             if isLoading {
-                ProgressView()
-                    .controlSize(.large)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .listRowSeparator(.hidden)
+                LoadingIndicator()
             } else {
                 ForEach(sortedSectionKeys, id: \.self) { letter in
                     Section(letter) {

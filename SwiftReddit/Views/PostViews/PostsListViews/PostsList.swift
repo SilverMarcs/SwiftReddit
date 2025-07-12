@@ -37,14 +37,17 @@ struct PostsList: View {
             }
             .listRowSeparator(.hidden)
             
-            LoadMoreTrigger(
-                isLoading: dataSource.isLoading,
-                hasMore: dataSource.after != nil
-            ) {
-                Task {
-                    await dataSource.loadMorePosts()
+            // Inline load more trigger
+            Color.clear
+                .frame(height: 1)
+                .onAppear {
+                    if !dataSource.isLoading && dataSource.after != nil {
+                        Task {
+                            await dataSource.loadMorePosts()
+                        }
+                    }
                 }
-            }
+                .listRowSeparator(.hidden)
             
             if dataSource.isLoading {
                 LoadingIndicator()
@@ -63,24 +66,5 @@ struct PostsList: View {
         .toolbar {
             PostListToolbar(feedType: feedType, selectedSort: $selectedSort)
         }
-    }
-}
-
-// MARK: - Supporting Views
-
-struct LoadMoreTrigger: View {
-    let isLoading: Bool
-    let hasMore: Bool
-    let onLoadMore: () -> Void
-    
-    var body: some View {
-        Color.clear
-            .frame(height: 1)
-            .onAppear {
-                if !isLoading && hasMore {
-                    onLoadMore()
-                }
-            }
-            .listRowSeparator(.hidden)
     }
 }

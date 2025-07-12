@@ -1,5 +1,5 @@
 //
-//  FlatCommentHeader.swift
+//  CommentHeader.swift
 //  SwiftReddit
 //
 //  Created by Zabir Raihan on 11/07/2025.
@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct FlatCommentHeader: View {
-    let comment: FlatComment
+struct CommentHeader: View {
+    let comment: Comment
     
     var body: some View {
         HStack {
@@ -62,7 +62,7 @@ struct FlatCommentHeader: View {
             
             Spacer()
             
-            FlatCommentActionsView(comment: comment)
+            CommentActionsView(comment: comment)
         }
     }
 }

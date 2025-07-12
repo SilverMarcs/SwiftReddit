@@ -1,5 +1,5 @@
 //
-//  FlatComment.swift
+//  Comment.swift
 //  SwiftReddit
 //
 //  Created by Zabir Raihan on 11/07/2025.
@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// Flattened comment for list display
-struct FlatComment: Identifiable, Hashable, Votable {
+struct Comment: Identifiable, Hashable, Votable {
     let id: String
     let author: String
     let body: String
@@ -69,7 +69,7 @@ struct FlatComment: Identifiable, Hashable, Votable {
         self.childIds = childIds
     }
     
-    // Add this initializer to FlatComment struct
+    // Add this initializer to Comment struct
     init(id: String,
          author: String,
          body: String,
@@ -97,9 +97,9 @@ struct FlatComment: Identifiable, Hashable, Votable {
         self.childIds = []
     }
     
-    /// Flatten CommentData directly into FlatComment array for optimal performance
-    static func flattenCommentData(_ commentDataArray: [CommentData]) -> [FlatComment] {
-        var result: [FlatComment] = []
+    /// Flatten CommentData directly into Comment array for optimal performance
+    static func flattenCommentData(_ commentDataArray: [CommentData]) -> [Comment] {
+        var result: [Comment] = []
         
         func collectChildIds(from commentData: CommentData) -> [String] {
             guard case .listing(let listing) = commentData.replies else { return [] }
@@ -117,13 +117,13 @@ struct FlatComment: Identifiable, Hashable, Votable {
             let childCount = childIds.count
             let hasChildren = childCount > 0
             
-            let flatComment = FlatComment(
+            let comment = Comment(
                 from: commentData,
                 hasChildren: hasChildren,
                 childCount: childCount,
                 childIds: childIds
             )
-            result.append(flatComment)
+            result.append(comment)
             
             // Process children recursively
             if case .listing(let listing) = commentData.replies {
@@ -141,19 +141,19 @@ struct FlatComment: Identifiable, Hashable, Votable {
     }
     
     /// Filter flat comments based on collapsed state for efficient collapse/expand
-    static func applyCollapseState(to flatComments: [FlatComment], collapsedIds: Set<String>) -> [FlatComment] {
-        var result: [FlatComment] = []
+    static func applyCollapseState(to comments: [Comment], collapsedIds: Set<String>) -> [Comment] {
+        var result: [Comment] = []
         var hiddenIds: Set<String> = Set()
         
         // Collect all IDs that should be hidden due to collapsed parents
         for collapsedId in collapsedIds {
-            if let comment = flatComments.first(where: { $0.id == collapsedId }) {
+            if let comment = comments.first(where: { $0.id == collapsedId }) {
                 hiddenIds.formUnion(comment.childIds)
             }
         }
         
         // Filter out hidden comments
-        for comment in flatComments {
+        for comment in comments {
             if !hiddenIds.contains(comment.id) {
                 result.append(comment)
             }

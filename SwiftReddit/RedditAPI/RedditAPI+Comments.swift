@@ -16,7 +16,7 @@ extension RedditAPI {
         sort: CommentSortOption = .confidence,
         limit: Int = 100, // TODO: implement infinite scrolling
         depth: Int = 8
-    ) async -> (Post?, [FlatComment], String?)? {
+    ) async -> (Post?, [Comment], String?)? {
         guard let url = buildCommentsURL(
             subreddit: subreddit,
             postID: postID,
@@ -45,9 +45,9 @@ extension RedditAPI {
             return child.data
         }
         
-        let flatComments = FlatComment.flattenCommentData(commentDataArray)
+        let comments = Comment.flattenCommentData(commentDataArray)
         
-        return (post, flatComments, response.after)
+        return (post, comments, response.after)
     }
 
     // MARK: - URL Building

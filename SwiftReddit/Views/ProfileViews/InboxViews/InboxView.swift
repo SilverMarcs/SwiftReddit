@@ -31,11 +31,7 @@ struct InboxView: View {
             
             if isLoading {
                 Section {
-                    ProgressView()
-                        .id(UUID())
-                        .controlSize(.large)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .listRowSeparator(.hidden)
+                    LoadingIndicator()
                 }
                 .listRowBackground(Color.clear)
             }

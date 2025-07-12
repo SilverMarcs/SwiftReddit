@@ -30,11 +30,7 @@ struct SearchTab: View {
         NavigationStack(path: $nav.path) {
             List {
                 if isLoading {
-                    ProgressView()
-                        .id(UUID())
-                        .controlSize(.large)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .listRowSeparator(.hidden)
+                    LoadingIndicator()
                 } else {
                     switch searchScope {
                     case .subreddits:
