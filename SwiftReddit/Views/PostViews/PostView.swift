@@ -90,6 +90,7 @@ struct PostView: View {
                   } label: {
                       Image(systemName: "arrowshape.turn.up.backward.fill")
                           .font(.headline)
+                          .foregroundStyle(.accent)
                           .padding(3)
                   }
                   .buttonStyle(.glass)

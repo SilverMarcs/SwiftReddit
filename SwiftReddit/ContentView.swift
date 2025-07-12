@@ -12,7 +12,7 @@ struct ContentView: View {
     @State private var navProfile = Nav()
     @State private var navSearch = Nav()
     
-    @Namespace private var imageZoomNamespace
+    @Namespace private var imageNS
     @Namespace private var videoNS
     
     var body: some View {
@@ -20,21 +20,21 @@ struct ContentView: View {
             Tab("Posts", systemImage: "doc.text.image") {
                 HomeTab()
                     .environment(navHome)
-                    .environment(\.imageZoomNamespace, imageZoomNamespace)
+                    .environment(\.imageNS, imageNS)
                     .environment(\.videoNS, videoNS)
             }
             
             Tab("Profile", systemImage: "person.fill") {
                 ProfileView()
                     .environment(navProfile)
-                    .environment(\.imageZoomNamespace, imageZoomNamespace)
+                    .environment(\.imageNS, imageNS)
                     .environment(\.videoNS, videoNS)
             }
             
             Tab(role: .search) {
                 SearchTab()
                     .environment(navSearch)
-                    .environment(\.imageZoomNamespace, imageZoomNamespace)
+                    .environment(\.imageNS, imageNS)
                     .environment(\.videoNS, videoNS)
             }
         }
@@ -48,7 +48,7 @@ struct ContentView: View {
         }
         .overlay {
             FullscreenImageOverlay()
-                .environment(\.imageZoomNamespace, imageZoomNamespace)
+                .environment(\.imageNS, imageNS)
         }
     }
 }

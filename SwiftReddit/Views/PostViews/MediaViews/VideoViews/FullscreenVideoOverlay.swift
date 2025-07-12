@@ -23,6 +23,8 @@ import AVKit
 
 struct FullscreenVideoOverlay: View {
     @Environment(\.videoNS) private var videoNS
+    @Namespace private var fallbackNS
+    
     var viewModel: VideoOverlayViewModel = .shared
     @State private var dragOffset: CGSize = .zero
     @State private var isDragging = false
@@ -36,7 +38,7 @@ struct FullscreenVideoOverlay: View {
                 
                 // Draggable VideoPlayer
                 VideoPlayer(player: player)
-                    .matchedGeometryEffect(id: viewModel.currentVideoURL ?? "videoPlayer", in: videoNS)
+                    .matchedGeometryEffect(id: viewModel.currentVideoURL ?? "videoPlayer", in: videoNS ?? fallbackNS)
                     .offset(dragOffset)
                     .gesture(
                         DragGesture()

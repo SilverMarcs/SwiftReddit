@@ -3,6 +3,8 @@ import AVKit
 
 struct PostVideoView: View {
     @Environment(\.videoNS) private var videoNS
+    @Namespace private var fallbackNS
+    
     @ObservedObject private var config = Config.shared
     let videoURL: String?
     let thumbnailURL: String?
@@ -14,7 +16,7 @@ struct PostVideoView: View {
     var body: some View {
         VideoPlayer(player: player)
             .aspectRatio(dimensions != nil ? (dimensions!.width / dimensions!.height) : 16/9, contentMode: .fit)
-            .matchedGeometryEffect(id: videoURL ?? "videoPlayer", in: videoNS)
+            .matchedGeometryEffect(id: videoURL ?? "videoPlayer", in: videoNS ?? fallbackNS)
 //            .transition(.scale(scale: 1))
             .cornerRadius(12)
             .clipped()

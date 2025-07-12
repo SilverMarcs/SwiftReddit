@@ -9,8 +9,8 @@ import Foundation
 import SwiftUI
 
 extension EnvironmentValues {
-    @Entry var imageZoomNamespace: Namespace.ID = Namespace().wrappedValue
-    @Entry var videoNS: Namespace.ID = Namespace().wrappedValue
+    @Entry var imageNS: Namespace.ID?
+    @Entry var videoNS: Namespace.ID?
     @Entry var addOptimisticComment: ((String, String) -> Void) = { _, _ in
         print("No optimistic comment handler passed")
     }

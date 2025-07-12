@@ -10,12 +10,13 @@ import SwiftUI
 struct PostImageView: View {
     var image: GalleryImage
     
-    @Environment(\.imageZoomNamespace) private var zoomNamespace
+    @Environment(\.imageNS) private var imageNS
+    @Namespace private var fallbackNS
     
     var body: some View {
         if let url = URL(string: image.url) {
             ImageView(url: url, aspectRatio: image.aspectRatio)
-                .matchedGeometryEffect(id: image.url, in: zoomNamespace)
+                .matchedGeometryEffect(id: image.url, in: imageNS ?? fallbackNS)
 //                .transition(.scale(scale: 1))
                 .cornerRadius(12)
                 .clipped()

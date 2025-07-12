@@ -8,13 +8,15 @@
 import SwiftUI
 
 struct PostGalleryView: View {
-    @Environment(\.imageZoomNamespace) private var zoomNamespace
+    @Environment(\.imageNS) private var imageNS
+    @Namespace private var fallbackNS
+    
     let images: [GalleryImage]
     
     var body: some View {
         HStack(spacing: 4) {
             ImageView(url: URL(string: images[0].url), aspectRatio: images[0].aspectRatio)
-                .matchedGeometryEffect(id: images[0].url, in: zoomNamespace)
+                .matchedGeometryEffect(id: images[0].url, in: imageNS ?? fallbackNS)
                 .cornerRadius(12)
                 .clipped()
                 .frame(maxHeight: 300)
