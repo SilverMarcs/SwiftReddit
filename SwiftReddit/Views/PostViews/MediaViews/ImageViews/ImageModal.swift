@@ -58,6 +58,10 @@ struct ImageModal: View {
             ForEach(Array(images.enumerated()), id: \.offset) { index, galleryImage in
                 ImageView(url: URL(string: galleryImage.url), aspectRatio: galleryImage.aspectRatio)
                     .zoomable()
+                    .overlay(alignment: .bottomTrailing) {
+                        SaveImageButton(imageURL: galleryImage.url)
+                            .padding()
+                    }
                     .tag(index)
             }
         }
@@ -83,4 +87,18 @@ extension Collection {
     subscript(safe index: Index) -> Element? {
         return indices.contains(index) ? self[index] : nil
     }
+}
+
+private func saveImageToPhotos(from url: URL) {
+    let task = URLSession.shared.dataTask(with: url) { data, response, error in
+        guard let data = data, error == nil,
+              let image = UIImage(data: data) else {
+            return
+        }
+        
+        DispatchQueue.main.async {
+            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+        }
+    }
+    task.resume()
 }
