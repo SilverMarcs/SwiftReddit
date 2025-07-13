@@ -19,14 +19,17 @@ import SwiftUI
     var scrollPosition = ScrollPosition(idType: Comment.ID.self)
     
     @ObservationIgnored private let postNavigation: PostNavigation
+    @ObservationIgnored private let hadInitialPost: Bool
     
     init(post: Post) {
         self.postNavigation = PostNavigation(from: post)
         self.post = post
+        self.hadInitialPost = true
     }
     
     init(postNavigation: PostNavigation) {
         self.postNavigation = postNavigation
+        self.hadInitialPost = false
     }
     
     func updateSort() async {
@@ -71,8 +74,8 @@ import SwiftUI
             // Extract post, flat comments, and after token
             let (fetchedPost, fetchedComments, _) = result
             
-            // Update post if we didn't have it before
-            if let fetchedPost = fetchedPost {
+            // Only update post if we didn't have one initially
+            if !hadInitialPost, let fetchedPost = fetchedPost {
                 post = fetchedPost
             }
             
