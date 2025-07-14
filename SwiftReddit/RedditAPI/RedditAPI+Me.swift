@@ -8,12 +8,12 @@
 import Foundation
 
 extension RedditAPI {
-    func fetchMe() async -> UserData? {
+    static func fetchMe() async -> UserData? {
         guard let url = URL(string: "\(Self.redditApiURLBase)/api/v1/me") else { return nil }
         return await performAuthenticatedRequest(url: url, responseType: UserData.self)
     }
     
-    func fetchMe(with accessToken: String) async -> UserData? {
+    static func fetchMe(with accessToken: String) async -> UserData? {
         guard let url = URL(string: "\(Self.redditApiURLBase)/api/v1/me") else { return nil }
         
         var request = URLRequest(url: url)
@@ -23,7 +23,7 @@ extension RedditAPI {
         return await performSimpleRequest(request, responseType: UserData.self)
     }
     
-    func fetchInbox(after: String = "", limit: Int = 25) async -> ([Message]?, String?)? {
+    static func fetchInbox(after: String = "", limit: Int = 25) async -> ([Message]?, String?)? {
         var components = URLComponents(string: "\(Self.redditApiURLBase)/message/inbox.json")
         components?.queryItems = [
             URLQueryItem(name: "mark", value: "true"),
@@ -44,7 +44,7 @@ extension RedditAPI {
         return (listing.data.children.map { $0.data }, listing.data.after)
     }
     
-    func fetchUserSubreddits() async -> [Subreddit]? {
+    static func fetchUserSubreddits() async -> [Subreddit]? {
         guard let url = URL(string: "\(Self.redditApiURLBase)/subreddits/mine/subscriber.json?limit=100"),
               let response = await performAuthenticatedRequest(url: url, responseType: Listing<SubredditData>.self) else { return nil }
         

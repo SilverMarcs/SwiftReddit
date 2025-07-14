@@ -189,7 +189,7 @@ import SwiftUI
         }
         
         // Exchange auth code for tokens
-        guard let tokenResponse = await RedditAPI.shared.exchangeAuthCodeForTokens(
+        guard let tokenResponse = await RedditAPI.exchangeAuthCodeForTokens(
             appID: credential.apiAppID,
             appSecret: credential.apiAppSecret,
             authCode: authCode
@@ -208,7 +208,7 @@ import SwiftUI
         updatedCredential.accessToken = newAccessToken
         
         // Fetch user info
-        if let userData = await RedditAPI.shared.fetchMe(with: tokenResponse.access_token) {
+        if let userData = await RedditAPI.fetchMe(with: tokenResponse.access_token) {
             updatedCredential.userName = userData.name
             if let iconImg = userData.icon_img, !iconImg.isEmpty {
                 updatedCredential.profilePicture = iconImg

@@ -76,7 +76,7 @@ struct UserSubredditsView: View {
         isLoading = true
         defer { isLoading = false }
         
-        if let fetchedSubreddits = await RedditAPI.shared.fetchUserSubreddits() {
+        if let fetchedSubreddits = await RedditAPI.fetchUserSubreddits() {
             subreddits = fetchedSubreddits.filter { $0.isSubscribed }
         }
     }

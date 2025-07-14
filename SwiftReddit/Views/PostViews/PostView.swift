@@ -136,7 +136,7 @@ struct PostView: View {
     }
     
     func toggleSave() async {
-        let success = await RedditAPI.shared.save(!isSaved, id: post.fullname)
+        let success = await RedditAPI.save(!isSaved, id: post.fullname)
         if success {
             isSaved.toggle()
         }

@@ -11,7 +11,7 @@ extension RedditAPI {
     
     // MARK: - Generic Search Method
     
-    private func performSearch<T: Codable>(
+    private static func performSearch<T: Codable>(
         query: String,
         endpoint: String,
         queryItems: [URLQueryItem],
@@ -28,7 +28,7 @@ extension RedditAPI {
     
     // MARK: - Subreddit Search
     
-    func searchSubreddits(_ query: String, limit: Int = 30) async -> [Subreddit]? {
+    static func searchSubreddits(_ query: String, limit: Int = 30) async -> [Subreddit]? {
         let queryItems = [
             URLQueryItem(name: "q", value: query),
             URLQueryItem(name: "limit", value: String(limit)),
@@ -51,7 +51,7 @@ extension RedditAPI {
     
     // MARK: - Post Search
     
-    func searchPosts(_ query: String, subreddit: String? = nil, limit: Int = 30) async -> [Post]? {
+    static func searchPosts(_ query: String, subreddit: String? = nil, limit: Int = 30) async -> [Post]? {
         let endpoint = subreddit != nil ? "r/\(subreddit!)/search" : "search"
         
         var queryItems = [

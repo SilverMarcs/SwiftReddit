@@ -52,9 +52,9 @@ struct SubredditInfoView: View {
     func toggleSubscribe() async {
         let success: Bool
         if isSubscribed {
-            success = await RedditAPI.shared.unsubscribeFromSubreddit(subreddit.displayName)
+            success = await RedditAPI.unsubscribeFromSubreddit(subreddit.displayName)
         } else {
-            success = await RedditAPI.shared.subscribeToSubreddit(subreddit.displayName)
+            success = await RedditAPI.subscribeToSubreddit(subreddit.displayName)
         }
         
         if success {

@@ -90,7 +90,7 @@ struct RedditCredential: Identifiable, Equatable, Hashable, Codable {
         }
         
         // Use RedditAPI for token refresh
-        if let response = await RedditAPI.shared.refreshAccessToken(
+        if let response = await RedditAPI.refreshAccessToken(
             appID: apiAppID, 
             appSecret: apiAppSecret, 
             refreshToken: refreshToken

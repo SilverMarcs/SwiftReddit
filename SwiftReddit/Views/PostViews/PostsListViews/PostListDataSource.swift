@@ -44,7 +44,7 @@ import Foundation
         let afterParam = isRefresh ? nil : after
         let sortParam = feedType.canSort ? currentSort : .best
         
-        let result = await RedditAPI.shared.fetchPosts(
+        let result = await RedditAPI.fetchPosts(
             for: feedType,
             sort: sortParam,
             after: afterParam,

@@ -10,13 +10,13 @@ import Foundation
 extension RedditAPI {
     static let appRedirectURI: String = "https://app.winston.cafe/auth-success"
     
-    private func createBasicAuthHeader(appID: String, appSecret: String) -> String {
+    private static func createBasicAuthHeader(appID: String, appSecret: String) -> String {
         let credentials = "\(appID):\(appSecret)"
         let base64Credentials = Data(credentials.utf8).base64EncodedString()
         return "Basic \(base64Credentials)"
     }
     
-    func exchangeAuthCodeForTokens(appID: String, appSecret: String, authCode: String) async -> GetAccessTokenResponse? {
+    static func exchangeAuthCodeForTokens(appID: String, appSecret: String, authCode: String) async -> GetAccessTokenResponse? {
         let code = authCode.hasSuffix("#_") ? String(authCode.dropLast(2)) : authCode
         guard let url = URL(string: "\(Self.redditWWWApiURLBase)/api/v1/access_token") else { return nil }
         
@@ -29,7 +29,7 @@ extension RedditAPI {
         return await performSimpleRequest(request, responseType: GetAccessTokenResponse.self)
     }
     
-    func refreshAccessToken(appID: String, appSecret: String, refreshToken: String) async -> RefreshAccessTokenResponse? {
+    static func refreshAccessToken(appID: String, appSecret: String, refreshToken: String) async -> RefreshAccessTokenResponse? {
         guard let url = URL(string: "\(Self.redditWWWApiURLBase)/api/v1/access_token") else { return nil }
         
         var request = URLRequest(url: url)

@@ -9,14 +9,14 @@ import Foundation
 import Kingfisher
 
 extension RedditAPI {
-    func fetchPosts(for feedType: PostFeedType, sort: SubListingSortOption = .best, after: String? = nil, limit: Int = 10) async -> ([Post], String?)? {
+    static func fetchPosts(for feedType: PostFeedType, sort: SubListingSortOption = .best, after: String? = nil, limit: Int = 10) async -> ([Post], String?)? {
         guard let url = buildPostsURL(for: feedType, sort: sort, after: after, limit: limit) else { return nil }
         return await fetchPostsFromURL(url: url)
     }
     
     // MARK: - Private Helper Methods
     
-    private func buildPostsURL(for feedType: PostFeedType, sort: SubListingSortOption, after: String?, limit: Int) -> URL? {
+    private static func buildPostsURL(for feedType: PostFeedType, sort: SubListingSortOption, after: String?, limit: Int) -> URL? {
         guard let endpoint = buildEndpoint(for: feedType, sort: sort) else { return nil }
         
         var components = URLComponents(string: "\(Self.redditApiURLBase)\(endpoint)")
@@ -38,7 +38,7 @@ extension RedditAPI {
         return components?.url
     }
     
-    private func buildEndpoint(for feedType: PostFeedType, sort: SubListingSortOption) -> String? {
+    static private func buildEndpoint(for feedType: PostFeedType, sort: SubListingSortOption) -> String? {
         let sortPath = sort.apiPath.lowercased()
         
         switch feedType {
@@ -61,7 +61,7 @@ extension RedditAPI {
         }
     }
     
-    private func fetchPostsFromURL(url: URL) async -> ([Post], String?)? {
+    private static func fetchPostsFromURL(url: URL) async -> ([Post], String?)? {
         guard let listingResponse = await performAuthenticatedRequest(url: url, responseType: PostListingResponse.self) else {
             return nil
         }
@@ -77,13 +77,13 @@ extension RedditAPI {
     // MARK: - Post Actions
     
     @discardableResult
-    func vote(_ action: VoteAction, id: String) async -> Bool {
+    static func vote(_ action: VoteAction, id: String) async -> Bool {
         guard let url = URL(string: "\(Self.redditApiURLBase)/api/vote") else { return false }
         let parameters = "dir=\(action.rawValue)&id=\(id)&api_type=json&raw_json=1"
         return await performPostRequest(url: url, parameters: parameters)
     }
     
-    func save(_ save: Bool, id: String) async -> Bool {
+    static func save(_ save: Bool, id: String) async -> Bool {
         let endpoint = save ? "save" : "unsave"
         guard let url = URL(string: "\(Self.redditApiURLBase)/api/\(endpoint)") else { return false }
         return await performPostRequest(url: url, parameters: "id=\(id)")

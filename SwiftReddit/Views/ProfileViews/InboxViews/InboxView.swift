@@ -54,7 +54,7 @@ struct InboxView: View {
         isLoading = true
         defer { isLoading = false }
         
-        if let result = await RedditAPI.shared.fetchInbox() {
+        if let result = await RedditAPI.fetchInbox() {
             messages = result.0 ?? []
             after = result.1
         }
@@ -68,7 +68,7 @@ struct InboxView: View {
         isLoading = true
         defer { isLoading = false }
         
-        if let result = await RedditAPI.shared.fetchInbox(after: after) {
+        if let result = await RedditAPI.fetchInbox(after: after) {
             let newMessages = result.0 ?? []
             messages.append(contentsOf: newMessages)
             self.after = result.1

@@ -87,13 +87,13 @@ struct SearchView: View {
         
         switch searchScope {
         case .subreddits:
-            if let subreddits = await RedditAPI.shared.searchSubreddits(searchText, limit: 25) {
+            if let subreddits = await RedditAPI.searchSubreddits(searchText, limit: 25) {
                 subredditResults = subreddits
             } else {
                 subredditResults = []
             }
         case .posts:
-            if let posts = await RedditAPI.shared.searchPosts(searchText, limit: 25) {
+            if let posts = await RedditAPI.searchPosts(searchText, limit: 25) {
                 postResults = posts
             } else {
                 postResults = []

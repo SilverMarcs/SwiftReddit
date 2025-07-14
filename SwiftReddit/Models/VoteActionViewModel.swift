@@ -46,9 +46,9 @@ import SwiftUI
             let success: Bool?
             switch targetType {
             case .post:
-                success = await RedditAPI.shared.vote(action, id: id)
+                success = await RedditAPI.vote(action, id: id)
             case .comment:
-                success = await RedditAPI.shared.voteComment(action, id: id)
+                success = await RedditAPI.voteComment(action, id: id)
             }
             if success != true {
                 likes = initialLikes

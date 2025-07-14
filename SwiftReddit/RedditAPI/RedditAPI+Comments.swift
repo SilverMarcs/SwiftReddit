@@ -9,7 +9,7 @@ import Foundation
 
 extension RedditAPI {
     /// Fetch post with comments
-    func fetchPostWithComments(
+    static func fetchPostWithComments(
         subreddit: String,
         postID: String,
         commentID: String? = nil,
@@ -52,7 +52,7 @@ extension RedditAPI {
 
     // MARK: - URL Building
     
-    func buildCommentsURL(
+    static func buildCommentsURL(
         subreddit: String,
         postID: String,
         commentID: String?,
@@ -84,14 +84,14 @@ extension RedditAPI {
     // MARK: - Comment Actions
     
     @discardableResult
-    func voteComment(_ action: VoteAction, id: String) async -> Bool {
+    static func voteComment(_ action: VoteAction, id: String) async -> Bool {
         guard let url = URL(string: "\(Self.redditApiURLBase)/api/vote") else { return false }
         let parameters = "dir=\(action.rawValue)&id=\(id)&api_type=json&raw_json=1"
         return await performPostRequest(url: url, parameters: parameters)
     }
     
     @discardableResult
-    func replyToComment(text: String, parentFullname: String) async -> Bool {
+    static func replyToComment(text: String, parentFullname: String) async -> Bool {
         guard let url = URL(string: "\(Self.redditApiURLBase)/api/comment") else { return false }
         let encodedText = text.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let parameters = "api_type=json&text=\(encodedText)&thing_id=\(parentFullname)&raw_json=1"

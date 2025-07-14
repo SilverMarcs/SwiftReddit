@@ -66,7 +66,7 @@ import SwiftUI
             return
         }
         
-        if let result = await RedditAPI.shared.fetchPostWithComments(
+        if let result = await RedditAPI.fetchPostWithComments(
             subreddit: subredditName,
             postID: postId,
             sort: sortOption
@@ -133,7 +133,7 @@ import SwiftUI
         
         // Fire off the network request in the background
         Task {
-            _ = await RedditAPI.shared.replyToComment(text: text, parentFullname: "t1_\(parentId)")
+            _ = await RedditAPI.replyToComment(text: text, parentFullname: "t1_\(parentId)")
         }
     }
     
@@ -155,7 +155,7 @@ import SwiftUI
         
         // Fire off the network request in the background
         Task {
-            _ = await RedditAPI.shared.replyToComment(text: text, parentFullname: "t3_\(postId)")
+            _ = await RedditAPI.replyToComment(text: text, parentFullname: "t3_\(postId)")
         }
     }
     
