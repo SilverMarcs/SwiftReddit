@@ -40,6 +40,5 @@ struct PostLinkView: View {
           .background(.background.secondary, in: .rect(cornerRadius: 12))
       }
       .buttonStyle(.plain)
-      .handleURLs()
     }
 }

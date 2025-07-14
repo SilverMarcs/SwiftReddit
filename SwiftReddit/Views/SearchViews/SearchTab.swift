@@ -13,9 +13,7 @@ struct SearchTab: View {
     var body: some View {
         NavigationStack(path: $path) {
             SearchView()
-                .navigationDestinations(append: { value in
-                    path.append(value)
-                })
+                .navigationDestinations(path: $path)
         }
     }
 }

@@ -40,7 +40,7 @@ struct PostGalleryView: View {
                 let displayImages = Array(remainingImages.prefix(3))
                 let remainingCount = remainingImages.count - displayImages.count
                 
-                HStack(spacing: 4) {
+                HStack(spacing: 8) {
                     ForEach(Array(displayImages.enumerated()), id: \.offset) { index, image in
                         Button {
                             appendToPath(ImageModalData(images: images, startIndex: index + 1))

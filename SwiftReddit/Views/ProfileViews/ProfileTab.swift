@@ -13,9 +13,7 @@ struct ProfileTab: View {
     var body: some View {
         NavigationStack(path: $path) {
             UserSubredditsView()
-                .navigationDestinations(append: { value in
-                    path.append(value)
-                })
+                .navigationDestinations(path: $path)
         }
     }
 }

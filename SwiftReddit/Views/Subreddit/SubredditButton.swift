@@ -20,6 +20,7 @@ struct SubredditButton: View {
             switch type {
             case .text:
                 Text(subreddit.displayNamePrefixed)
+                    .lineLimit(1)
                     .font(.caption)
                     .foregroundStyle(subreddit.color ?? .blue)
             case .icon(let iconURL):

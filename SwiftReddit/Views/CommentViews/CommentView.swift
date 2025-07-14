@@ -46,7 +46,6 @@ struct CommentView: View {
                             .font(.default)
                             .opacity(0.85)
                             .fixedSize(horizontal: false, vertical: true)
-                            .handleURLs()
                     }
                     
                     if comment.hasChildren && isCollapsed {

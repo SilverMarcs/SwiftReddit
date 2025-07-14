@@ -29,7 +29,8 @@ struct CommentHeader: View {
                         )
                     
                     if let flairText = comment.authorFlairText, !flairText.isEmpty {
-                        Text(flairText.prefix(12))
+                        Text(flairText)
+                            .lineLimit(1)
                             .font(.caption2)
                             .padding(.horizontal, 4)
                             .padding(.vertical, 1)

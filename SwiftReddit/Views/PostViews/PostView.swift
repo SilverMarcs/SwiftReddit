@@ -49,7 +49,6 @@ struct PostView: View {
                     .foregroundStyle(isCompact ? .secondary : .primary)
                     .opacity(isCompact ? 1 : 0.9)
                     .lineLimit(isCompact ? 3 : nil)
-                    .handleURLs()
         }
           
           if post.mediaType.hasMedia {

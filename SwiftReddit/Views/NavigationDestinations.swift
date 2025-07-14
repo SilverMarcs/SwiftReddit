@@ -8,34 +8,40 @@
 import SwiftUI
 
 extension View {
-    func navigationDestinations(append: @escaping (any Hashable) -> Void) -> some View {
-        return self
+    func commonDestinationModifiers(path: Binding<NavigationPath>) -> some View {
+        self
             .environment(\.appendToPath, { value in
-                 append(value)
+                path.wrappedValue.append(value)
             })
+            .handleURLs()
+    }
+    
+    func navigationDestinations(path: Binding<NavigationPath>) -> some View {
+        self
+            .commonDestinationModifiers(path: path)
             .navigationDestination(for: PostFeedType.self) { feedType in
                 PostsList(feedType: feedType)
-                    .environment(\.appendToPath, append)
+                    .commonDestinationModifiers(path: path)
             }
             .navigationDestination(for: PostNavigation.self) { postNavigation in
                 PostDetailView(postNavigation: postNavigation)
-                    .environment(\.appendToPath, append)
+                    .commonDestinationModifiers(path: path)
             }
             .navigationDestination(for: Post.self) { post in
                 PostDetailView(post: post)
-                    .environment(\.appendToPath, append)
+                    .commonDestinationModifiers(path: path)
             }
             .navigationDestination(for: Message.self) { message in
                 MessageDetailView(message: message)
-                    .environment(\.appendToPath, append)
+                    .commonDestinationModifiers(path: path)
             }
             .navigationDestination(for: InboxDestination.self) { inbox in
                 InboxView()
-                    .environment(\.appendToPath, append)
+                    .commonDestinationModifiers(path: path)
             }
             .navigationDestination(for: ImageModalData.self) { imageData in
                 ImageModal(imageData: imageData)
-                    .environment(\.appendToPath, append)
+                    .commonDestinationModifiers(path: path)
                     #if !os(macOS)
                     .toolbarVisibility(.hidden, for: .tabBar)
                     .toolbarVisibility(.hidden, for: .navigationBar)
