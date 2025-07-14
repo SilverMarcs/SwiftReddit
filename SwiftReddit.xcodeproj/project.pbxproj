@@ -19,7 +19,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
-				Models/Comment/Comment.swift,
 			);
 			target = 08846F632DFF0E1B009F6F77 /* SwiftReddit */;
 		};

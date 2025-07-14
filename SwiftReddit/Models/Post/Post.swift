@@ -29,9 +29,8 @@ struct Post: Identifiable, Hashable, Equatable, Votable {
     let linkFlairBackgroundColor: String?
     let over18: Bool?
     var saved: Bool
-    let likes: Bool? // Vote state: true = upvoted, false = downvoted, nil = no vote
+    let likes: Bool?
     
-    //  media properties
     let mediaType: MediaType
     
     // Pre-computed formatted values
@@ -39,7 +38,10 @@ struct Post: Identifiable, Hashable, Equatable, Votable {
     let formattedNumComments: String
     let timeAgo: String
     
-    // Custom hash implementation to handle optionals
+    // Pre-computed colors
+    let flairBackgroundColor: Color
+    let flairTextColor: Color
+    
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
         hasher.combine(title)
@@ -50,14 +52,11 @@ struct Post: Identifiable, Hashable, Equatable, Votable {
         self.title = postData.title
         self.author = postData.author
         
-        // Handle sr_detail safely
         if let srDetail = postData.sr_detail {
             self.subreddit = Subreddit(detail: srDetail)
         } else {
-            // Fallback to basic subreddit info
             self.subreddit = Subreddit(
-                displayName: postData.subreddit,
-//                displayNamePrefixed: postData.subreddit_name_prefixed
+                displayName: postData.subreddit
             )
         }
         
@@ -83,27 +82,26 @@ struct Post: Identifiable, Hashable, Equatable, Votable {
         self.formattedNumComments = postData.num_comments.formatted
         self.timeAgo = postData.created.timeAgo
         
-        // Extract media information with high-quality image support
+        // Pre-compute media type
         self.mediaType = Post.extractMedia(from: postData)
-    }
-    
-    /// Get flair background color from Reddit API
-    var flairBackgroundColor: Color {
-        guard let bgColor = linkFlairBackgroundColor, !bgColor.isEmpty else {
-            return Color(hex: "D5D7D9") // Default light gray
-        }
-        return Color(hex: bgColor)
-    }
-    
-    /// Get flair text color from Reddit API
-    var flairTextColor: Color {
-        let hasBackground = linkFlairBackgroundColor != nil && !linkFlairBackgroundColor!.isEmpty
         
-        if hasBackground, let textColor = linkFlairTextColor {
-            return textColor == "light" ? .white : .black
+        // Pre-compute flair background color
+        if let bgColor = postData.link_flair_background_color,
+           !bgColor.isEmpty {
+            self.flairBackgroundColor = Color(hex: bgColor)
+        } else {
+            self.flairBackgroundColor = Color(hex: "D5D7D9") // Default light gray
         }
         
-        return .black // Default
+        // Pre-compute flair text color
+        let hasBackground = postData.link_flair_background_color != nil &&
+                          !postData.link_flair_background_color!.isEmpty
+        
+        if hasBackground, let textColor = postData.link_flair_text_color {
+            self.flairTextColor = textColor == "light" ? .white : .black
+        } else {
+            self.flairTextColor = .black // Default
+        }
     }
     
     /// Full Reddit URL for sharing

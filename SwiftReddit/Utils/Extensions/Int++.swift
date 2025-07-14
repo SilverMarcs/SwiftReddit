@@ -12,7 +12,7 @@ extension Int {
     var formatted: String {
         if abs(self) >= 1000 {
             let value = Double(self) / 1000.0
-            let formatted = String(format: value.truncatingRemainder(dividingBy: 1) == 0 ? "%.0fk" : "%.1fk", value)
+            let formatted = unsafe String(format: value.truncatingRemainder(dividingBy: 1) == 0 ? "%.0fk" : "%.1fk", value)
             return formatted
         }
         return String(self)
