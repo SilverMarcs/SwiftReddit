@@ -20,6 +20,9 @@ struct Subreddit: Identifiable, Hashable {
     let color: Color?
     var isDetailed: Bool = true
     
+    // Pre-computed formatted values
+    let formattedSubscriberCount: String
+    
     /// Convenience initializer that extracts necessary properties from SubredditData
     init(data: SubredditData) {
         self.id = data.id
@@ -45,6 +48,9 @@ struct Subreddit: Identifiable, Hashable {
         } else {
             self.iconURL = nil
         }
+        
+        // Pre-compute formatted subscriber count
+        self.formattedSubscriberCount = data.subscribers.formatted
     }
     
     /// Convenience initializer that extracts necessary properties from SubredditDetail
@@ -72,6 +78,9 @@ struct Subreddit: Identifiable, Hashable {
         } else {
             self.iconURL = nil
         }
+        
+        // Pre-compute formatted subscriber count
+        self.formattedSubscriberCount = detail.subscribers.formatted
     }
     
     /// Convenience initializer for creating a simple Subreddit with just a display name
@@ -85,6 +94,9 @@ struct Subreddit: Identifiable, Hashable {
         self.publicDescription = ""
         self.color = nil
         self.isDetailed = false
+        
+        // Pre-compute formatted subscriber count
+        self.formattedSubscriberCount = 0.formatted
     }
     
     /// Helper method to validate and convert key_color to SwiftUI Color

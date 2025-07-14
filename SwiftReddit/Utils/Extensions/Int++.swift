@@ -10,9 +10,22 @@ import Foundation
 extension Int {
     /// Format large numbers with k suffix (e.g., 1500 -> "1.5k")
     var formatted: String {
-        if self >= 1000 {
-            return unsafe String(format: "%.1fk", Double(self) / 1000.0)
+        if abs(self) >= 1000 {
+            let value = Double(self) / 1000.0
+            let formatted = String(format: value.truncatingRemainder(dividingBy: 1) == 0 ? "%.0fk" : "%.1fk", value)
+            return formatted
         }
         return String(self)
+    }
+}
+
+extension Optional where Wrapped == Int {
+    var formatted: String {
+        switch self {
+        case .some(let value):
+            return value.formatted
+        case .none:
+            return "0"
+        }
     }
 }

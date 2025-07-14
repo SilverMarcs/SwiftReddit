@@ -21,7 +21,7 @@ struct SubredditInfoView: View {
             LabeledContent("Subreddit", value: subreddit.displayNamePrefixed)
             
             Section("Statistics") {
-                LabeledContent("Subscribers", value: "\(subreddit.subscriberCount.formatted())")
+                LabeledContent("Subscribers", value: subreddit.formattedSubscriberCount)
                 
                 HStack {
                     Text("Subscribed")

@@ -25,7 +25,7 @@ struct CommentActionsView: View {
             }
             .buttonStyle(.plain)
             
-            Text(viewModel.upsCount.formatted)
+            Text(viewModel.formattedUpsCount)
                 .contentTransition(.numericText())
                 .font(.subheadline)
                 .fontWeight(.semibold)

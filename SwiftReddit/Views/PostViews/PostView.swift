@@ -68,13 +68,13 @@ struct PostView: View {
                         HStack(spacing: 4) {
                           Image(systemName: "bubble.left")
                           
-                            Text(post.numComments.formatted)
+                            Text(post.formattedNumComments)
                         }
                       
                         HStack(spacing: 4) {
                             Image(systemName: "clock")
 
-                            Text(post.created.timeAgo)
+                            Text(post.timeAgo)
                         }
                   }
                   .font(.caption)

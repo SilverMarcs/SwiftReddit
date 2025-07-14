@@ -15,7 +15,6 @@ extension Double {
         let minutes = Int(timeInterval / 60)
         let hours = Int(timeInterval / 3600)
         let days = Int(timeInterval / 86400)
-        
         if days > 0 {
             return "\(days)d"
         } else if hours > 0 {
@@ -24,6 +23,17 @@ extension Double {
             return "\(minutes)m"
         } else {
             return "now"
+        }
+    }
+}
+
+extension Optional where Wrapped == Double {
+    var timeAgo: String? {
+        switch self {
+        case .some(let value):
+            return value.timeAgo
+        case .none:
+            return nil
         }
     }
 }

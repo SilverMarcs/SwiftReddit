@@ -53,7 +53,7 @@ struct CommentHeader: View {
                 HStack(spacing: 4) {
                     Image(systemName: "clock")
                     
-                    Text(comment.created.timeAgo)
+                    Text(comment.timeAgo)
                 }
                 .font(.caption2)
                 .fontWeight(.medium)

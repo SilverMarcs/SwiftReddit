@@ -25,7 +25,7 @@ struct CompactPostView: View {
                         Text("•")
                             .foregroundStyle(.secondary)
                         
-                        Text(post.created.timeAgo)
+                        Text(post.timeAgo)
                             .foregroundStyle(.secondary)
                             .font(.caption)
                     }
@@ -40,12 +40,12 @@ struct CompactPostView: View {
                     HStack(spacing: 16) {
                         HStack(spacing: 4) {
                             Image(systemName: "arrow.up")
-                            Text(post.ups.formatted)
+                            Text(post.formattedUps)
                         }
                         
                         HStack(spacing: 4) {
                             Image(systemName: "bubble.left")
-                            Text(post.numComments.formatted)
+                            Text(post.formattedNumComments)
                         }
                     }
                     .font(.subheadline)

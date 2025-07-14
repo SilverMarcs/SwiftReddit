@@ -28,6 +28,9 @@ struct Message: Codable, Identifiable, Hashable {
     var isNew: Bool?
     let wasComment: Bool?
     
+    // Pre-computed formatted values
+    let timeAgo: String?
+    
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
@@ -51,6 +54,32 @@ struct Message: Codable, Identifiable, Hashable {
         case createdUtc = "created_utc"
         case isNew = "new"
         case wasComment = "was_comment"
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.id = try container.decode(String.self, forKey: .id)
+        self.subject = try container.decodeIfPresent(String.self, forKey: .subject)
+        self.author = try container.decodeIfPresent(String.self, forKey: .author)
+        self.authorFullname = try container.decodeIfPresent(String.self, forKey: .authorFullname)
+        self.subreddit = try container.decodeIfPresent(String.self, forKey: .subreddit)
+        self.subredditNamePrefixed = try container.decodeIfPresent(String.self, forKey: .subredditNamePrefixed)
+        self.body = try container.decodeIfPresent(String.self, forKey: .body)
+        self.bodyHtml = try container.decodeIfPresent(String.self, forKey: .bodyHtml)
+        self.linkTitle = try container.decodeIfPresent(String.self, forKey: .linkTitle)
+        self.dest = try container.decodeIfPresent(String.self, forKey: .dest)
+        self.context = try container.decodeIfPresent(String.self, forKey: .context)
+        self.parentId = try container.decodeIfPresent(String.self, forKey: .parentId)
+        self.name = try container.decodeIfPresent(String.self, forKey: .name)
+        self.type = try container.decodeIfPresent(String.self, forKey: .type)
+        self.created = try container.decodeIfPresent(Double.self, forKey: .created)
+        self.createdUtc = try container.decodeIfPresent(Double.self, forKey: .createdUtc)
+        self.isNew = try container.decodeIfPresent(Bool.self, forKey: .isNew)
+        self.wasComment = try container.decodeIfPresent(Bool.self, forKey: .wasComment)
+        
+        // Pre-compute timeAgo
+        self.timeAgo = created.timeAgo
     }
     
     var createdDate: Date {

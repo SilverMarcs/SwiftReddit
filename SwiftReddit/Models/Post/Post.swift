@@ -34,6 +34,11 @@ struct Post: Identifiable, Hashable, Equatable, Votable {
     //  media properties
     let mediaType: MediaType
     
+    // Pre-computed formatted values
+    let formattedUps: String
+    let formattedNumComments: String
+    let timeAgo: String
+    
     // Custom hash implementation to handle optionals
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
@@ -72,6 +77,11 @@ struct Post: Identifiable, Hashable, Equatable, Votable {
         self.over18 = postData.over_18
         self.saved = postData.saved
         self.likes = postData.likes
+        
+        // Pre-compute formatted values
+        self.formattedUps = postData.ups.formatted
+        self.formattedNumComments = postData.num_comments.formatted
+        self.timeAgo = postData.created.timeAgo
         
         // Extract media information with high-quality image support
         self.mediaType = Post.extractMedia(from: postData)

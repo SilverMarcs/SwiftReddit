@@ -89,7 +89,7 @@ struct PostDetailView: View {
             await dataSource.loadComments()
         }
         .navigationTitle(dataSource.post?.subreddit.displayNamePrefixed ?? "Post")
-        .navigationSubtitle(dataSource.post?.numComments.formatted.appending(" comments") ?? "Loading...")
+        .navigationSubtitle(dataSource.post?.formattedNumComments.appending(" comments") ?? "Loading...")
         .toolbarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {

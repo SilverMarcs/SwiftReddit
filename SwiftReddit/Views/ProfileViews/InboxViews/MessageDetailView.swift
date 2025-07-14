@@ -52,7 +52,7 @@ struct MessageDetailView: View {
                 }
                 
                 HStack {
-                    if let timeAgo = message.created?.timeAgo {
+                    if let timeAgo = message.timeAgo {
                         Text(timeAgo)
                             .font(.caption2)
                             .foregroundStyle(.secondary)

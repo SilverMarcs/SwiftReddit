@@ -20,7 +20,7 @@ struct SubredditRowView: View {
                 Label {
                     Text(subreddit.displayNamePrefixed)
                     if subreddit.subscriberCount > 0 {
-                        Text("\(subreddit.subscriberCount.formatted()) subscribers")
+                        Text("\(subreddit.formattedSubscriberCount) subscribers")
                     }
                 } icon : {
                     if let iconURL = subreddit.iconURL, let url = URL(string: iconURL) {

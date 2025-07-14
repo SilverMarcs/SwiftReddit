@@ -55,7 +55,7 @@ struct MessageRowView: View {
                         
                         Spacer()
                         
-                        if let timeAgo = message.created?.timeAgo {
+                        if let timeAgo = message.timeAgo {
                             Text(timeAgo)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)

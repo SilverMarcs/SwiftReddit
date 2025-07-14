@@ -29,6 +29,10 @@ struct Comment: Identifiable, Hashable, Votable {
     let childCount: Int
     let childIds: [String] // Store child IDs for collapse/expand functionality
     
+    // Pre-computed formatted values
+    let formattedUps: String
+    let timeAgo: String
+    
     var fullname: String {
         return "t1_\(id)"
     }
@@ -67,6 +71,11 @@ struct Comment: Identifiable, Hashable, Votable {
         self.hasChildren = hasChildren
         self.childCount = childCount
         self.childIds = childIds
+        
+        // Pre-compute formatted values
+        let upsValue = commentData.ups ?? 0
+        self.formattedUps = upsValue.formatted
+        self.timeAgo = (commentData.created_utc ?? 0).timeAgo
     }
     
     // Add this initializer to Comment struct
@@ -95,6 +104,10 @@ struct Comment: Identifiable, Hashable, Votable {
         self.hasChildren = false
         self.childCount = 0
         self.childIds = []
+        
+        // Pre-compute formatted values
+        self.formattedUps = 1.formatted
+        self.timeAgo = created.timeAgo
     }
     
     /// Flatten CommentData directly into Comment array for optimal performance

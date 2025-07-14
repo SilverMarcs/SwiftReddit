@@ -32,7 +32,7 @@ struct PostRepostView: View {
                         Image(systemName: "arrow.up")
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                        Text(originalPost.ups.formatted)
+                        Text(originalPost.formattedUps)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
