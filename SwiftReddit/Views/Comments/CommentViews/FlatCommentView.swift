@@ -43,7 +43,7 @@ struct CommentView: View {
                     
                     if !isCollapsed {
                         Text(LocalizedStringKey(comment.body))
-                            .font(.callout)
+                            .font(.default)
                             .opacity(0.85)
                             .fixedSize(horizontal: false, vertical: true)
                             .handleURLs()

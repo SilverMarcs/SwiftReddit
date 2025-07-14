@@ -45,7 +45,7 @@ struct PostView: View {
 
             if !post.selftext.isEmpty {
                 Text(LocalizedStringKey(post.selftext))
-                    .font(.callout)
+                    .font(isCompact ? .callout : .default)
                     .foregroundStyle(isCompact ? .secondary : .primary)
                     .opacity(isCompact ? 1 : 0.9)
                     .lineLimit(isCompact ? 3 : nil)
