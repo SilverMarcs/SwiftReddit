@@ -1,3 +1,12 @@
+//
+//  LinkButton.swift
+//  SwiftReddit
+//
+//  Created by Zabir Raihan on 15/07/2025.
+//
+
+import SwiftUI
+
 struct LinkButton: View {
     let icon: String
     let title: String

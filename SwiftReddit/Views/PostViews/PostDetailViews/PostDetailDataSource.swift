@@ -19,7 +19,7 @@ import SwiftUI
     var scrollPosition = ScrollPosition(idType: Comment.ID.self)
     
     @ObservationIgnored private let postNavigation: PostNavigation
-    @ObservationIgnored private let hadInitialPost: Bool
+    @ObservationIgnored private var hadInitialPost: Bool
     
     init(post: Post) {
         self.postNavigation = PostNavigation(from: post)
@@ -42,7 +42,7 @@ import SwiftUI
         }
     }
     
-    func loadComments() async {
+    func loadComments(resetPost: Bool = false) async {
         isLoading = true
         
         defer {
@@ -75,8 +75,10 @@ import SwiftUI
             let (fetchedPost, fetchedComments, _) = result
             
             // Only update post if we didn't have one initially
-            if !hadInitialPost, let fetchedPost = fetchedPost {
-                post = fetchedPost
+            if let fetchedPost = fetchedPost {
+                if resetPost || !hadInitialPost {
+                    post = fetchedPost
+                }
             }
             
             allComments = fetchedComments

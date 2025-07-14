@@ -86,8 +86,7 @@ struct PostDetailView: View {
             }
         }
         .refreshable {
-            dataSource.post = nil
-            await dataSource.loadComments()
+            await dataSource.loadComments(resetPost: true)
         }
         .navigationTitle(dataSource.post?.subreddit.displayNamePrefixed ?? "Post")
         .navigationSubtitle(dataSource.post?.formattedNumComments.appending(" comments") ?? "Loading...")

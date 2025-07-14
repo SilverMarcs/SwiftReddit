@@ -7,7 +7,7 @@
 
 import Foundation
 
-class RedditAPI {
+struct RedditAPI {
     static let shared = RedditAPI()
     static let redditApiURLBase = "https://oauth.reddit.com"
     static let redditWWWApiURLBase = "https://www.reddit.com"
