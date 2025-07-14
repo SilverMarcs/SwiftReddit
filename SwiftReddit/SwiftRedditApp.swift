@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AVKit
 import Kingfisher
 
 @main
@@ -29,6 +30,11 @@ struct SwiftRedditApp: App {
     init() {
         ImageCache.default.memoryStorage.config.totalCostLimit = 1024 * 1024 * 60 // 60 MB
         ImageCache.default.diskStorage.config.sizeLimit = 1024 * 1024 * 200 // 300 MB
-        ImageCache.default.diskStorage.config.expiration = .days(2) // 2 day        
+        ImageCache.default.diskStorage.config.expiration = .days(2) // 2 day
+        
+        #if !os(macOS)
+        try? AVAudioSession.sharedInstance().setCategory(.playback, options: [.mixWithOthers])
+        try? AVAudioSession.sharedInstance().setActive(true)
+        #endif
     }
 }

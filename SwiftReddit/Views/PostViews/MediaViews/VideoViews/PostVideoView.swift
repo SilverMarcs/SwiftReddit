@@ -38,28 +38,19 @@ struct PostVideoView: View {
               let url = URL(string: videoURL),
               player == nil else { return }
         
-        do {
-            #if !os(macOS)
-            try AVAudioSession.sharedInstance().setCategory(.playback, options: [.mixWithOthers])
-            try AVAudioSession.sharedInstance().setActive(true)
-            #endif
-            
-            let asset = AVURLAsset(url: url)
-            let playerItem = AVPlayerItem(asset: asset)
-            playerItem.preferredPeakBitRate = 2_000_000
-            
-            let queuePlayer = AVQueuePlayer(playerItem: playerItem)
-            queuePlayer.isMuted = muteOnPlay
-            
-            // Use AVPlayerLooper instead of notification
-            playerLooper = AVPlayerLooper(player: queuePlayer, templateItem: playerItem)
-            player = queuePlayer
-            
-            if autoplay {
-                queuePlayer.play()
-            }
-        } catch {
-            print("Failed to setup video player: \(error)")
+        let asset = AVURLAsset(url: url)
+        let playerItem = AVPlayerItem(asset: asset)
+        playerItem.preferredPeakBitRate = 2_000_000
+        
+        let queuePlayer = AVQueuePlayer(playerItem: playerItem)
+        queuePlayer.isMuted = muteOnPlay
+        
+        // Use AVPlayerLooper instead of notification
+        playerLooper = AVPlayerLooper(player: queuePlayer, templateItem: playerItem)
+        player = queuePlayer
+        
+        if autoplay {
+            queuePlayer.play()
         }
     }
     
