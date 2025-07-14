@@ -86,6 +86,7 @@ struct PostDetailView: View {
             }
         }
         .refreshable {
+            dataSource.post = nil
             await dataSource.loadComments()
         }
         .navigationTitle(dataSource.post?.subreddit.displayNamePrefixed ?? "Post")
