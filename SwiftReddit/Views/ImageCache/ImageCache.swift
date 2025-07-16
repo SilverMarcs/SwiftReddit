@@ -99,12 +99,10 @@ struct DiskCache {
                 return cachedImage
             }
             
-            // Check disk cache and downsample
+            // Check disk cache
             if let diskData = DiskCache.shared.retrieve(for: url.absoluteString),
                let diskImage = UIImage(data: diskData) {
-                let downsampledImage = await downsample(image: diskImage)
-                await ImageCacher.shared.insert(downsampledImage, for: url.absoluteString)
-                return downsampledImage
+                return diskImage  // Already downsampled image from disk
             }
             
             // Download and downsample
@@ -117,9 +115,10 @@ struct DiskCache {
                 // Store downsampled image in memory cache
                 await ImageCacher.shared.insert(downsampledImage, for: url.absoluteString)
                 
-                // Store original data in disk cache
-                // This allows for different target sizes in the future if needed
-                DiskCache.shared.store(data, for: url.absoluteString)
+                // Store downsampled image data in disk cache
+                if let downsampledData = downsampledImage.jpegData(compressionQuality: 0.7) {
+                    DiskCache.shared.store(downsampledData, for: url.absoluteString)
+                }
                 
                 return downsampledImage
             } catch {
