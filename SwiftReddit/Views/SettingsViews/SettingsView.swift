@@ -17,17 +17,6 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                // TODO: Experimental
-                Button(action: {
-                    Task {
-                        await clearAllCaches()
-                    }
-                }) {
-                    Label("Clear All Caches", systemImage: "trash")
-                        .foregroundColor(.red)
-                }
-                .buttonStyle(.bordered)
-                
                 Section("Reddit API") {
                     NavigationLink(destination: CredentialsView()) {
                         Label("Credentials", systemImage: "key.fill")
@@ -67,7 +56,7 @@ struct SettingsView: View {
                     .alert("Clear Image Cache", isPresented: $deleteAlertPresented) {
                         Button("Clear", role: .destructive) {
                             Task {
-                                await MemoryCacher.shared.clearCache()
+                                await MemoryCache.shared.clearCache()
                                 DiskCache.shared.clearCache()
                             }
                         }
