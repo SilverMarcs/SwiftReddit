@@ -28,8 +28,8 @@ struct LinkButton: View {
                 Spacer()
                 
                 Image(systemName: "chevron.right")
-                    .foregroundStyle(.tertiary)
-                    .font(.headline)
+                    .foregroundStyle(.secondary.opacity(0.6))
+                    .font(.system(size: 13.5, weight: .medium))
             }
             .contentShape(.rect)
         }
