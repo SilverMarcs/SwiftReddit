@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct SubredditInfoButton: View {
     let subreddit: Subreddit
@@ -17,9 +16,8 @@ struct SubredditInfoButton: View {
             showingSubredditInfo = true
         } label: {
             if let url = URL(string: subreddit.iconURL ?? "") {
-                KFImage(url)
-                    .downsampling(size: CGSize(width: 30, height: 20))
-                    .fade(duration: 0.1)
+                CachedImageView(url: url, targetSize: CGSize(width: 50, height: 50))
+                    .frame(width: 30, height: 30)
                     .clipShape(Circle())
             } else {
                 Image(systemName: "info.circle")

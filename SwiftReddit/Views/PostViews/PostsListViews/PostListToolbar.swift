@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct PostListToolbar: ToolbarContent {
     let feedType: PostFeedType

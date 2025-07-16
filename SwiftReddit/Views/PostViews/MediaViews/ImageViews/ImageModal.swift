@@ -28,7 +28,8 @@ struct ImageModal: View {
         ZStack {
             // Current Image
             if let currentImage = images[safe: currentIndex] {
-                ImageView(url: URL(string: currentImage.url), aspectRatio: currentImage.aspectRatio)
+                CachedImage(url: URL(string: galleryImage.url)!, targetSize: CGSize(width: 500, height: 500))
+                    .aspectRatio(contentMode: .fit)
                     .zoomable()
             }
             
@@ -56,7 +57,8 @@ struct ImageModal: View {
         #else
         TabView(selection: $currentIndex) {
             ForEach(Array(images.enumerated()), id: \.offset) { index, galleryImage in
-                ImageView(url: URL(string: galleryImage.url), aspectRatio: galleryImage.aspectRatio)
+                CachedImageView(url: URL(string: galleryImage.url)!, targetSize: CGSize(width: 500, height: 500))
+                    .aspectRatio(contentMode: .fit)
                     .zoomable()
                     .overlay(alignment: .bottomTrailing) {
                         SaveImageButton(imageURL: galleryImage.url)

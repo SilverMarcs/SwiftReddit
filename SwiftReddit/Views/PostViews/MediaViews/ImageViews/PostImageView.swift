@@ -20,7 +20,8 @@ struct PostImageView: View {
             Button {
                 appendToPath(ImageModalData(image: image))
             } label: {
-                ImageView(url: url, aspectRatio: image.aspectRatio)
+                CachedImageView(url: url, targetSize: CGSize(width: 500, height: 500))
+                    .aspectRatio(image.aspectRatio, contentMode: .fit)
                     .matchedTransitionSource(id: image.url, in: imageNS ?? fallbackNS)
                     .cornerRadius(12)
                     .clipped()

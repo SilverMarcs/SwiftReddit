@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct UserSubredditsView: View {
     @Environment(\.appendToPath) var appendToPath

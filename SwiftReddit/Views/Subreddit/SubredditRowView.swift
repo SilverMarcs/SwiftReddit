@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct SubredditRowView: View {
     @Environment(\.appendToPath) var appendToPath
@@ -24,11 +23,11 @@ struct SubredditRowView: View {
                     }
                 } icon : {
                     if let iconURL = subreddit.iconURL, let url = URL(string: iconURL) {
-                        KFImage(url)
-                            .downsampling(size: CGSize(width: 32, height: 32))
-                            .fade(duration: 0.1)
+                        CachedImageView(url: url, targetSize: CGSize(width: 50, height: 50))
+                            .foregroundStyle(subreddit.color ?? .secondary)
                             .clipShape(Circle())
                             .frame(width: 32, height: 32)
+
                     } else {
                         Image(systemName: "r.circle")
                             .foregroundStyle(subreddit.color ?? .secondary)

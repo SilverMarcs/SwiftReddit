@@ -9,21 +9,7 @@ import Foundation
 import Kingfisher
 
 /// Utility for extracting and prefetching image URLs during media processing
-struct MediaURLExtractor {
-    
-    /// Kingfisher options for prefetching with downsampling and JPEG serialization
-    static let prefetchOptions: KingfisherOptionsInfo = [
-        .processor(DownsamplingImageProcessor(size: CGSize(width: 1000, height: 1000))),
-        .cacheSerializer(FormatIndicatedCacheSerializer.jpeg),
-        .alsoPrefetchToMemory
-//        .backgroundDecode,
-//        .cacheOriginalImage,
-//        .scaleFactor(UIScreen.main.scale),
-//        .cacheMemoryOnly // Keep in memory for faster access
-//        .scaleFactor(UIScreen.main.scale),
-
-    ]
-    
+struct MediaURLExtractor {    
     /// Extract image URLs from a MediaType and start prefetching immediately
     /// - Parameter mediaType: The MediaType to extract URLs from
     /// - Returns: Array of URLs that were extracted and queued for prefetching
@@ -91,19 +77,5 @@ struct MediaURLExtractor {
         }
         
         return urls
-    }
-    
-    /// Prefetch images using Kingfisher's ImagePrefetcher
-    /// - Parameter urls: URLs to prefetch
-    private static func prefetchImages(urls: [URL]) {
-        let prefetcher = ImagePrefetcher(
-            urls: urls,
-            options: prefetchOptions, completionHandler:  { skippedResources, failedResources, completedResources in
-                if !failedResources.isEmpty {
-                    AppLogger.info("Image prefetching completed with \(failedResources.count) failures")
-                }
-            })
-        
-        prefetcher.start()
     }
 }

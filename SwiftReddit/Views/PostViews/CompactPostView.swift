@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct CompactPostView: View {
     @Environment(\.appendToPath) var appendToPath
@@ -55,24 +54,8 @@ struct CompactPostView: View {
                 Spacer()
                 
                 if let url = post.mediaType.firstMediaURL, let mediaURL = URL(string: url) {
-                    KFImage(mediaURL)
-                        .placeholder {
-                            Rectangle()
-                                .fill(.background.secondary)
-                                .frame(width: 70, height: 70)
-                                .aspectRatio(1, contentMode: .fill)
-                                .cornerRadius(12)
-                                .clipped()
-                                .overlay(
-                                    ProgressView()
-                                )
-                        }
-                        .downsampling(size: CGSize(width: 1000, height: 1000))
-                        .serialize(as: .JPEG)
-                        .fade(duration: 0.1)
-                        .resizable()
+                    CachedImageView(url: mediaURL, targetSize: CGSize(width: 500, height: 500))
                         .frame(width: 70, height: 70)
-                        .aspectRatio(1, contentMode: .fill)
                         .cornerRadius(12)
                         .clipped()
                 }

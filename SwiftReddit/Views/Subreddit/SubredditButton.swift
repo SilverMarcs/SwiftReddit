@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct SubredditButton: View {
     @Environment(\.appendToPath) var appendToPath
@@ -25,17 +24,7 @@ struct SubredditButton: View {
                     .foregroundStyle(subreddit.color ?? .blue)
             case .icon(let iconURL):
                 if let url = URL(string: iconURL) {
-                    KFImage(url)
-                        .placeholder { // during loading
-                            Image(systemName: "r.circle")
-                                .resizable()
-                                .frame(width: 32, height: 32)
-                                .foregroundStyle(subreddit.color ?? .secondary)
-                               .clipShape(Circle())
-                        }
-                        .downsampling(size: CGSize(width: 60, height: 60))
-                        .fade(duration: 0.1)
-                        .resizable()
+                    CachedImageView(url: url, targetSize: CGSize(width: 50, height: 50))
                         .frame(width: 32, height: 32)
                         .clipShape(Circle())
                 } else {
@@ -43,7 +32,7 @@ struct SubredditButton: View {
                         .resizable()
                         .frame(width: 32, height: 32)
                         .font(.title)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(subreddit.color ?? .blue)
                 }
             }
         }

@@ -6,12 +6,10 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
     @State private var deleteAlertPresented = false
-    @State private var cacheSize: String = "Calculating..."
     
     @AppStorage("autoplay") var autoplay: Bool = true
     @AppStorage("muteOnPlay") var muteOnPlay: Bool = false
@@ -19,6 +17,17 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
+                // TODO: Experimental
+                Button(action: {
+                    Task {
+                        await clearAllCaches()
+                    }
+                }) {
+                    Label("Clear All Caches", systemImage: "trash")
+                        .foregroundColor(.red)
+                }
+                .buttonStyle(.bordered)
+                
                 Section("Reddit API") {
                     NavigationLink(destination: CredentialsView()) {
                         Label("Credentials", systemImage: "key.fill")
@@ -48,7 +57,7 @@ struct SettingsView: View {
                             
                             Spacer()
                             
-                            Text("\(cacheSize)")
+                            Text("{Cache Size}")
                         }
                         .contentShape(.rect)
                     }
@@ -57,17 +66,16 @@ struct SettingsView: View {
                     #endif
                     .alert("Clear Image Cache", isPresented: $deleteAlertPresented) {
                         Button("Clear", role: .destructive) {
-                            ImageCache.default.clearCache()
-                            calculateCacheSize()
+                            Task {
+                                await MemoryCacher.shared.clearCache()
+                                DiskCache.shared.clearCache()
+                            }
                         }
                         Button("Cancel", role: .cancel) { }
                     } message: {
                         Text("This will clear all cached images, freeing up storage space.")
                     }
                 }
-            }
-            .task {
-                calculateCacheSize()
             }
             .formStyle(.grouped)
             .navigationTitle("Settings")
@@ -84,19 +92,6 @@ struct SettingsView: View {
                 }
             }
             #endif
-        }
-    }
-    
-    private func calculateCacheSize() {
-        ImageCache.default.calculateDiskStorageSize { result in
-            Task { @MainActor in
-                switch result {
-                case .success(let size):
-                    self.cacheSize = unsafe String(format: "%.2f MB", Double(size) / 1024 / 1024)
-                case .failure:
-                    self.cacheSize = "Unknown"
-                }
-            }
         }
     }
 }

@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Kingfisher
 
 extension RedditAPI {
     static func fetchPosts(for feedType: PostFeedType, sort: SubListingSortOption = .best, after: String? = nil, limit: Int = 10) async -> ([Post], String?)? {

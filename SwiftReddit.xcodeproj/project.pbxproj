@@ -6,10 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		0856134F2E08428600C41C05 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 0856134E2E08428600C41C05 /* Kingfisher */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXFileReference section */
 		08846F642DFF0E1B009F6F77 /* SwiftReddit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftReddit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -40,7 +36,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0856134F2E08428600C41C05 /* Kingfisher in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,7 +78,6 @@
 			);
 			name = SwiftReddit;
 			packageProductDependencies = (
-				0856134E2E08428600C41C05 /* Kingfisher */,
 			);
 			productName = SwiftReddit;
 			productReference = 08846F642DFF0E1B009F6F77 /* SwiftReddit.app */;
@@ -114,7 +108,6 @@
 			mainGroup = 08846F5B2DFF0E1B009F6F77;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				0856134D2E08428600C41C05 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 08846F652DFF0E1B009F6F77 /* Products */;
@@ -401,25 +394,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		0856134D2E08428600C41C05 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/onevcat/Kingfisher";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 8.3.3;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		0856134E2E08428600C41C05 /* Kingfisher */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0856134D2E08428600C41C05 /* XCRemoteSwiftPackageReference "Kingfisher" */;
-			productName = Kingfisher;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 08846F5C2DFF0E1B009F6F77 /* Project object */;
 }
