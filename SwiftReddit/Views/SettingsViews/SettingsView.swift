@@ -57,7 +57,7 @@ struct SettingsView: View {
                         Button("Clear", role: .destructive) {
                             Task {
                                 await MemoryCache.shared.clearCache()
-                                DiskCache.shared.clearCache()
+                                await DiskCache.shared.clearCache()
                             }
                         }
                         Button("Cancel", role: .cancel) { }

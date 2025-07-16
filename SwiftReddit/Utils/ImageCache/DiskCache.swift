@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct DiskCache {
+actor DiskCache {
     static let shared = DiskCache()
     private let fileManager = FileManager.default
     
@@ -15,8 +15,8 @@ struct DiskCache {
         fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first?
             .appendingPathComponent("ImageCacher")
     }
-    
-    init() {
+
+    func setup() {
         createCacheDirectoryIfNeeded()
     }
     
@@ -28,7 +28,7 @@ struct DiskCache {
     func store(_ data: Data, for key: String) {
         guard let cacheDirectory = cacheDirectory else { return }
         let fileURL = cacheDirectory.appendingPathComponent(key)
-        try? data.write(to: fileURL)
+        try? data.write(to: fileURL, options: .atomic)
     }
     
     func retrieve(for key: String) -> Data? {

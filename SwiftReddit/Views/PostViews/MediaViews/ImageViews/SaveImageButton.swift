@@ -39,7 +39,7 @@ struct SaveImageButton: View {
                 imageToSave = cachedImage
             }
             // Try disk cache next
-            else if let diskData = DiskCache.shared.retrieve(for: imageURL),
+            else if let diskData = await DiskCache.shared.retrieve(for: imageURL),
                     let diskImage = UIImage(data: diskData) {
                 imageToSave = diskImage
                 // Store in memory cache for future use
@@ -53,7 +53,7 @@ struct SaveImageButton: View {
                 
                 // Store in both caches for future use
                 await MemoryCache.shared.insert(downloadedImage, for: imageURL)
-                DiskCache.shared.store(data, for: imageURL)
+                await DiskCache.shared.store(data, for: imageURL)
             }
             
             // Save to photo library

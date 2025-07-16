@@ -37,6 +37,9 @@ struct ContentView: View {
                     .environment(\.videoNS, videoNS)
             }
         }
+        .task {
+             await DiskCache.shared.setup()
+         }
         .tabViewStyle(.sidebarAdaptable)
         #if !os(macOS)
         .tabBarMinimizeBehavior(.onScrollDown)

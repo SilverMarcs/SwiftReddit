@@ -13,9 +13,8 @@ actor MemoryCache {
     private var cache = NSCache<NSString, UIImage>()
     
     init() {
-        cache.countLimit = 150
-        // Add total cost limit (in bytes) to prevent excessive memory usage
-        cache.totalCostLimit = 1024 * 1024 * 60 // 100 MB
+        cache.countLimit = 100
+        cache.totalCostLimit = 1024 * 1024 * 50 // 50 MB
     }
     
     func insert(_ image: UIImage, for key: String) {

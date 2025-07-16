@@ -26,8 +26,8 @@ struct CachedImageView: View {
                     .overlay { ProgressView() }
             }
         }
-        .task {
-            image = await loader.loadAndGetImage()
+        .task(id: loader.url) {
+            image = try? await loader.loadAndGetImage()
         }
     }
 }
