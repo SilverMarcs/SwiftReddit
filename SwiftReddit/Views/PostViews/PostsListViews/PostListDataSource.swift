@@ -22,6 +22,7 @@ import Foundation
     
     func loadInitialPosts() async {
         guard !isLoading else { return }
+        posts = []
         
         isLoading = true
         await fetchPosts(isRefresh: true)

@@ -11,7 +11,7 @@ struct LoadingIndicator: View {
     var body: some View {
         ProgressView()
             .controlSize(.large)
-            .frame(maxWidth: .infinity, minHeight: 200)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .listRowSeparator(.hidden)
     }
 }
