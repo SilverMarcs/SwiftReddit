@@ -23,36 +23,48 @@ import SwiftUI
 
     func vote(action: RedditAPI.VoteAction) {
         hapticFeedback()
-        let initialLikes = likes
-        let initialUpsCount = upsCount
+        let previousState = (likes: likes, count: upsCount)
         
-        // Optimistically update the UI
-        switch action {
-        case .up:
-            withAnimation {
-                likes = (likes == true) ? nil : true
-                upsCount += (likes == true) ? (initialLikes == nil ? 1 : -1) : -1
+        withAnimation {
+            switch (action, likes) {
+            case (.up, true):     // Remove upvote
+                likes = nil
+                upsCount -= 1
+                
+            case (.up, false):    // Change downvote to upvote
+                likes = true
+                upsCount += 2
+                
+            case (.up, nil):      // Add upvote
+                likes = true
+                upsCount += 1
+                
+            case (.down, true):   // Change upvote to downvote
+                likes = false
+                upsCount -= 2
+                
+            case (.down, false):  // Remove downvote
+                likes = nil
+                upsCount += 1
+                
+            case (.down, nil):    // Add downvote
+                likes = false
+                upsCount -= 1
+                
+            case (.none, _):
+                break
             }
-        case .down:
-            withAnimation {
-                likes = (likes == false) ? nil : false
-                upsCount += (likes == false) ? (initialLikes == nil ? -1 : 1) : 1
-            }
-        case .none:
-            break
         }
         
         Task {
-            let success: Bool?
-            switch targetType {
-            case .post:
-                success = await RedditAPI.vote(action, id: id)
-            case .comment:
-                success = await RedditAPI.voteComment(action, id: id)
-            }
+            let success = await (targetType == .post)
+                ? RedditAPI.vote(action, id: id)
+                : RedditAPI.voteComment(action, id: id)
+                
             if success != true {
-                likes = initialLikes
-                upsCount = initialUpsCount
+                // Revert on failure
+                likes = previousState.likes
+                upsCount = previousState.count
             }
         }
     }
