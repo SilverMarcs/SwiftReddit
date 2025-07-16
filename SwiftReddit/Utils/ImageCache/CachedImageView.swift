@@ -9,7 +9,11 @@ import SwiftUI
 
 struct CachedImageView: View {
     private var loader: ImageLoader
+    #if os(macOS)
+    @State private var image: NSImage?
+    #else
     @State private var image: UIImage?
+    #endif
     
     init(url: URL, targetSize: CGSize) {
         self.loader = ImageLoader(url: url, targetSize: targetSize)
@@ -18,13 +22,18 @@ struct CachedImageView: View {
     var body: some View {
         Group {
             if let image = image {
-                Image(uiImage: image)
+                #if os(macOS)
+                Image(nsImage: image)
                     .resizable()
 //                    .interpolation(.none)
+                #else
+                Image(uiImage: image)
+                    .resizable()
+                    .interpolation(.none)
+                #endif
             } else {
                 Rectangle()
-                    .fill(.background.secondary)
-//                    .overlay { ProgressView() }
+                    .fill(.secondary)
             }
         }
         .task(id: loader.url) {

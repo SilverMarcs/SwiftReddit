@@ -15,14 +15,20 @@ enum ImageError: Error {
 class ImageLoader {
     let url: URL
     private let targetSize: CGSize
-    private var loadTask: Task<UIImage?, Never>?
+    private var loadTask: Task<PlatformImage?, Never>?
     
     init(url: URL, targetSize: CGSize) {
         self.url = url
         self.targetSize = targetSize
     }
     
-    func loadAndGetImage() async throws -> UIImage {
+    #if os(macOS)
+    typealias PlatformImage = NSImage
+    #else
+    typealias PlatformImage = UIImage
+    #endif
+    
+    func loadAndGetImage() async throws -> PlatformImage {
         loadTask?.cancel()
         
         return try await Task {
@@ -34,7 +40,7 @@ class ImageLoader {
             }
             
             do {
-                let image: UIImage?
+                let image: PlatformImage?
                 
                 // Check disk cache first
                 if let diskData = await DiskCache.shared.retrieve(for: url.absoluteString) {
@@ -57,7 +63,7 @@ class ImageLoader {
         }.value
     }
     
-    private func loadImage(from data: Data) async -> UIImage? {
+    private func loadImage(from data: Data) async -> PlatformImage? {
         await Task.detached(priority: .userInitiated) {
             let imageSourceOptions = [
                 kCGImageSourceShouldCache: false,
@@ -68,22 +74,29 @@ class ImageLoader {
                 return nil
             }
             
-            // More aggressive downsampling with fixed size
-            let maxDimension = min(self.targetSize.width, self.targetSize.height) * 2 // Fixed scale factor
+            let maxDimension = min(self.targetSize.width, self.targetSize.height) * 2
             
             let downsampleOptions = [
                 kCGImageSourceCreateThumbnailFromImageAlways: true,
-                kCGImageSourceShouldCacheImmediately: false, // Changed to false
+                kCGImageSourceShouldCacheImmediately: false,
                 kCGImageSourceCreateThumbnailWithTransform: true,
                 kCGImageSourceThumbnailMaxPixelSize: maxDimension,
                 kCGImageSourceShouldAllowFloat: false
             ] as CFDictionary
             
             if let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) {
+                #if os(macOS)
+                return NSImage(cgImage: downsampledImage, size: NSSize(width: maxDimension, height: maxDimension))
+                #else
                 return UIImage(cgImage: downsampledImage, scale: 1.0, orientation: .up)
+                #endif
             }
             
+            #if os(macOS)
+            return NSImage(data: data)
+            #else
             return UIImage(data: data, scale: 1.0)
+            #endif
         }.value
     }
 }
