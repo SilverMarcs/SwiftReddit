@@ -7,6 +7,7 @@
 
 import SwiftUI
 import PhotosUI
+import CachedAsyncImage
  
 struct SaveImageButton: View {
     let imageURL: String
@@ -32,36 +33,22 @@ struct SaveImageButton: View {
         defer { isSaving = false }
         
         do {
-            var imageToSave: UIImage?
-            
-            // Try memory cache first
+            // Since we're saving an image that's being displayed, it should be in memory cache
             if let cachedImage = await MemoryCache.shared.get(for: imageURL) {
-                imageToSave = cachedImage
-            }
-            // Try disk cache next
-            else if let diskData = await DiskCache.shared.retrieve(for: imageURL),
-                    let diskImage = UIImage(data: diskData) {
-                imageToSave = diskImage
-                // Store in memory cache for future use
-                await MemoryCache.shared.insert(diskImage, for: imageURL)
-            }
-            // Finally, download if not in any cache
-            else {
-                let (data, _) = try await URLSession.shared.data(from: url)
-                guard let downloadedImage = UIImage(data: data) else { return }
-                imageToSave = downloadedImage
-                
-                // Store in both caches for future use
-                await MemoryCache.shared.insert(downloadedImage, for: imageURL)
-                await DiskCache.shared.store(data, for: imageURL)
-            }
-            
-            // Save to photo library
-            if let finalImage = imageToSave {
                 try await PHPhotoLibrary.shared().performChanges {
                     @Sendable in
-                    PHAssetChangeRequest.creationRequestForAsset(from: finalImage)
+                    PHAssetChangeRequest.creationRequestForAsset(from: cachedImage)
                 }
+                return
+            }
+            
+            // Fallback: Download if somehow not in memory cache
+            let (data, _) = try await URLSession.shared.data(from: url)
+            guard let downloadedImage = UIImage(data: data) else { return }
+            
+            try await PHPhotoLibrary.shared().performChanges {
+                @Sendable in
+                PHAssetChangeRequest.creationRequestForAsset(from: downloadedImage)
             }
         } catch {
             print("Failed to save image: \(error)")

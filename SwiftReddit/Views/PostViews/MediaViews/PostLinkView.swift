@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CachedAsyncImage
 
 struct PostLinkView: View {
   @Environment(\.openURL) var openURL
@@ -30,7 +31,7 @@ struct PostLinkView: View {
               Spacer()
               
               if let thumbnailURL = metadata.thumbnailURL, let url = URL(string: thumbnailURL) {
-                  CachedImageView(url: url, targetSize: CGSize(width: 100, height: 100))
+                  CachedAsyncImage(url: url, targetSize: CGSize(width: 100, height: 100))
                       .frame(width: 90, height: 60)
                       .cornerRadius(12)
                       .clipped()

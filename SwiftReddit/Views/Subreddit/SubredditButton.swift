@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CachedAsyncImage
 
 struct SubredditButton: View {
     @Environment(\.appendToPath) var appendToPath
@@ -24,7 +25,7 @@ struct SubredditButton: View {
                     .foregroundStyle(subreddit.color ?? .blue)
             case .icon(let iconURL):
                 if let url = URL(string: iconURL) {
-                    CachedImageView(url: url, targetSize: CGSize(width: 50, height: 50))
+                    CachedAsyncImage(url: url, targetSize: CGSize(width: 50, height: 50))
                         .frame(width: 32, height: 32)
                         .clipShape(Circle())
                 } else {

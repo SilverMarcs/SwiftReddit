@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Kingfisher
 
 /// Utility for extracting and prefetching image URLs during media processing
 struct MediaURLExtractor {    

@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		08D5D85A2E283C910027D139 /* CachedAsyncImage in Frameworks */ = {isa = PBXBuildFile; productRef = 08D5D8592E283C910027D139 /* CachedAsyncImage */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		08846F642DFF0E1B009F6F77 /* SwiftReddit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftReddit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				08D5D85A2E283C910027D139 /* CachedAsyncImage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +83,7 @@
 			);
 			name = SwiftReddit;
 			packageProductDependencies = (
+				08D5D8592E283C910027D139 /* CachedAsyncImage */,
 			);
 			productName = SwiftReddit;
 			productReference = 08846F642DFF0E1B009F6F77 /* SwiftReddit.app */;
@@ -108,6 +114,7 @@
 			mainGroup = 08846F5B2DFF0E1B009F6F77;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				08D5D8582E283C910027D139 /* XCLocalSwiftPackageReference "../CachedAsyncImage" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 08846F652DFF0E1B009F6F77 /* Products */;
@@ -394,6 +401,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		08D5D8582E283C910027D139 /* XCLocalSwiftPackageReference "../CachedAsyncImage" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../CachedAsyncImage;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		08D5D8592E283C910027D139 /* CachedAsyncImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CachedAsyncImage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 08846F5C2DFF0E1B009F6F77 /* Project object */;
 }

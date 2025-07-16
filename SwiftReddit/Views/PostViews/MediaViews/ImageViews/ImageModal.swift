@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CachedAsyncImage
 
 struct ImageModal: View {
     let images: [GalleryImage]
@@ -57,7 +58,7 @@ struct ImageModal: View {
         #else
         TabView(selection: $currentIndex) {
             ForEach(Array(images.enumerated()), id: \.offset) { index, galleryImage in
-                CachedImageView(url: URL(string: galleryImage.url)!, targetSize: CGSize(width: 500, height: 500))
+                CachedAsyncImage(url: URL(string: galleryImage.url)!, targetSize: CGSize(width: 500, height: 500))
                     .aspectRatio(contentMode: .fit)
                     .zoomable()
                     .tag(index)

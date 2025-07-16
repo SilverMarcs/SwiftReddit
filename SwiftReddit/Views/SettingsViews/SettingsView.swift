@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CachedAsyncImage
 
 struct SettingsView: View {
     @Environment(\.dismiss) var dismiss

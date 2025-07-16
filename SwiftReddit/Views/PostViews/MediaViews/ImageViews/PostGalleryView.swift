@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CachedAsyncImage
 
 struct PostGalleryView: View {
     @Environment(\.imageNS) private var imageNS
@@ -26,7 +27,7 @@ struct PostGalleryView: View {
                 Button {
                     appendToPath(ImageModalData(images: images, startIndex: 0))
                 } label: {
-                    CachedImageView(url: url, targetSize: CGSize(width: 500, height: 500))
+                    CachedAsyncImage(url: url, targetSize: CGSize(width: 500, height: 500))
                         .aspectRatio(contentMode: .fit)
                         .matchedTransitionSource(id: firstImage.url, in: imageNS ?? fallbackNS)
                         .cornerRadius(12)
@@ -47,7 +48,7 @@ struct PostGalleryView: View {
                             appendToPath(ImageModalData(images: images, startIndex: index + 1))
                         } label: {
                             if let url = URL(string: image.url) {
-                                CachedImageView(url: url, targetSize: CGSize(width: 500, height: 500))
+                                CachedAsyncImage(url: url, targetSize: CGSize(width: 500, height: 500))
                                     .aspectRatio(contentMode: .fill)
                                     .frame(width: 80, height: 80)
                                     .cornerRadius(8)

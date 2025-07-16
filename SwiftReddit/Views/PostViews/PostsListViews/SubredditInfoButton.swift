@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CachedAsyncImage
 
 struct SubredditInfoButton: View {
     let subreddit: Subreddit
@@ -16,7 +17,7 @@ struct SubredditInfoButton: View {
             showingSubredditInfo = true
         } label: {
             if let url = URL(string: subreddit.iconURL ?? "") {
-                CachedImageView(url: url, targetSize: CGSize(width: 50, height: 50))
+                CachedAsyncImage(url: url, targetSize: CGSize(width: 50, height: 50))
                     .frame(width: 30, height: 30)
                     .clipShape(Circle())
             } else {
