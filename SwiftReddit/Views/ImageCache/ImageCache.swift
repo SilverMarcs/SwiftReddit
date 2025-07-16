@@ -23,13 +23,17 @@ actor ImageCacher {
     private var cache = NSCache<NSString, UIImage>()
     
     init() {
-        // Set only count limit instead of cost
         cache.countLimit = 150
+        // Add total cost limit (in bytes) to prevent excessive memory usage
+        cache.totalCostLimit = 1024 * 1024 * 60 // 100 MB
     }
     
     func insert(_ image: UIImage, for key: String) {
-        // Simple insert without cost calculation
-        cache.setObject(image, forKey: key as NSString)
+        // Calculate approximate memory cost
+        let bytesPerPixel = 4
+        let imageSize = image.size
+        let cost = Int(imageSize.width * imageSize.height * CGFloat(bytesPerPixel))
+        cache.setObject(image, forKey: key as NSString, cost: cost)
     }
     
     func clearCache() {
@@ -94,33 +98,34 @@ struct DiskCache {
         loadTask?.cancel()
         
         loadTask = Task {
+            // Generate a cache key that includes the target size
+            let sizeKey = "\(Int(targetSize.width))x\(Int(targetSize.height))"
+            let cacheKey = "\(url.absoluteString)_\(sizeKey)"
+            
             // Check memory cache first
-            if let cachedImage = await ImageCacher.shared.get(for: url.absoluteString) {
+            if let cachedImage = await ImageCacher.shared.get(for: cacheKey) {
                 return cachedImage
             }
             
-            // Check disk cache
-            if let diskData = DiskCache.shared.retrieve(for: url.absoluteString),
-               let diskImage = UIImage(data: diskData) {
-                return diskImage  // Already downsampled image from disk
-            }
-            
-            // Download and downsample
+            // Efficient loading from disk or network
             do {
-                let (data, _) = try await URLSession.shared.data(from: url)
-                guard let downloadedImage = UIImage(data: data) else { return nil }
+                let image: UIImage?
                 
-                let downsampledImage = await downsample(image: downloadedImage)
-                
-                // Store downsampled image in memory cache
-                await ImageCacher.shared.insert(downsampledImage, for: url.absoluteString)
-                
-                // Store downsampled image data in disk cache
-                if let downsampledData = downsampledImage.jpegData(compressionQuality: 0.7) {
-                    DiskCache.shared.store(downsampledData, for: url.absoluteString)
+                // Check disk cache first
+                if let diskData = DiskCache.shared.retrieve(for: url.absoluteString) {
+                    image = await loadImage(from: diskData)
+                } else {
+                    // Download if not in disk cache
+                    let (data, _) = try await URLSession.shared.data(from: url)
+                    DiskCache.shared.store(data, for: url.absoluteString)
+                    image = await loadImage(from: data)
                 }
                 
-                return downsampledImage
+                if let finalImage = image {
+                    await ImageCacher.shared.insert(finalImage, for: cacheKey)
+                }
+                
+                return image
             } catch {
                 print("Error loading image: \(error)")
                 return nil
@@ -130,28 +135,40 @@ struct DiskCache {
         return await loadTask?.value
     }
     
-    private func downsample(image: UIImage) async -> UIImage {
+    private func loadImage(from data: Data) async -> UIImage? {
         await Task.detached(priority: .userInitiated) {
             let imageSourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
-            guard let imageData = image.jpegData(compressionQuality: 0.7) ?? image.pngData(), // Try JPEG first
-                  let imageSource = CGImageSourceCreateWithData(imageData as CFData, imageSourceOptions) else {
-                return image
+            guard let imageSource = CGImageSourceCreateWithData(data as CFData, imageSourceOptions) else {
+                return nil
             }
             
-            let maxDimensionInPixels = await max(self.targetSize.width, self.targetSize.height) * UIScreen.main.scale
-            
-            let downsampleOptions = [
-                kCGImageSourceCreateThumbnailFromImageAlways: true,
-                kCGImageSourceShouldCacheImmediately: true,
-                kCGImageSourceCreateThumbnailWithTransform: true,
-                kCGImageSourceThumbnailMaxPixelSize: maxDimensionInPixels
-            ] as CFDictionary
-            
-            guard let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) else {
-                return image
+            // Get image properties
+            guard let properties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [CFString: Any],
+                  let pixelWidth = properties[kCGImagePropertyPixelWidth] as? Int,
+                  let pixelHeight = properties[kCGImagePropertyPixelHeight] as? Int else {
+                return nil
             }
             
-            return UIImage(cgImage: downsampledImage)
+            // Calculate scale factor
+            let maxDimension = await max(self.targetSize.width, self.targetSize.height) * UIScreen.main.scale
+            let scale = maxDimension / CGFloat(max(pixelWidth, pixelHeight))
+            
+            // Only downsample if image is larger than needed
+            if scale < 1.0 {
+                let downsampleOptions = [
+                    kCGImageSourceCreateThumbnailFromImageAlways: true,
+                    kCGImageSourceShouldCacheImmediately: true,
+                    kCGImageSourceCreateThumbnailWithTransform: true,
+                    kCGImageSourceThumbnailMaxPixelSize: maxDimension
+                ] as CFDictionary
+                
+                if let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) {
+                    return UIImage(cgImage: downsampledImage)
+                }
+            }
+            
+            // Return original image if downsampling not needed or failed
+            return UIImage(data: data)
         }.value
     }
 }
