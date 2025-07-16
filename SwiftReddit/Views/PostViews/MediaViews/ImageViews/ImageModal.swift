@@ -60,16 +60,16 @@ struct ImageModal: View {
                 CachedImageView(url: URL(string: galleryImage.url)!, targetSize: CGSize(width: 500, height: 500))
                     .aspectRatio(contentMode: .fit)
                     .zoomable()
-                    .overlay(alignment: .bottomTrailing) {
-                        SaveImageButton(imageURL: galleryImage.url)
-                            .padding()
-                    }
                     .tag(index)
             }
         }
         .ignoresSafeArea()
         .tabViewStyle(.page)
         .navigationTransition(.zoom(sourceID: sourceID, in: imageNS ?? fallbackNS))
+        .overlay(alignment: .bottomTrailing) {
+            SaveImageButton(imageURL: images[currentIndex].url)
+                .padding()
+        }
         #endif
     }
     

@@ -20,10 +20,11 @@ struct CachedImageView: View {
             if let image = image {
                 Image(uiImage: image)
                     .resizable()
+//                    .interpolation(.none)
             } else {
                 Rectangle()
                     .fill(.background.secondary)
-                    .overlay { ProgressView() }
+//                    .overlay { ProgressView() }
             }
         }
         .task(id: loader.url) {

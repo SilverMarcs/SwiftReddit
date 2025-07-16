@@ -57,42 +57,6 @@ class ImageLoader {
         }.value
     }
     
-//    private func loadImage(from data: Data) async -> UIImage? {
-//        await Task.detached(priority: .userInitiated) {
-//            let imageSourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
-//            guard let imageSource = CGImageSourceCreateWithData(data as CFData, imageSourceOptions) else {
-//                return nil
-//            }
-//            
-//            // Get image properties
-//            guard let properties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [CFString: Any],
-//                  let pixelWidth = properties[kCGImagePropertyPixelWidth] as? Int,
-//                  let pixelHeight = properties[kCGImagePropertyPixelHeight] as? Int else {
-//                return nil
-//            }
-//            
-//            // Calculate scale factor
-//            let maxDimension = await max(self.targetSize.width, self.targetSize.height) * UIScreen.main.scale
-//            let scale = maxDimension / CGFloat(max(pixelWidth, pixelHeight))
-//            
-//            // Only downsample if image is larger than needed
-//            if scale < 1.0 {
-//                let downsampleOptions = [
-//                    kCGImageSourceCreateThumbnailFromImageAlways: true,
-//                    kCGImageSourceShouldCacheImmediately: true,
-//                    kCGImageSourceCreateThumbnailWithTransform: true,
-//                    kCGImageSourceThumbnailMaxPixelSize: maxDimension
-//                ] as CFDictionary
-//                
-//                if let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) {
-//                    return UIImage(cgImage: downsampledImage)
-//                }
-//            }
-//            
-//            // Return original image if downsampling not needed or failed
-//            return UIImage(data: data)
-//        }.value
-//    }
     private func loadImage(from data: Data) async -> UIImage? {
         await Task.detached(priority: .userInitiated) {
             let imageSourceOptions = [
@@ -104,22 +68,22 @@ class ImageLoader {
                 return nil
             }
             
-            // More aggressive downsampling
-            let maxDimension = await min(self.targetSize.width, self.targetSize.height) * UIScreen.main.scale
+            // More aggressive downsampling with fixed size
+            let maxDimension = min(self.targetSize.width, self.targetSize.height) * 2 // Fixed scale factor
             
             let downsampleOptions = [
                 kCGImageSourceCreateThumbnailFromImageAlways: true,
-                kCGImageSourceShouldCacheImmediately: true,
+                kCGImageSourceShouldCacheImmediately: false, // Changed to false
                 kCGImageSourceCreateThumbnailWithTransform: true,
                 kCGImageSourceThumbnailMaxPixelSize: maxDimension,
                 kCGImageSourceShouldAllowFloat: false
             ] as CFDictionary
             
             if let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) {
-                return UIImage(cgImage: downsampledImage)
+                return UIImage(cgImage: downsampledImage, scale: 1.0, orientation: .up)
             }
             
-            return UIImage(data: data)
+            return UIImage(data: data, scale: 1.0)
         }.value
     }
 }
