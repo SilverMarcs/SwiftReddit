@@ -8,25 +8,25 @@
 import SwiftUI
 
 struct URLHandlingModifier: ViewModifier {
-    @Environment(\.appendToPath) var appendToPath
+    let path: Binding<NavigationPath>
     
     func body(content: Content) -> some View {
         content
             .environment(\.openURL, OpenURLAction { url in
                 if let galleryImage = detectRedditImage(from: url) {
-//                    ImageOverlayViewModel.shared.present(images: [galleryImage])
-                    appendToPath(ImageModalData(image: galleryImage))
+                    path.wrappedValue.append(ImageModalData(image: galleryImage))
                     return .handled
                 }
 
                 if let navPayload = parseRedditURL(url) {
-                    appendToPath(navPayload)
+                    path.wrappedValue.append(navPayload)
                     return .handled
                 }
 
                 return .systemAction(prefersInApp: true)
             })
     }
+    
     /// Parses Reddit URLs for posts, comments, and subreddits
     private func parseRedditURL(_ url: URL) -> (any Hashable)? {
         guard let host = url.host, host.contains("reddit.com") else { return nil }
@@ -83,7 +83,7 @@ struct URLHandlingModifier: ViewModifier {
 
 extension View {
     /// Applies Reddit-aware URL handling to this view
-    func handleURLs() -> some View {
-        modifier(URLHandlingModifier())
+    func handleURLs(path: Binding<NavigationPath>) -> some View {
+        modifier(URLHandlingModifier(path: path))
     }
 }

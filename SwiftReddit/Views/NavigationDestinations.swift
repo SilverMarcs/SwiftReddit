@@ -13,7 +13,7 @@ extension View {
             .environment(\.appendToPath, { value in
                 path.wrappedValue.append(value)
             })
-            .handleURLs()
+            .handleURLs(path: path)
     }
     
     func navigationDestinations(path: Binding<NavigationPath>) -> some View {
