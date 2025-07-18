@@ -13,6 +13,8 @@ struct UserSubredditsView: View {
     @State private var isLoading = false
     @State private var showSettings = false
     
+//    @Namespace private var transition
+
     var body: some View {
         List {
             UserLinks()
@@ -45,6 +47,9 @@ struct UserSubredditsView: View {
         .toolbarTitleDisplayMode(.inlineLarge)
         .sheet(isPresented: $showSettings) {
             SettingsView()
+//                .navigationTransition(
+//                   .zoom(sourceID: "settings", in: transition)
+//               )
         }
         #if !os(macOS)
         .toolbar {
@@ -55,6 +60,9 @@ struct UserSubredditsView: View {
                     Image(systemName: "gear")
                 }
             }
+//            .matchedTransitionSource(
+//                id: "info", in: transition
+//            )
         }
         #endif
     }

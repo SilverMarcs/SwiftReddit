@@ -42,7 +42,7 @@ struct SearchView: View {
         }
         .navigationTitle("Search")
         .toolbarTitleDisplayMode(.inlineLarge)
-        .searchable(text: $searchText, prompt: "Search \(searchScope.rawValue)")
+        .searchable(text: $searchText, placement: .toolbarPrincipal, prompt: "Search \(searchScope.rawValue)")
         .searchScopes($searchScope) {
             ForEach(SearchScope.allCases, id: \.self) { scope in
                 Text(scope.rawValue).tag(scope)
@@ -61,11 +61,13 @@ struct SearchView: View {
             }
         }
         .toolbar {
-            ToolbarItem(placement: .destructiveAction) {
-                Button("Clear", role: .destructive) {
+            ToolbarItem(placement: .primaryAction) {
+                Button(role: .destructive) {
                     searchText = ""
                     subredditResults = []
                     postResults = []
+                } label: {
+                    Image(systemName: "eraser")
                 }
                 .disabled(searchText.isEmpty && searchResults.isEmpty)
             }

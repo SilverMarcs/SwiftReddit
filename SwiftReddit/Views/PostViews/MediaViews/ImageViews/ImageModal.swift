@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CachedAsyncImage
+import PhotosUI
 
 struct ImageModal: View {
     let images: [GalleryImage]
@@ -29,7 +30,7 @@ struct ImageModal: View {
         ZStack {
             // Current Image
             if let currentImage = images[safe: currentIndex] {
-                CachedImage(url: URL(string: galleryImage.url)!, targetSize: CGSize(width: 500, height: 500))
+                CachedAsyncImage(url: URL(string: currentImage.url)!, targetSize: CGSize(width: 500, height: 500))
                     .aspectRatio(contentMode: .fit)
                     .zoomable()
             }
@@ -90,18 +91,4 @@ extension Collection {
     subscript(safe index: Index) -> Element? {
         return indices.contains(index) ? self[index] : nil
     }
-}
-
-private func saveImageToPhotos(from url: URL) {
-    let task = URLSession.shared.dataTask(with: url) { data, response, error in
-        guard let data = data, error == nil,
-              let image = UIImage(data: data) else {
-            return
-        }
-        
-        DispatchQueue.main.async {
-            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-        }
-    }
-    task.resume()
 }
