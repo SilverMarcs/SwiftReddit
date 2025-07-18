@@ -1,7 +1,7 @@
 # SwiftReddit
 
 Simple SwiftUI Reddit client with Liquid Glass.
-Uses several new SwiftUI APIs introduced in WWDC25/
+Uses several new SwiftUI APIs introduced in WWDC25
 
 ## Features
 - Fetch Home feed and apply filters (Best/Top/Controversial etc)
