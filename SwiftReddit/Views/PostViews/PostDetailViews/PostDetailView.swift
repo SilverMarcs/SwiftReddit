@@ -37,6 +37,7 @@ struct PostDetailView: View {
                 if dataSource.isLoading {
                     LoadingIndicator()
                         .id(UUID())
+                        .padding()
                     
                 } else if !dataSource.visibleComments.isEmpty {
                     Text("Comments")
