@@ -1,4 +1,4 @@
-# SwiftReddit
+# SwiftDdit
 
 Simple SwiftUI Reddit client with Liquid Glass.
 Uses several new SwiftUI APIs introduced in WWDC25
