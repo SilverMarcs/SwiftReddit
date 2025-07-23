@@ -57,6 +57,7 @@ struct CredentialsView: View {
                         
                         HStack {
                             Text("swiftddit://auth-success")
+                                .monospaced()
                             Spacer()
                             Button {
                                 #if os(macOS)
