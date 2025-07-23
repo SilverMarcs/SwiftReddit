@@ -20,7 +20,7 @@ struct SettingsView: View {
             Form {
                 Section("Reddit API") {
                     NavigationLink(destination: CredentialsView()) {
-                        Label("Credentials", systemImage: "key.fill")
+                        Label("Accounts", systemImage: "person.fill")
                     }
                 }
                 

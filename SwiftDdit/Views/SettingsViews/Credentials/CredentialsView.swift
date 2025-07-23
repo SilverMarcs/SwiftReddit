@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct CredentialsView: View {
+    
+    
     @State private var credentialsManager = CredentialsManager.shared
     @State private var appID = KeychainManager.shared.loadAppID() ?? ""
     @State private var isLoading = false
@@ -52,17 +54,40 @@ struct CredentialsView: View {
                         Text("1. Go to Reddit's app preferences")
                         Text("2. Create a new app (select 'installed app')")
                         Text("3. Set the redirect URI to the following url:")
-                        Text("swiftddit://auth-success")
-                            .textSelection(.enabled)
-                            .padding(.leading)
-                        Text("4. Copy the App ID below")
+                        
+                        HStack {
+                            Text("swiftddit://auth-success")
+                            Spacer()
+                            Button {
+                                #if os(macOS)
+                                NSPasteboard.general.clearContents()
+                                NSPasteboard.general.setString("swiftddit://auth-success", forType: .string)
+                                #else
+                                UIPasteboard.general.string = "swiftddit://auth-success"
+                                #endif
+                            } label: {
+                                Image(systemName: "doc.on.clipboard")
+                            }
+                            .controlSize(.small)
+                        }
+                        .padding(8)
+                        .background {
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(.background.tertiary)
+                        }
+                        
+                        Text("4. Paste the App ID below")
                     }
+                    .focusEffectDisabled()
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     
                     Link(destination: URL(string: "https://www.reddit.com/prefs/apps")!) {
                         Label("Open Reddit App Settings", systemImage: "safari")
                     }
+                    .environment(\.openURL, OpenURLAction { url in
+                        return .systemAction
+                    })
                 }
                 Section("Step 2: Enter Your App ID") {
                     TextField("Enter your Reddit app ID", text: $appID)
@@ -173,9 +198,7 @@ struct CredentialsView: View {
     }
     
     private func processAuthCode(_ authCode: String) async {
-//        await MainActor.run {
-            isLoading = true
-//        }
+        isLoading = true
         
         let trimmedAppID: String
         if let existingAppID = credentialsManager.existingAppCredentials {
@@ -188,18 +211,16 @@ struct CredentialsView: View {
         )
         let success = await credentialsManager.authorizeCredential(credential, authCode: authCode)
         
-//        await MainActor.run {
-            isLoading = false
-            waitingForCallback = false
-            
-            if success {
-                // Reset form state
-                resetForm()
-            } else {
-                errorMessage = "Failed to exchange authorization code for access token. Please check your credentials and try again."
-                showingError = true
-            }
-//        }
+        isLoading = false
+        waitingForCallback = false
+        
+        if success {
+            // Reset form state
+            resetForm()
+        } else {
+            errorMessage = "Failed to exchange authorization code for access token. Please check your credentials and try again."
+            showingError = true
+        }
     }
 }
 
