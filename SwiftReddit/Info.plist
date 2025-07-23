@@ -8,10 +8,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>CFBundleURLName</key>
-			<string>lo.cafe.winston</string>
+			<string>com.silvermarcs.swiftddit</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>winstonapp</string>
+				<string>swiftddit</string>
 			</array>
 		</dict>
 	</array>

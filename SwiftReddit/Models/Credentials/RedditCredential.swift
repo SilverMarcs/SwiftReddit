@@ -10,19 +10,12 @@ import SwiftUI
 
 struct RedditCredential: Identifiable, Equatable, Hashable, Codable {
     var id: UUID
-    var apiAppID: String { 
-        willSet { 
-            if apiAppID != newValue { 
-                clearIdentity() 
-            } 
-        } 
-    }
-    var apiAppSecret: String { 
-        willSet { 
-            if apiAppSecret != newValue { 
-                clearIdentity() 
-            } 
-        } 
+    var apiAppID: String {
+        willSet {
+            if apiAppID != newValue {
+                clearIdentity()
+            }
+        }
     }
     var accessToken: AccessToken? = nil
     var refreshToken: String? = nil
@@ -31,22 +24,19 @@ struct RedditCredential: Identifiable, Equatable, Hashable, Codable {
     
     var validationStatus: CredentialValidationState {
         var newRedditAPIPairState: CredentialValidationState = .empty
-        
-        if self.apiAppID.count == 22 && self.apiAppSecret.count == 30 {
+        if self.apiAppID.count == 14 { // Reddit installed app IDs are 14 chars
             newRedditAPIPairState = .valid
-        } else if self.apiAppID.count > 10 && self.apiAppSecret.count > 20 {
+        } else if self.apiAppID.count > 10 {
             newRedditAPIPairState = .maybeValid
-        } else if self.apiAppID.count > 0 || self.apiAppSecret.count > 0 {
+        } else if self.apiAppID.count > 0 {
             newRedditAPIPairState = .invalid
         }
-        
         guard self.refreshToken != nil else { return newRedditAPIPairState }
         return .authorized
     }
     
     init(
         apiAppID: String = "",
-        apiAppSecret: String = "",
         accessToken: String? = nil,
         refreshToken: String? = nil,
         expiration: Int? = nil,
@@ -56,8 +46,6 @@ struct RedditCredential: Identifiable, Equatable, Hashable, Codable {
     ) {
         self.id = UUID()
         self.apiAppID = apiAppID
-        self.apiAppSecret = apiAppSecret
-        
         if let accessToken = accessToken, let expiration = expiration, let lastRefresh = lastRefresh {
             let newAccessToken = AccessToken(token: accessToken, expiration: expiration, lastRefresh: lastRefresh)
             self.accessToken = newAccessToken
@@ -75,24 +63,20 @@ struct RedditCredential: Identifiable, Equatable, Hashable, Codable {
     }
     
     func getUpToDateToken(forceRenew: Bool = false) async -> (token: AccessToken?, updatedCredential: RedditCredential?) {
-        guard let refreshToken = self.refreshToken, !apiAppID.isEmpty && !apiAppSecret.isEmpty else { 
-            return (nil, nil) 
+        guard let refreshToken = self.refreshToken, !apiAppID.isEmpty else {
+            return (nil, nil)
         }
-        
         if !forceRenew, let accessToken = self.accessToken {
             let lastRefresh = Double(accessToken.lastRefresh.timeIntervalSince1970)
             let expiration = Double(max(0, accessToken.expiration - 100))
             let now = Double(Date().timeIntervalSince1970)
-            
             if (now - lastRefresh) < expiration {
                 return (accessToken, nil)
             }
         }
-        
         // Use RedditAPI for token refresh
         if let response = await RedditAPI.refreshAccessToken(
-            appID: apiAppID, 
-            appSecret: apiAppSecret, 
+            appID: apiAppID,
             refreshToken: refreshToken
         ) {
             let newAccessToken = AccessToken(
@@ -100,10 +84,8 @@ struct RedditCredential: Identifiable, Equatable, Hashable, Codable {
                 expiration: response.expires_in,
                 lastRefresh: Date()
             )
-            
             var updatedCredential = self
             updatedCredential.accessToken = newAccessToken
-            
             return (newAccessToken, updatedCredential)
         } else {
             // Token refresh failed - clear credentials
@@ -112,7 +94,6 @@ struct RedditCredential: Identifiable, Equatable, Hashable, Codable {
             clearedCredential.accessToken = nil
             clearedCredential.userName = nil
             clearedCredential.profilePicture = nil
-            
             return (nil, clearedCredential)
         }
     }

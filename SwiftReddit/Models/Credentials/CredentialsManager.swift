@@ -79,8 +79,8 @@ import SwiftUI
     }
     
     // Get app credentials from any existing credential for new account setup
-    var existingAppCredentials: (appID: String, appSecret: String)? {
-        return credentials.first.map { ($0.apiAppID, $0.apiAppSecret) }
+    var existingAppCredentials: String? {
+        return credentials.first?.apiAppID
     }
     
     private func loadCredentials() {
@@ -162,8 +162,8 @@ import SwiftUI
         
         // Check if this is our expected redirect URL
         // Handle both direct custom scheme and web-based redirects
-        let isValidURL = (components.scheme == "winstonapp" && components.host == "auth-success") ||
-                        (components.scheme == "winstonapp" && components.path.contains("auth-success"))
+        let isValidURL = (components.scheme == "swiftddit" && components.host == "auth-success") ||
+                        (components.scheme == "swiftddit" && components.path.contains("auth-success"))
         
         guard isValidURL else {
             return nil
@@ -184,14 +184,13 @@ import SwiftUI
     }
     
     func authorizeCredential(_ credential: RedditCredential, authCode: String) async -> Bool {
-        guard !credential.apiAppID.isEmpty && !credential.apiAppSecret.isEmpty else {
-            return false 
+        guard !credential.apiAppID.isEmpty else {
+            return false
         }
         
         // Exchange auth code for tokens
         guard let tokenResponse = await RedditAPI.exchangeAuthCodeForTokens(
             appID: credential.apiAppID,
-            appSecret: credential.apiAppSecret,
             authCode: authCode
         ) else {
             return false

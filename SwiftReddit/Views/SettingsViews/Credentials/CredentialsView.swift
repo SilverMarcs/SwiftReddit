@@ -1,8 +1,8 @@
 //
 //  CredentialsView.swift
-//  winston
+//  SwiftDdit
 //
-//  Created by Winston Team on 16/06/25.
+//  Created by SilverMarcs on 16/06/25.
 //
 
 import SwiftUI
@@ -10,7 +10,6 @@ import SwiftUI
 struct CredentialsView: View {
     @State private var credentialsManager = CredentialsManager.shared
     @State private var appID = KeychainManager.shared.loadAppID() ?? ""
-    @State private var appSecret = KeychainManager.shared.loadAppSecret() ?? ""
     @State private var isLoading = false
     @State private var waitingForCallback = false
     @State private var errorMessage = ""
@@ -20,8 +19,7 @@ struct CredentialsView: View {
     @State private var credentialToDelete: RedditCredential?
     
     private var isFormValid: Bool {
-        !appID.trimmingCharacters(in: .whitespaces).isEmpty &&
-        !appSecret.trimmingCharacters(in: .whitespaces).isEmpty
+        !appID.trimmingCharacters(in: .whitespaces).isEmpty
     }
     
     private var hasAnyCredentials: Bool {
@@ -48,43 +46,44 @@ struct CredentialsView: View {
                 }
             }
             
-            // Show credential setup form for first account only
-            if !hasAnyCredentials {
-                if needsAppCredentials {
-                    // Only show app credentials form if we don't have any existing credentials
-                    Section("Step 1: Get Your App Credentials") {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("1. Go to Reddit's app preferences")
-                            Text("2. Create a new app (select 'installed app')")
-                            Text("3. Copy the App ID and Secret below")
-                        }
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        
-                        Link(destination: URL(string: "https://www.reddit.com/prefs/apps")!) {
-                            Label("Open Reddit App Settings", systemImage: "safari")
-                        }
+//            if !hasAnyCredentials && needsAppCredentials {
+                Section("Step 1: Get Your App ID") {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("1. Go to Reddit's app preferences")
+                        Text("2. Create a new app (select 'installed app')")
+                        Text("3. Set the redirect URI to the following url:")
+                        Text("swiftddit://auth-success")
+                            .textSelection(.enabled)
+                            .padding(.leading)
+                        Text("4. Copy the App ID below")
                     }
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
                     
-                    Section("Step 2: Enter Your App Credentials") {
-                        TextField("Enter your Reddit app ID", text: $appID)
-                            .onChange(of: appID) {
-                                KeychainManager.shared.saveAppID(appID)
-                            }
-                        TextField("Enter your Reddit app secret", text: $appSecret)
-                            .onChange(of: appSecret) {
-                                KeychainManager.shared.saveAppSecret(appSecret)
-                            }
+                    Link(destination: URL(string: "https://www.reddit.com/prefs/apps")!) {
+                        Label("Open Reddit App Settings", systemImage: "safari")
                     }
                 }
-            }
+                Section("Step 2: Enter Your App ID") {
+                    TextField("Enter your Reddit app ID", text: $appID)
+                        .onChange(of: appID) {
+                            KeychainManager.shared.saveAppID(appID)
+                        }
+                }
+            
+                Section("Step 3: Add Account") {
+                    Text("Click Plus button on top right and complete the auth flow in reddit website")
+                }
+//            }
         }
         .navigationTitle("Accounts")
         .toolbarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 if isLoading || waitingForCallback {
-                    ProgressView()
+                    Button("Cancel") {
+                        cancelAuthorization()
+                    }
                 } else {
                     Button {
                         authorizeCredential()
@@ -119,45 +118,39 @@ struct CredentialsView: View {
         }
         .onAppear {
             // Pre-populate app credentials if we have existing accounts
-            if let existingCreds = credentialsManager.existingAppCredentials {
-                appID = existingCreds.appID
-                appSecret = existingCreds.appSecret
+            if let existingAppID = credentialsManager.existingAppCredentials {
+                appID = existingAppID
             } else {
                 appID = KeychainManager.shared.loadAppID() ?? ""
-                appSecret = KeychainManager.shared.loadAppSecret() ?? ""
             }
         }
+    }
+    
+    private func cancelAuthorization() {
+        isLoading = false
+        waitingForCallback = false
     }
     
     private func resetForm() {
         if !hasAnyCredentials {
             appID = ""
-            appSecret = ""
         }
     }
     
     private func authorizeCredential() {
         let trimmedAppID: String
-        let trimmedAppSecret: String
-        
-        // Use existing app credentials if available, otherwise use form input
-        if let existingCreds = credentialsManager.existingAppCredentials {
-            trimmedAppID = existingCreds.appID
-            trimmedAppSecret = existingCreds.appSecret
+        if let existingAppID = credentialsManager.existingAppCredentials {
+            trimmedAppID = existingAppID
         } else {
             trimmedAppID = appID.trimmingCharacters(in: .whitespaces)
-            trimmedAppSecret = appSecret.trimmingCharacters(in: .whitespaces)
         }
-        
-        guard !trimmedAppID.isEmpty && !trimmedAppSecret.isEmpty else {
-            errorMessage = "Please enter both App ID and App Secret"
+        guard !trimmedAppID.isEmpty else {
+            errorMessage = "Please enter your App ID"
             showingError = true
             return
         }
-        
         let authURL = credentialsManager.getAuthorizationCodeURL(trimmedAppID)
         waitingForCallback = true
-        
         #if os(macOS)
         NSWorkspace.shared.open(authURL)
         #else
@@ -180,30 +173,22 @@ struct CredentialsView: View {
     }
     
     private func processAuthCode(_ authCode: String) async {
-        await MainActor.run {
+//        await MainActor.run {
             isLoading = true
-        }
+//        }
         
         let trimmedAppID: String
-        let trimmedAppSecret: String
-        
-        // Use existing app credentials if available, otherwise use form input
-        if let existingCreds = credentialsManager.existingAppCredentials {
-            trimmedAppID = existingCreds.appID
-            trimmedAppSecret = existingCreds.appSecret
+        if let existingAppID = credentialsManager.existingAppCredentials {
+            trimmedAppID = existingAppID
         } else {
             trimmedAppID = appID.trimmingCharacters(in: .whitespaces)
-            trimmedAppSecret = appSecret.trimmingCharacters(in: .whitespaces)
         }
-        
         let credential = RedditCredential(
-            apiAppID: trimmedAppID,
-            apiAppSecret: trimmedAppSecret
+            apiAppID: trimmedAppID
         )
-        
         let success = await credentialsManager.authorizeCredential(credential, authCode: authCode)
         
-        await MainActor.run {
+//        await MainActor.run {
             isLoading = false
             waitingForCallback = false
             
@@ -214,7 +199,7 @@ struct CredentialsView: View {
                 errorMessage = "Failed to exchange authorization code for access token. Please check your credentials and try again."
                 showingError = true
             }
-        }
+//        }
     }
 }
 
