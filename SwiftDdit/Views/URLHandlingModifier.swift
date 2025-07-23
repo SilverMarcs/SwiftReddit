@@ -19,10 +19,10 @@ struct URLHandlingModifier: ViewModifier {
                 }
 
                 // Use new RedditURLParser for broader support
-                if let postNav = RedditURLParser.parsePostNavigation(from: url) {
-                    path.wrappedValue.append(postNav)
-                    return .handled
-                }
+//                if let postNav = RedditURLParser.parsePostNavigation(from: url) {
+//                    path.wrappedValue.append(postNav)
+//                    return .handled
+//                }
 
                 if let navPayload = parseRedditURL(url) {
                     path.wrappedValue.append(navPayload)
