@@ -94,6 +94,12 @@ struct PostView: View {
                   }
                   .buttonStyle(.glass)
                   .buttonBorderShape(.circle)
+              } else {
+                  toggleSaveButton
+                      .font(.headline)
+                      .labelStyle(.iconOnly)
+                      .buttonStyle(.glass)
+                      .controlSize(.regular)
               }
               
               PostActionsView(post: post)
@@ -114,15 +120,9 @@ struct PostView: View {
                   }
               }
           }
-          
-          Button {
-              Task {
-                await toggleSave()
-              }
-          } label: {
-              Label(isSaved ? "Unsave" : "Save", systemImage: isSaved ? "bookmark.fill" : "bookmark")
-          }
-          
+            
+        toggleSaveButton
+
           if let redditURL = post.redditURL {
               ShareLink(item: redditURL) {
                   Label("Share", systemImage: "square.and.arrow.up")
@@ -139,5 +139,17 @@ struct PostView: View {
         if success {
             isSaved.toggle()
         }
+    }
+    
+    var toggleSaveButton: some View {
+        Button {
+            Task {
+              await toggleSave()
+            }
+        } label: {
+            Label(isSaved ? "Unsave" : "Save", systemImage: isSaved ? "bookmark.fill" : "bookmark")
+                .padding(2)
+        }
+        .foregroundStyle(isSaved ? .green : .secondary)
     }
 }
