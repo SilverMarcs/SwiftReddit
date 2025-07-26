@@ -13,16 +13,15 @@ struct URLHandlingModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .environment(\.openURL, OpenURLAction { url in
+                // Check if URL contains "gif" - handle with system action
+                if url.absoluteString.lowercased().contains("gif") {
+                    return .systemAction(prefersInApp: true)
+                }
+                
                 if let galleryImage = detectRedditImage(from: url) {
                     path.wrappedValue.append(ImageModalData(image: galleryImage))
                     return .handled
                 }
-
-                // Use new RedditURLParser for broader support
-//                if let postNav = RedditURLParser.parsePostNavigation(from: url) {
-//                    path.wrappedValue.append(postNav)
-//                    return .handled
-//                }
 
                 if let navPayload = parseRedditURL(url) {
                     path.wrappedValue.append(navPayload)
